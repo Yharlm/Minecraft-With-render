@@ -1,4 +1,5 @@
 ﻿using Minecraft;
+using System;
 using System.Diagnostics;
 using System.Numerics;
 
@@ -85,10 +86,11 @@ namespace cammera
                     {
                         Render_block(Game.Get_ByID(grid[i+camera.Position.y, j+ camera.Position.x]), j, i);
                         //Fill_block(player.x, player.y, camera.View, Game.GetBlock("Stone"));
-
+                        Console.ForegroundColor = ConsoleColor.Gray;
                         //WriteAt("EE",player.x*2,player.y);
-                        WriteAt("EE", camera.View.GetLength(1) - 1, (camera.View.GetLength(0) / 2)-1);
-                        WriteAt("EE", camera.View.GetLength(1) - 1, camera.View.GetLength(0) / 2);
+                        WriteAt("██", camera.View.GetLength(1) - 1, (camera.View.GetLength(0) / 2)-1);
+                        WriteAt("██", camera.View.GetLength(1) - 1, camera.View.GetLength(0) / 2);
+                        Console.ForegroundColor = default;
                     }
                     
                 }
@@ -199,7 +201,7 @@ namespace cammera
                     {
                         player.Entity_hotbar = 0;
                     }
-                    //Print_window(player);
+                    
                     break;
 
                 case "R":
@@ -272,8 +274,7 @@ namespace cammera
                     player.Selected_block = game.Block_list[player.hotbar];
 
                     Console.ForegroundColor = ConsoleColor.Red;
-                    //Print_window(player);
-
+                    Print_window(camera, game, player);
 
                     if (player.hotbar == game.Block_list.Count - 1) player.hotbar = 0;
 
@@ -511,7 +512,7 @@ namespace cammera
             int tree_rate = 34
            ;
             int Tree_r = 0;
-            for (int i = 20; i < grid.GetLength(1)-20; i++)
+            for (int i = 20; i < grid.GetLength(1)-40; i++)
             {
                 Tree_r = random.Next(1, tree_rate);
                 if (Tree_r >= tree_rate - 2)
@@ -585,10 +586,10 @@ namespace cammera
         {
             Random random = new Random();
             int Width = 1000;
-            ; int Height = 34
+            ; int Height = 104
             ;
             int dirt_Height = 5;
-            int stone_Height = 12;
+            int stone_Height = 42;
             int min = 1;
             int max = 5;
             int c = 0;
@@ -618,6 +619,19 @@ namespace cammera
                     count++;
                 }
             }
+
+
+            //for (int j = 0; j < Width;)
+            //{
+            //    int coalN = random.Next(14, 24);
+            //    int vein = random.Next(1, 6);
+
+            //    if (random.Next(1, 30) < 4)
+            //    {
+            //        Fill_Index_Cord2(j, Height + coalN - vein, j + vein, Height + coalN, grid, game.GetBlock("Coal_ore"),5);
+            //    }
+            //    j++;
+            //}
         }
 
         private static void Fill_block(int x, int y, int[,] grid, Solid Block)
@@ -630,6 +644,77 @@ namespace cammera
             Console.BackgroundColor = ConsoleColor.Cyan;
         }
 
+        static void Fill_Index_Cord(int x1, int y1, int x2, int y2, int[,] grid, Solid Block)
+        {
+
+            for (int j = y1; j < y2; j++)
+            {
+                for (int i = x1; i < x2; i++)
+                {
+                    
+                    grid[j, i] = Block.id;
+                    
+
+
+                }
+            }
+            
+        }
+
+        static void Fill_Index_Cord2(int x1, int y1, int x2, int y2, int[,] grid, Solid Block, int randomiser)
+        {
+            Random random = new Random();
+            for (int j = y1; j < y2; j++)
+            {
+                for (int i = x1; i < x2; i++)
+                {
+                    int e = random.Next(0, randomiser);
+                    if (e == 0)
+                    {
+                        continue;
+                    }
+                    Console.ForegroundColor = Block.FG;
+                    Console.BackgroundColor = Block.BG;
+                    grid[j, i] = Block.id;
+                    WriteAt(Block.Texture, i * 2, j);
+
+
+                }
+            }
+            Console.ForegroundColor = default;
+            Console.BackgroundColor = ConsoleColor.Cyan;
+        }
+
+        private static void PrintUI(Player player)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            WriteAt(player.health.ToString() + " Health", 3, 4);
+            Console.ForegroundColor = default;
+        }
+
+        static void Print_window(Camera camera,Game game,Player player)
+        {
+            
+            int c = 0;
+            int UI = camera.View.GetLength(0) + 1;
+            WriteAt("                                    ", 1, UI + 2);
+            foreach (Solid i in game.Block_list)
+            {
+                Console.ForegroundColor = i.FG;
+                Console.BackgroundColor = i.BG;
+                WriteAt(i.Texture.ToString(),c*2,UI);
+                Console.BackgroundColor = ConsoleColor.White;
+                Console.ForegroundColor = ConsoleColor.Black;
+                WriteAt(i.quantity.ToString(), c*2, UI-1);
+                c++;
+
+                
+            }
+            WriteAt("^^", player.Selected_block.id * 2, UI + 1);
+            Console.BackgroundColor = ConsoleColor.Cyan;
+            Console.ForegroundColor = default;
+
+        }
 
     }
 }
