@@ -1,13 +1,10 @@
 ﻿using Minecraft;
-using System;
-using System.Diagnostics;
-using System.Numerics;
 
 namespace cammera
 {
     internal class Program
     {
-        
+
 
         protected static int origRow;
         protected static int origCol;
@@ -25,13 +22,181 @@ namespace cammera
                 Console.WriteLine(e.Message);
             }
         }
-        
+
+        static void Entity_behaviour(Game game, Player player, int[,] grid)
+        {
+            try
+            {
+                foreach (Entity mob in game.Existing_Entities)
+                {
+                    string behaviour = mob.Type;
+                    switch (behaviour)
+                    {
+                        case "Pig":
+
+                            //try { Walk_to_player(mob, player, grid, game); }
+                            //catch { }
+                            if (mob.Health <= 0) { Kill_entity(game, mob); }
+                            Walk_to_player(mob, player, grid, game);
+                            if (GetRadius_forplayer(player, mob.cordinates, 2, 2) && game.delay(mob.time, 2, game.curent_tick))
+                            {
+                                Explosion(game, grid, mob.cordinates, player, 2);
+                                Kill_entity(game, mob);
+                            }
+                            if (grid[mob.cordinates.y + 1, mob.cordinates.x] != 0)
+                            {
+                                if (grid[mob.cordinates.y, mob.cordinates.x + 1] != 0 || grid[mob.cordinates.y, mob.cordinates.x - 1] != 0)
+                                {
+
+                                    mob.cordinates.y -= 2;
+                                }
+                            }
+                            break;
+                        case "Boss":
+                            if (mob.Health <= 0) { Kill_entity(game, mob); }
+                            Walk_to_player(mob, player, grid, game);
+                            if (grid[mob.cordinates.y + 1, mob.cordinates.x] != 0)
+                            {
+                                if (grid[mob.cordinates.y, mob.cordinates.x + 1] != 0 || grid[mob.cordinates.y, mob.cordinates.x - 1] != 0)
+                                {
+
+                                    mob.cordinates.y -= 2;
+                                }
+                            }
+                            if (GetRadius_forplayer(player, mob.cordinates, 2, 2) && game.curent_tick)
+                            {
+                                player.health -= 10;
+                            }
+
+
+                            break;
+                        case "Projectile":
+
+                            Cordinates pos = mob.cordinates;
+                            if (game.curent_tick)
+                            {
+
+                                if (mob.Name == "Slash")
+                                {
+                                    if (pos.x <= pos.x1 + 8)
+                                    {
+                                        Break_block(pos.x, pos.y, grid, game.GetBlock("Air"), game);
+                                        Break_block(pos.x - 1, pos.y - 1, grid, game.GetBlock("Air"), game);
+                                        Break_block(pos.x - 1, pos.y + 1, grid, game.GetBlock("Air"), game);
+                                    }
+                                    if (pos.x >= pos.x1 + 14)
+                                    {
+                                        Break_block(pos.x + 1, pos.y, grid, game.GetBlock("Air"), game);
+                                        Break_block(pos.x + 2, pos.y, grid, game.GetBlock("Air"), game);
+
+                                    }
+                                    if (pos.x >= pos.x1 + 20)
+                                    {
+                                        Kill_entity(game, mob);
+                                    }
+                                    grid[pos.y, pos.x] = 0;
+                                    //Fill_Index_Cord(pos.x-2,pos.y-2,pos.x,pos.y,grid,player.GetBlock("air"));
+
+
+                                    mob.cordinates.x += 1;
+
+                                    Attack(game, mob.cordinates, grid, 1, 3, 10);
+                                }
+
+                                else if (mob.Name == "Arrow")
+                                {
+                                    int start = mob.cordinates.x1;
+                                    int range = mob.specialvalue;
+                                    //if (mob.cordinates.x % 2 == 0)
+                                    //{
+                                    //    mob.specialvalue += 1;
+                                    //}
+                                    if (grid[pos.y, pos.x] != 0)
+                                    {
+                                        Explosion(game, grid, pos, player, range);
+                                        Kill_entity(game, mob);
+                                    }
+
+                                    mob.cordinates.x += 1;
+                                }
+
+                                else if (mob.Name == "Blue")
+                                {
+                                    Random random = new Random();
+                                    int radius = mob.specialvalue;
+                                    int x = pos.x-radius/2;
+                                    int y = pos.y-radius/2;
+                                    int xq =  1;
+                                    int yq =  1;
+
+
+
+                                    int counter = 0;
+                                    while (counter < radius*2)
+                                    {
+                                        int X = random.Next(0, radius);
+                                        int Y = random.Next(0, radius);
+                                        int i = 0;
+                                        int j = 0;
+                                        //if (X < Y) { i = Y / X; j = 1; }
+                                        //else { j = X / Y; i = 1; }
+
+                                        if (X > radius / 2)
+                                        {
+                                            xq *= -1;
+                                        }
+                                        if (Y > radius / 2)
+                                        {
+                                            yq *= -1;
+                                        }
+                                        if (grid[y + Y, x + X] != 0)
+                                        {
+                                            grid[y + Y + yq * 1, x + X + xq * 1] = grid[y + Y, x + X];
+                                            grid[y + Y, x + X] = 0;
+                                        }
+                                        counter++;
+                                    }
+                                    for (int i = 0; i < 3; i++)
+                                    {
+                                        for (int j = 0; j < 3; j++)
+                                        {
+                                            grid[y + i - 1, x + j - 1] = 0;
+                                        }
+                                    }
+
+                                    if (mob.delay(9, game.curent_tick))
+                                    {
+                                        mob.specialvalue++;
+                                    }
+
+                                }
+
+                            }
+                            break;
+                    }
+                    }
+                }
+            catch { }
+        }
 
         static void Main(string[] args)
         {
+
             Game Game = new Game();
             Player player = new Player();
 
+
+            Entity Mob = new Entity(null, 0, null, "EE"); Game.Entity_list.Add(Mob);
+
+            Mob = new Entity("pig", 10, "Pig", "██"); Game.Entity_list.Add(Mob);
+            Mob.Color = ConsoleColor.Red;
+
+            Mob = new Entity("TNT", 0, null, "██"); Game.Entity_list.Add(Mob);
+            Mob.Color = ConsoleColor.Red;
+            Mob = new Entity("Boss", 30, "E", "██");
+
+            Mob.Color = ConsoleColor.Blue;
+            Game.Entity_list.Add(Mob);
 
             Solid Default = new Solid("null", 0, null, default, default);
             Non_solid Background = new Non_solid("", 0, null, default, default);
@@ -45,23 +210,38 @@ namespace cammera
             Default = new Solid("water", 5, "  ", ConsoleColor.DarkBlue, ConsoleColor.DarkBlue); Game.Block_list.Add(Default);
             //Default = new Solid("water", 5, "  ", ConsoleColor.DarkBlue, ConsoleColor.DarkBlue); Game.Block_list.Add(Default);
 
-            Default = new Solid("waterTop", 6, "▄▄", ConsoleColor.DarkBlue, ConsoleColor.DarkBlue); Game.Block_list.Add(Default);
+            Default = new Solid("waterTop", 6, "▄▄", ConsoleColor.DarkBlue, ConsoleColor.Cyan); Game.Block_list.Add(Default);
             Default = new Solid("Leaves", 7, "▄▀", ConsoleColor.DarkGreen, ConsoleColor.Green); Game.Block_list.Add(Default);
             Default = new Solid("Coal_ore", 8, "▄▀", ConsoleColor.DarkGray, ConsoleColor.Black); Game.Block_list.Add(Default);
             Default = new Solid("Iron_ore", 9, "▄▀", ConsoleColor.DarkGray, ConsoleColor.Magenta); Game.Block_list.Add(Default);
             Default = new Solid("Crafting_table", 10, "TT", ConsoleColor.Yellow, ConsoleColor.DarkYellow); Game.Block_list.Add(Default);
             Default = new Solid("Wooden_planks", 11, "▄▄", ConsoleColor.Yellow, ConsoleColor.DarkYellow); Game.Block_list.Add(Default);
-            Default = new Solid("water", 12, "  ", ConsoleColor.DarkBlue, ConsoleColor.DarkBlue); Game.Block_list.Add(Default);
+
+
+            //Projectiles
+            Mob = new Entity("Blue", 0, "Projectile", "██");
+            Mob.Color = ConsoleColor.Blue;
+            Game.Projectiles.Add(Mob);
+            Mob = new Entity("Slash", 0, "Projectile", "--");
+            Mob.Color = ConsoleColor.White;
+            Game.Projectiles.Add(Mob);
+            Mob = new Entity("Arrow", 0, "Projectile", "  ");
+
+            Mob.specialvalue = 5;
+            Mob.BGColor = ConsoleColor.Yellow;
+            Game.Projectiles.Add(Mob);
+
 
             Camera camera = new Camera();
             int[,] grid = new int[1000, 1000];
-            
+            player.x = 500;
+            player.Selected_block = Game.Get_ByID(0);
             BuildWorld(grid, player, Game);
-            double tick = 0.0002;
+            double tick = 0.002;
             while (true)
             {
                 //double timer = Math.Ceiling(overworld.time += 0.0002);
-                double timer = Game.time += 0.0002;
+                double timer = Game.time += 0.005;
                 if (Game.time >= tick)
                 {
 
@@ -74,9 +254,9 @@ namespace cammera
 
                     Game.curent_tick = false;
                 }
-                camera.Position.x = player.x-camera.View.GetLength(1) / 2;
-                camera.Position.y = player.y - camera.View.GetLength(0)/2;
-                
+                camera.Position.x = player.x - camera.View.GetLength(1) / 2;
+                camera.Position.y = player.y - camera.View.GetLength(0) / 2;
+                Entity_update(grid, Game.Existing_Entities, Game, player);
 
 
 
@@ -84,24 +264,26 @@ namespace cammera
                 {
                     for (int j = 0; j < camera.View.GetLength(1); j++)
                     {
-                        Render_block(Game.Get_ByID(grid[i+camera.Position.y, j+ camera.Position.x]), j, i);
+
+                        Render_block(Game.Get_ByID(grid[i + camera.Position.y, j + camera.Position.x]), j, i, Game, camera, player);
                         //Fill_block(player.x, player.y, camera.View, Game.GetBlock("Stone"));
                         Console.ForegroundColor = ConsoleColor.Gray;
                         //WriteAt("EE",player.x*2,player.y);
-                        WriteAt("██", camera.View.GetLength(1) - 1, (camera.View.GetLength(0) / 2)-1);
+                        WriteAt("██", camera.View.GetLength(1) - 1, (camera.View.GetLength(0) / 2) - 1);
                         WriteAt("██", camera.View.GetLength(1) - 1, camera.View.GetLength(0) / 2);
                         Console.ForegroundColor = default;
                     }
-                    
+
                 }
+
                 if (grid[player.y + 1, player.x] == 0 && Game.curent_tick)
                 {
 
                     if (grid[player.y - 2, player.x] == 0)
                     {
-                        
+
                     }
-                    
+
 
                     player.y++;
                     player.grounded = false;
@@ -119,14 +301,69 @@ namespace cammera
                 {
                     player.grounded = true;
                 }
-                GetInput(grid,player,Game,camera);
-                
+                GetInput(grid, player, Game, camera);
+
             }
 
         }
 
-        
-            private static void GetInput(int[,] grid, Player player, Game game,Camera camera)
+        static void Entity_update(int[,] grid, List<Entity> Entity_list, Game game, Player player)
+        {
+            //Entity_behaviour(game, player, grid);
+            Entity_behaviour(game, player, grid);
+            //PlayerAbilities(grid, player, game);
+            if (game.Existing_Entities.Count != 0)
+            {
+                foreach (Entity entity in game.Existing_Entities)
+                {
+                    if (game.curent_tick)
+                    {
+                        entity.gravity(grid);
+                    }
+
+                    //try { Walk_to_player(entity, player, grid, game); }
+                    //catch { }
+                }
+
+            }
+        }
+
+        static void Walk_to_player(Entity entity, Player player, int[,] grid, Game game)
+        {
+
+            int speed = 10;
+
+            if (player.x < entity.cordinates.x)
+            {
+
+                if (grid[entity.cordinates.y, entity.cordinates.x - 1] == 0 && entity.delay(speed, game.curent_tick))
+                {
+
+                    entity.cordinates.x--;
+                }
+
+
+
+            }
+            else if (player.x > entity.cordinates.x)
+            {
+
+                if (grid[entity.cordinates.y, entity.cordinates.x + 1] == 0 && entity.delay(speed, game.curent_tick))
+                {
+
+                    entity.cordinates.x++;
+                }
+
+            }
+
+
+        }
+        private static void Kill_entity(Game game, Entity entity)
+        {
+
+            game.Existing_Entities.Remove(entity);
+        }
+        private static void GetInput(int[,] grid, Player player, Game game, Camera camera)
         {
 
             //Block_ids air = new Block_ids(0, "  ", default, ConsoleColor.Cyan);
@@ -150,9 +387,9 @@ namespace cammera
 
             if (Console.KeyAvailable == true)
             {
-                WriteAt(" ", 50, 12);
+                WriteAt(" ", 0, 0);
 
-                player.Input = Console.ReadKey().Key.ToString(); 
+                player.Input = Console.ReadKey().Key.ToString();
                 if (player.Input != "Spacebar" && player.Input != "L" && player.Input != "K" && player.Input != "R")
                 {
                     player.last_key = player.Input;
@@ -186,22 +423,20 @@ namespace cammera
             {
                 case "X":
 
-
-                    //Shoot_Projectile(player, game, player_cords, player.Entity_hotbar);
+                    //player.Holding = true;
+                    Shoot_Projectile(player, game, player_cords, player.Entity_hotbar);
                     break;
                 case "Q":
-                    player.Crafting_select++;
+                    player.hotbar--;
 
-                    if (player.Crafting_select == player.Recipes.Count)
-                    {
-                        player.Crafting_select = 0;
-                    }
-                    player.Entity_hotbar++;
-                    if (player.Entity_hotbar >= 2)
-                    {
-                        player.Entity_hotbar = 0;
-                    }
-                    
+                    player.Selected_block = game.Block_list[player.hotbar];
+
+                    Console.ForegroundColor = ConsoleColor.Red;
+
+
+                    if (player.hotbar == 0) player.hotbar = game.Block_list.Count;
+                    Print_window(camera, game, player);
+
                     break;
 
                 case "R":
@@ -219,10 +454,10 @@ namespace cammera
                         {
 
 
-                            WriteAt("  ", entity.cordinates.x * 2, entity.cordinates.y);
-                            Cordinates cordinates = entity.cordinates;
+
+
                             game.Existing_Entities.Remove(entity);
-                            //Explosion(game, grid, cordinates, player, 4);
+                            Explosion(game, grid, entity.cordinates, player, 4);
 
                         }
                     }
@@ -240,26 +475,21 @@ namespace cammera
 
                     break;
                 case "Y":
-                    foreach (Entity ent in game.Existing_Entities)
-                    {
-                        WriteAt("  ", ent.cordinates.x * 2, ent.cordinates.y);
-                    }
+
                     game.Existing_Entities.Clear();
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    WriteAt(game.Existing_Entities.Count().ToString() + "  ", 24, 3);
-                    Console.ForegroundColor = default;
+
                     break;
                 case "T":
                     {
 
-                        WriteAt(game.Existing_Entities.Count().ToString(), 24, 3);
+                        //WriteAt(game.Existing_Entities.Count().ToString(), 24, 3);
 
                         Entity mob = game.Entity_list[1];
                         Entity Default = new Entity(mob.Name, mob.Health, mob.Type, mob.Sprite);
                         Default.Color = mob.Color;
                         //Default.cordinates.x = random.Next(4, 55);
-                        Default.cordinates.x = random.Next(30, 70);
-                        Default.cordinates.y = player.y - 10;
+                        Default.cordinates.x = player.x;
+                        Default.cordinates.y = player.y - 1;
 
 
 
@@ -270,13 +500,13 @@ namespace cammera
                     }
                 case "E":
                     player.hotbar++;
+                    if (player.hotbar == game.Block_list.Count - 1) player.hotbar = 0;
 
                     player.Selected_block = game.Block_list[player.hotbar];
-
-                    Console.ForegroundColor = ConsoleColor.Red;
                     Print_window(camera, game, player);
+                    Console.ForegroundColor = ConsoleColor.Red;
 
-                    if (player.hotbar == game.Block_list.Count - 1) player.hotbar = 0;
+
 
 
                     break;
@@ -325,7 +555,7 @@ namespace cammera
                         }
                     }
 
-                    //Print_window(player);
+                    Print_window(camera, game, player);
 
                     break;
                 case "L":
@@ -362,7 +592,7 @@ namespace cammera
                                     Fill_block(player.x - 1, player.y - 1, grid, player.Selected_block);
                                 player.Selected_block.quantity--;
                             }
-                        //Print_window(player);
+                        Print_window(camera, game, player);
                     }
                     break;
                 case "Spacebar":
@@ -393,7 +623,7 @@ namespace cammera
                     camera.Position.x--;
                     if (player.grounded == false)
                     {
-                        
+
 
                     }
 
@@ -427,7 +657,7 @@ namespace cammera
 
                     if (player.grounded == false)
                     {
-                        
+
 
                     }
                     if (grid[player.y, player.x + 1] == 0 && grid[player.y - 1, player.x + 1] == 0)
@@ -445,11 +675,11 @@ namespace cammera
                     }
                     break;
             }
-            
+
             player.Input = null;
             player.x = x;
             player.y = y;
-            
+
 
 
 
@@ -458,25 +688,34 @@ namespace cammera
         static void Break_block(int x, int y, int[,] grid, Solid Block, Game game)
         {
 
-            Console.ForegroundColor = Block.FG;
-            Console.BackgroundColor = Block.BG;
+
             game.Block_list.Find(i => i.id == grid[y, x]).quantity++;
             grid[y, x] = Block.id;
-            
-            Console.ForegroundColor = default;
-            Console.BackgroundColor = ConsoleColor.Cyan;
+
+
 
         }
 
 
 
-        static void Render_block(Solid block, int x, int y)
+        static async void Render_block(Solid block, int x, int y, Game game, Camera camera, Player player)
         {
+
             Console.ForegroundColor = block.FG;
             Console.BackgroundColor = block.BG;
             WriteAt(block.Texture, x * 2, y);
             Console.ForegroundColor = default;
             Console.BackgroundColor = default;
+            foreach (Entity mob in game.Existing_Entities)
+            {
+
+                if (mob.cordinates.x >= x + camera.Position.x && mob.cordinates.x <= x + camera.Position.x && mob.cordinates.y >= y + camera.Position.y && mob.cordinates.y <= y + camera.Position.y)
+                {
+                    Console.ForegroundColor = mob.Color;
+                    Console.BackgroundColor = mob.BGColor;
+                    WriteAt(mob.Sprite, x * 2, y);
+                }
+            }
         }
 
         private static void BuildWorld(int[,] grid, object instance, Game game)
@@ -512,7 +751,7 @@ namespace cammera
             int tree_rate = 34
            ;
             int Tree_r = 0;
-            for (int i = 20; i < grid.GetLength(1)-40; i++)
+            for (int i = 20; i < 700; i++)
             {
                 Tree_r = random.Next(1, tree_rate);
                 if (Tree_r >= tree_rate - 2)
@@ -586,7 +825,7 @@ namespace cammera
         {
             Random random = new Random();
             int Width = 1000;
-            ; int Height = 104
+            ; int Height = 55
             ;
             int dirt_Height = 5;
             int stone_Height = 42;
@@ -651,14 +890,14 @@ namespace cammera
             {
                 for (int i = x1; i < x2; i++)
                 {
-                    
+
                     grid[j, i] = Block.id;
-                    
+
 
 
                 }
             }
-            
+
         }
 
         static void Fill_Index_Cord2(int x1, int y1, int x2, int y2, int[,] grid, Solid Block, int randomiser)
@@ -673,42 +912,220 @@ namespace cammera
                     {
                         continue;
                     }
-                    Console.ForegroundColor = Block.FG;
-                    Console.BackgroundColor = Block.BG;
+
                     grid[j, i] = Block.id;
-                    WriteAt(Block.Texture, i * 2, j);
+
 
 
                 }
             }
-            Console.ForegroundColor = default;
-            Console.BackgroundColor = ConsoleColor.Cyan;
+
+        }
+        static void Explosion(Game game, int[,] grid, Cordinates pos, Player player, int radius)
+        {
+
+
+            Solid air = new Solid("air", 0, "  ", ConsoleColor.White, ConsoleColor.Cyan);
+
+
+            int range = radius;
+            int range_max = range * 2;
+            int x = pos.x;
+            int y = pos.y;
+
+            Cordinates cordinates = new Cordinates();
+            cordinates.x = range_max;
+            cordinates.y = range_max;
+            cordinates.x1 = x + range_max + 1;
+            cordinates.y1 = y + range_max + 1;
+
+            Fill_Index_Cord2(x - range, y - range, x + range + 1, y + range + 1, grid, air, 30);
+            Fill_Index_Cord2(x - range_max, y - range_max - range, x + range_max + 1, y + range_max + 1 - range, grid, air, 2);
+            Attack(game, pos, grid, 5, range, range_max);
+
+            if (GetRadius_forplayer(pos, Convert_cor(player.x, player.y), range_max, range_max)) { player.health -= 50; }
+            if (GetRadius_forplayer(pos, Convert_cor(player.x, player.y), range, range)) { player.health -= 50; }
+
+        }
+        private static Cordinates Convert_cor(int x, int y)
+        {
+            Cordinates cords = new Cordinates();
+            cords.y = y;
+            cords.x = x;
+            return cords;
+        }
+        static bool GetRadius(Entity mob1, Cordinates plr, int x, int y)
+        {
+            bool res = false;
+            if (mob1.cordinates.x > plr.x - x && mob1.cordinates.x < plr.x + x)
+            {
+                res = true;
+            }
+            //if (mob1.cordinates.y > plr.y - y && mob1.cordinates.y < plr.y + y)
+            //{
+            //    res = true;
+            //}
+
+            return res;
+        }
+        static bool GetRadius_forplayer(Cordinates object1, Cordinates object2, int x, int y)
+        {
+            bool res = false;
+            if (object1.x >= object2.x - x && object1.x <= object2.x + x && object1.y >= object2.y - y && object1.y <= object2.y + y)
+            {
+                res = true;
+            }
+
+
+            return res;
         }
 
-        private static void PrintUI(Player player)
+        private static bool Attack(Game game, Cordinates player, int[,] grid, int knockback, int range, int dmg)
         {
-            Console.ForegroundColor = ConsoleColor.Red;
-            WriteAt(player.health.ToString() + " Health", 3, 4);
-            Console.ForegroundColor = default;
+            bool is_there = false;
+            foreach (Entity entity in game.Existing_Entities)
+            {
+                if (entity.Type != "Projectle")
+                {
+                    if (GetRadius(entity, player, range, 3) && entity.cordinates.x > player.x)
+                    {
+                        WriteAt("  ", entity.cordinates.x * 2, entity.cordinates.y);
+                        entity.Health -= dmg;
+                        if (grid[entity.cordinates.y, entity.cordinates.x + range] == 0) { entity.cordinates.x += knockback; }
+                        is_there = true;
+                        entity.cordinates.y -= knockback;
+                        entity.velocity += 1;
+                    }
+                    if (GetRadius(entity, player, range, 3) && entity.cordinates.x < player.x)
+                    {
+                        WriteAt("  ", entity.cordinates.x * 2, entity.cordinates.y);
+                        entity.Health -= dmg;
+                        if (grid[entity.cordinates.y, entity.cordinates.x - range] == 0) { entity.cordinates.x -= knockback; }
+                        is_there = true;
+                        entity.cordinates.y -= knockback;
+                        entity.velocity += -1;
+                    }
+                }
+
+            }
+            return is_there;
+        }
+        static void Shoot_Projectile(Player player, Game game, Cordinates cordinates, int ID)
+        {
+            Entity entity = game.Projectiles[ID];
+            entity.cordinates = cordinates;
+            entity.cordinates.y -= 1;
+            entity.cordinates.x += 1;
+            entity.cordinates.x1 = cordinates.x;
+            game.Existing_Entities.Add(entity);
+
+
         }
 
-        static void Print_window(Camera camera,Game game,Player player)
+        static void Slash(Player player, Game game, int[,] grid)
         {
-            
+            int x = 0;
+            int y = player.y - 4;
+            if (player.last_key == "D")
+            {
+                x = (player.x + 2) * 2;
+                Cordinates cordinates = new Cordinates();
+                cordinates.x = 5;
+                cordinates.y = 5;
+                cordinates.x1 = -2;
+                cordinates.y1 = 4;
+                Console.ForegroundColor = ConsoleColor.Red;
+
+                Thread.Sleep(20);
+                WriteAt("▀ ▄       ", x, y + 0);
+                WriteAt("  ▀ ▄     ", x, y + 1);
+                WriteAt("    █▄    ", x, y + 2);
+                WriteAt("    ▀     ", x, y + 3);
+                WriteAt("          ", x, y + 4);
+                Thread.Sleep(20);
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                WriteAt("   ▄      ", x, y + 0);
+                WriteAt("    ▀▄    ", x, y + 1);
+                WriteAt("     █▄   ", x, y + 2);
+                WriteAt("   ▄██▀   ", x, y + 3);
+                WriteAt("▄██▀▀     ", x, y + 4);
+                Thread.Sleep(40);
+                Console.ForegroundColor = ConsoleColor.White
+                    ;
+                WriteAt("          ", x, y + 0);
+                WriteAt("     ▄    ", x, y + 1);
+                WriteAt("      ▄   ", x, y + 2);
+                WriteAt("     █▀   ", x, y + 3);
+                WriteAt("▄ ▄█▀▀    ", x, y + 4);
+                Thread.Sleep(10);
+                WriteAt("          ", x, y + 0);
+                WriteAt("          ", x, y + 1);
+                WriteAt("          ", x, y + 2);
+                WriteAt("          ", x, y + 3);
+                WriteAt("          ", x, y + 4);
+                Console.ForegroundColor = default;
+            }
+            else if (player.last_key == "A")
+            {
+                Cordinates cordinates = new Cordinates();
+                cordinates.x = 5;
+                cordinates.y = 5;
+                cordinates.x1 = 6;
+                cordinates.y1 = 4;
+                x = (player.x - 6
+                    ) * 2;
+                Console.ForegroundColor = ConsoleColor.Red;
+                Thread.Sleep(20);
+                WriteAt("       ▄ ▀", x, y + 0);
+                WriteAt("     ▄ ▀  ", x, y + 1);
+                WriteAt("    ▄█    ", x, y + 2);
+                WriteAt("     ▀    ", x, y + 3);
+                WriteAt("          ", x, y + 4);
+                Thread.Sleep(20);
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                WriteAt("      ▄   ", x, y + 0);
+                WriteAt("    ▄▀    ", x, y + 1);
+                WriteAt("   ▄█     ", x, y + 2);
+                WriteAt("   ▀██▄   ", x, y + 3);
+                WriteAt("     ▀▀██▄", x, y + 4);
+                Thread.Sleep(40);
+                Console.ForegroundColor = ConsoleColor.White;
+                WriteAt("          ", x, y + 0);
+                WriteAt("    ▄     ", x, y + 1);
+                WriteAt("   ▄      ", x, y + 2);
+                WriteAt("   ▀█     ", x, y + 3);
+                WriteAt("    ▀▀█▄ ▄", x, y + 4);
+                Thread.Sleep(10);
+                WriteAt("          ", x, y + 0);
+                WriteAt("          ", x, y + 1);
+                WriteAt("          ", x, y + 2);
+                WriteAt("          ", x, y + 3);
+                WriteAt("          ", x, y + 4);
+            }
+
+        }
+
+
+        static void Print_window(Camera camera, Game game, Player player)
+        {
+
             int c = 0;
             int UI = camera.View.GetLength(0) + 1;
-            WriteAt("                                    ", 1, UI + 2);
+            Console.BackgroundColor = ConsoleColor.Black;
+            Console.ForegroundColor = ConsoleColor.Red;
+            WriteAt("Health" + player.health.ToString(), 1, UI + 2);
+            WriteAt("                                    ", 1, UI + 1);
             foreach (Solid i in game.Block_list)
             {
                 Console.ForegroundColor = i.FG;
                 Console.BackgroundColor = i.BG;
-                WriteAt(i.Texture.ToString(),c*2,UI);
-                Console.BackgroundColor = ConsoleColor.White;
-                Console.ForegroundColor = ConsoleColor.Black;
-                WriteAt(i.quantity.ToString(), c*2, UI-1);
+                WriteAt(i.Texture.ToString(), c * 2, UI);
+                Console.BackgroundColor = ConsoleColor.Black;
+                Console.ForegroundColor = ConsoleColor.White;
+                WriteAt(i.quantity.ToString(), c * 2, UI - 1);
                 c++;
 
-                
+
             }
             WriteAt("^^", player.Selected_block.id * 2, UI + 1);
             Console.BackgroundColor = ConsoleColor.Cyan;

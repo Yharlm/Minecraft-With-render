@@ -76,7 +76,7 @@ namespace Minecraft
     class Camera
     {
 
-        public int[,] View = new int[19, 21];
+        public int[,] View = new int[19, 31];
         public Cordinates Position = new Cordinates();
     }
     class Game
@@ -124,16 +124,16 @@ namespace Minecraft
             //number++;
         }
 
-        protected double count = 0;
-        public bool delay(double delay)
+        
+        public bool delay(int mob_time,int delay,bool tick)
         {
-            if (curent_tick)
+            if (tick)
             {
-                count += 1;
+                mob_time += 1;
             }
-            if (count == delay)
+            if (mob_time >= delay)
             {
-                count = 0;
+                mob_time = 0;
                 return true;
             }
             else
@@ -238,31 +238,6 @@ namespace Minecraft
             }
         }
 
-        public static void Walk_to_player(Entity entity, Player player, int[,] grid, Game game)
-        {
-
-            int speed = 2;
-            if (player.x < entity.cordinates.x)
-            {
-
-                if (grid[entity.cordinates.y, entity.cordinates.x - 1] == 0 && game.delay(speed))
-                {
-                    WriteAt("  ", entity.cordinates.x * 2, entity.cordinates.y);
-                    entity.cordinates.x--;
-                }
-
-            }
-            else if (player.x > entity.cordinates.x)
-            {
-
-                if (grid[entity.cordinates.y, entity.cordinates.x + 1] == 0 && game.delay(speed))
-                {
-                    WriteAt("  ", entity.cordinates.x * 2, entity.cordinates.y);
-                    entity.cordinates.x++;
-                }
-
-            }
-        }
         public void Shoot_WithImaginaryProjectiles()
         {
 
@@ -271,7 +246,22 @@ namespace Minecraft
     }
     class Entity(string name, int health, string type, string sprite)
     {
-
+        public bool delay( int delay, bool tick)
+        {
+            if (tick)
+            {
+                time += 1;
+            }
+            if (time >= delay)
+            {
+                time = 0;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
         public int velocity = 0;
         public string Name = name;
         public int Health = health;
@@ -281,7 +271,7 @@ namespace Minecraft
         protected static int origCol;
         public string Sprite = sprite;
         public Cordinates starting_pos;
-
+        public int time=0;
         public int specialvalue = 0;
         protected static void WriteAt(string s, int x, int y)
         {
@@ -301,16 +291,16 @@ namespace Minecraft
         public Cordinates cordinates = new Cordinates();
         public ConsoleColor Color;
         public ConsoleColor BGColor;
-        public void gravity(int[,] grid, bool time)
+        public void gravity(int[,] grid)
         {
 
-
+            
             //WriteAt("  ", cordinates.x, cordinates.y);
-            if (grid[cordinates.y + 1, cordinates.x] == 0 && time && Type != "Projectile")
+            if (grid[cordinates.y + 1, cordinates.x] == 0 && Type != "Projectile")
             {
 
 
-                WriteAt("  ", cordinates.x * 2, cordinates.y);
+
 
                 if (grid[cordinates.y + 2, cordinates.x] == 0)
                 {
@@ -320,19 +310,14 @@ namespace Minecraft
                 {
                     cordinates.y += 1;
                 }
-                cordinates.x += velocity;
+                //cordinates.x += velocity;
 
             }
             else if (grid[cordinates.y + 1, cordinates.x] != 0)
             {
                 velocity = 0;
             }
-            Console.BackgroundColor = BGColor;
-            Console.ForegroundColor = Color;
-            //WriteAt("██", cordinates.x * 2, cordinates.y - 1);
-            WriteAt(sprite, cordinates.x * 2, cordinates.y);
-            Console.ForegroundColor = default;
-            Console.BackgroundColor = ConsoleColor.Cyan;
+            
         }
 
 
