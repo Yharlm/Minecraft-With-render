@@ -34,10 +34,7 @@ namespace Minecraft
         public bool grounded = false;
         
     }
-    class Sprite
-    {
-        public string[,] Sprites;
-    }
+    
     class Projectile(string name, int damage)
     {
         public Cordinates cordinates = new Cordinates();
@@ -102,6 +99,8 @@ namespace Minecraft
 
         public double time = 0;
         public bool curent_tick = false;
+        public List<Sprites> Sprite_list = new List<Sprites>();
+        public List<Sprites> Displayed_sprites = new List<Sprites>();
         public List<Solid> Block_list = new List<Solid>();
         public List<Entity> Entity_list = new List<Entity>();
         public List<Entity> Existing_Entities = new List<Entity>();

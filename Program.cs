@@ -122,18 +122,20 @@ namespace cammera
 
                                 else if (mob.Name == "Blue")
                                 {
+                                    
                                     Random random = new Random();
-                                    int radius = mob.specialvalue;
-                                    int x = pos.x-radius/2;
-                                    int y = pos.y-radius/2;
-                                    int xq =  1;
-                                    int yq =  1;
+                                    int radius = mob.specialvalue + 6;
+                                    int x = pos.x - radius / 2;
+                                    int y = pos.y - radius / 2;
+                                    int xq = 1;
+                                    int yq = 1;
 
 
 
                                     int counter = 0;
-                                    while (counter < radius*2)
+                                    while (counter <= radius * radius)
                                     {
+
                                         int X = random.Next(0, radius);
                                         int Y = random.Next(0, radius);
                                         int i = 0;
@@ -164,24 +166,71 @@ namespace cammera
                                         }
                                     }
 
-                                    if (mob.delay(9, game.curent_tick))
+                                    //if (mob.delay(3, game.curent_tick))
+                                    //{
+                                    //    mob.specialvalue++;
+                                    //}
+                                    //if(mob.time %2  == 0) { pos.x++; }
+                                    if (mob.delay(3, game.curent_tick))
                                     {
-                                        mob.specialvalue++;
+                                        if (player.x + 12 > pos.x)
+                                        {
+                                            pos.x++;
+                                        }
+                                        else if (player.x + 12 < pos.x)
+                                        {
+                                            pos.x--;
+                                        }
+
+                                    }
+                                    foreach (Entity entity in game.Existing_Entities)
+                                    {
+                                        
+                                        if (GetRadius(entity, pos, 3, 3) && entity.Type != "Projectile")
+                                        {
+                                            entity.cordinates.x = pos.x;
+                                            entity.cordinates.y = pos.y + -1;
+
+                                        }
                                     }
 
+
                                 }
+                                else if (mob.Name == "Red")
+                                {
+                                    foreach(Entity entity in game.Existing_Entities)
+                                    {
+                                        if(GetRadius(entity, pos, 3, 3) && entity.Name == "Blue")
+                                        {
+                                            //Explosion(game, grid, pos, player, 12);
+                                            
+                                            Kill_entity(game, mob);
+                                            Kill_entity(game, entity);
+                                        }
+                                    }
+                                    if (grid[pos.y,pos.x] != 0)
+                                    {
+                                        Explosion(game, grid, pos, player, 5);
+                                        game.Displayed_sprites.Add(game.Sprite_list[0]);
+                                        Kill_entity(game, mob);
+                                        
+                                    }
+                                    pos.x++;
+
+                                }
+
 
                             }
                             break;
                     }
-                    }
                 }
+            }
             catch { }
         }
 
         static void Main(string[] args)
         {
-
+            Console.CursorVisible = false;
             Game Game = new Game();
             Player player = new Player();
 
@@ -220,7 +269,10 @@ namespace cammera
 
             //Projectiles
             Mob = new Entity("Blue", 0, "Projectile", "██");
-            Mob.Color = ConsoleColor.Blue;
+            Mob.Color = ConsoleColor.DarkBlue;
+            Game.Projectiles.Add(Mob);
+            Mob = new Entity("Red", 0, "Projectile", "██");
+            Mob.Color = ConsoleColor.DarkRed;
             Game.Projectiles.Add(Mob);
             Mob = new Entity("Slash", 0, "Projectile", "--");
             Mob.Color = ConsoleColor.White;
@@ -232,6 +284,16 @@ namespace cammera
             Game.Projectiles.Add(Mob);
 
 
+            // Sprites ▄█▀
+
+            Sprites sprite = new Sprites();
+            sprite.sprite = new string[3];
+            sprite.sprite[0] = "  ██  ";
+            sprite.sprite[1] = "██████";
+            sprite.sprite[2] = "  ██  ";
+            Game.Sprite_list.Add(sprite);
+
+
             Camera camera = new Camera();
             int[,] grid = new int[1000, 1000];
             player.x = 500;
@@ -240,8 +302,9 @@ namespace cammera
             double tick = 0.002;
             while (true)
             {
+                GetInput(grid, player, Game, camera);
                 //double timer = Math.Ceiling(overworld.time += 0.0002);
-                double timer = Game.time += 0.005;
+                double timer = Game.time += 0.002;
                 if (Game.time >= tick)
                 {
 
@@ -257,25 +320,28 @@ namespace cammera
                 camera.Position.x = player.x - camera.View.GetLength(1) / 2;
                 camera.Position.y = player.y - camera.View.GetLength(0) / 2;
                 Entity_update(grid, Game.Existing_Entities, Game, player);
-
+                
 
 
                 for (int i = 0; i < camera.View.GetLength(0); i++)
                 {
                     for (int j = 0; j < camera.View.GetLength(1); j++)
                     {
-
-                        Render_block(Game.Get_ByID(grid[i + camera.Position.y, j + camera.Position.x]), j, i, Game, camera, player);
+                        
+                        Render_block(Game.Get_ByID(grid[i + camera.Position.y, j + camera.Position.x]), j, i, Game, camera, player,grid);
+                        
                         //Fill_block(player.x, player.y, camera.View, Game.GetBlock("Stone"));
-                        Console.ForegroundColor = ConsoleColor.Gray;
+                        Console.BackgroundColor = ConsoleColor.White;
+                        Console.ForegroundColor = ConsoleColor.Black;
                         //WriteAt("EE",player.x*2,player.y);
-                        WriteAt("██", camera.View.GetLength(1) - 1, (camera.View.GetLength(0) / 2) - 1);
-                        WriteAt("██", camera.View.GetLength(1) - 1, camera.View.GetLength(0) / 2);
+                        WriteAt("==", camera.View.GetLength(1) - 1, (camera.View.GetLength(0) / 2) - 1);
+                        WriteAt("  ", camera.View.GetLength(1) - 1, camera.View.GetLength(0) / 2);
                         Console.ForegroundColor = default;
+                        Console.BackgroundColor = ConsoleColor.Cyan;
                     }
 
                 }
-
+                
                 if (grid[player.y + 1, player.x] == 0 && Game.curent_tick)
                 {
 
@@ -287,11 +353,6 @@ namespace cammera
 
                     player.y++;
                     player.grounded = false;
-                    Console.ForegroundColor = ConsoleColor.White;
-
-                    //WriteAt("  ", player.x * 2, player.y);
-
-                    Console.ForegroundColor = ConsoleColor.Cyan;
 
                     //Thread.Sleep(100);
 
@@ -301,7 +362,7 @@ namespace cammera
                 {
                     player.grounded = true;
                 }
-                GetInput(grid, player, Game, camera);
+
 
             }
 
@@ -309,6 +370,9 @@ namespace cammera
 
         static void Entity_update(int[,] grid, List<Entity> Entity_list, Game game, Player player)
         {
+
+            
+
             //Entity_behaviour(game, player, grid);
             Entity_behaviour(game, player, grid);
             //PlayerAbilities(grid, player, game);
@@ -387,6 +451,7 @@ namespace cammera
 
             if (Console.KeyAvailable == true)
             {
+                Console.ForegroundColor = ConsoleColor.Cyan;
                 WriteAt(" ", 0, 0);
 
                 player.Input = Console.ReadKey().Key.ToString();
@@ -410,10 +475,8 @@ namespace cammera
                 //    Fill_block(x, y - 1, grid, air);
                 //}
 
-                //WriteAt("  ", x * 2, y - 1);
-                //WriteAt("  ", x * 2, y);
-                //WriteAt("  ", 110, 0);
             }
+
             else { player.Input = null; }
             Cordinates player_cords = new Cordinates();
             player_cords.x = x;
@@ -439,11 +502,12 @@ namespace cammera
 
                     break;
 
-                case "R":
-                    //Attack(game, Convert_cor(player.x, player.y), grid, 4, 5, 2);
-                    //Slash(player, game, grid);
-
-
+                case "Z":
+                    player.Entity_hotbar++;
+                    if(player.Entity_hotbar== 2)
+                    {
+                        player.Entity_hotbar = 0;
+                    }
                     break;
                 case "N":
 
@@ -466,7 +530,10 @@ namespace cammera
                     break;
                 case "C":
 
-
+                    Sprites test = game.Sprite_list[0];
+                    test.pos = player_cords;
+                    game.Displayed_sprites.Add(test);
+                    
                     //Craft(player, player.Recipes[player.Crafting_select]);
 
 
@@ -488,8 +555,8 @@ namespace cammera
                         Entity Default = new Entity(mob.Name, mob.Health, mob.Type, mob.Sprite);
                         Default.Color = mob.Color;
                         //Default.cordinates.x = random.Next(4, 55);
-                        Default.cordinates.x = player.x;
-                        Default.cordinates.y = player.y - 1;
+                        Default.cordinates.x = player.x + 13;
+                        Default.cordinates.y = player.y - 4;
 
 
 
@@ -698,9 +765,9 @@ namespace cammera
 
 
 
-        static async void Render_block(Solid block, int x, int y, Game game, Camera camera, Player player)
+        static void Render_block(Solid block, int x, int y, Game game, Camera camera, Player player,int [,]grid)
         {
-
+            
             Console.ForegroundColor = block.FG;
             Console.BackgroundColor = block.BG;
             WriteAt(block.Texture, x * 2, y);
@@ -716,7 +783,30 @@ namespace cammera
                     WriteAt(mob.Sprite, x * 2, y);
                 }
             }
+            foreach (Sprites sprite in game.Displayed_sprites)
+            {
+
+                if (sprite.pos.x >= x + camera.Position.x && sprite.pos.x <= x + camera.Position.x && sprite.pos.y >= y + camera.Position.y && sprite.pos.y <= y + camera.Position.y)
+                {
+                    for (int i = 0; i < sprite.sprite.GetLength(0); i++)
+                    {
+                        for (int j = 0; j < sprite.sprite[i].Length; j++)
+                        {
+                            if (grid[sprite.pos.y+i, sprite.pos.x+j] == 0 && j%2!=0 )
+                            {
+                                var c = sprite.sprite[i];
+                                WriteAt(c[j].ToString(), x * 2 + j, y + i);
+                            }
+                            
+                        }
+                    }
+                }
+
+            }
+
         }
+
+        
 
         private static void BuildWorld(int[,] grid, object instance, Game game)
         {
@@ -940,7 +1030,7 @@ namespace cammera
             cordinates.y1 = y + range_max + 1;
 
             Fill_Index_Cord2(x - range, y - range, x + range + 1, y + range + 1, grid, air, 30);
-            Fill_Index_Cord2(x - range_max, y - range_max - range, x + range_max + 1, y + range_max + 1 - range, grid, air, 2);
+            Fill_Index_Cord2(x - range_max, y - range_max, x + range_max + 1, y + range_max + 1, grid, air, 2);
             Attack(game, pos, grid, 5, range, range_max);
 
             if (GetRadius_forplayer(pos, Convert_cor(player.x, player.y), range_max, range_max)) { player.health -= 50; }
