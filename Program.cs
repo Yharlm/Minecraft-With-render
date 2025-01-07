@@ -336,6 +336,26 @@ namespace cammera
                         //WriteAt("EE",player.x*2,player.y);
                         WriteAt("==", camera.View.GetLength(1) - 1, (camera.View.GetLength(0) / 2) - 1);
                         WriteAt("  ", camera.View.GetLength(1) - 1, camera.View.GetLength(0) / 2);
+                        foreach(Sprites sprites in Game.Displayed_sprites)
+                        {
+                            int x = sprites.pos.x - camera.Position.x;
+                            int y = sprites.pos.y - camera.Position.y;
+                            
+                            
+                            for (int a = 0; a < sprites.sprite.GetLength(0); a++)
+                            {
+                                for (int j = 0; j < sprites.sprite[i].Length; j++)
+                                {
+                                    if (grid[sprites.pos.y + i, sprites.pos.x + j] == 0 && j % 2 != 0)
+                                    {
+                                        var c = sprites.sprite[i];
+                                        WriteAt(c[j].ToString(), x * 2 + j, y + i);
+                                    }
+
+                                }
+                            }
+                        }
+
                         Console.ForegroundColor = default;
                         Console.BackgroundColor = ConsoleColor.Cyan;
                     }
@@ -529,8 +549,10 @@ namespace cammera
 
                     break;
                 case "C":
-
-                    Sprites test = game.Sprite_list[0];
+                    Sprites temp = game.Sprite_list[0];
+                    Sprites test = new Sprites();
+                    test.sprite = temp.sprite;
+                    
                     test.pos = player_cords;
                     game.Displayed_sprites.Add(test);
                     
@@ -767,10 +789,12 @@ namespace cammera
 
         static void Render_block(Solid block, int x, int y, Game game, Camera camera, Player player,int [,]grid)
         {
-            
+            bool front = true;
             Console.ForegroundColor = block.FG;
             Console.BackgroundColor = block.BG;
-            WriteAt(block.Texture, x * 2, y);
+            
+             WriteAt(block.Texture, x * 2, y); 
+            
             Console.ForegroundColor = default;
             Console.BackgroundColor = default;
             foreach (Entity mob in game.Existing_Entities)
@@ -783,26 +807,26 @@ namespace cammera
                     WriteAt(mob.Sprite, x * 2, y);
                 }
             }
-            foreach (Sprites sprite in game.Displayed_sprites)
-            {
+            //foreach (Sprites sprite in game.Displayed_sprites)
+            //{
 
-                if (sprite.pos.x >= x + camera.Position.x && sprite.pos.x <= x + camera.Position.x && sprite.pos.y >= y + camera.Position.y && sprite.pos.y <= y + camera.Position.y)
-                {
-                    for (int i = 0; i < sprite.sprite.GetLength(0); i++)
-                    {
-                        for (int j = 0; j < sprite.sprite[i].Length; j++)
-                        {
-                            if (grid[sprite.pos.y+i, sprite.pos.x+j] == 0 && j%2!=0 )
-                            {
-                                var c = sprite.sprite[i];
-                                WriteAt(c[j].ToString(), x * 2 + j, y + i);
-                            }
-                            
-                        }
-                    }
-                }
+            //    if (sprite.pos.x >= x + camera.Position.x && sprite.pos.x <= x + camera.Position.x && sprite.pos.y >= y + camera.Position.y && sprite.pos.y <= y + camera.Position.y)
+            //    {
+            //        for (int i = 0; i < sprite.sprite.GetLength(0); i++)
+            //        {
+            //            for (int j = 0; j < sprite.sprite[i].Length; j++)
+            //            {
+            //                if (grid[sprite.pos.y + i, sprite.pos.x + j] == 0 && j % 2 != 0)
+            //                {
+            //                    var c = sprite.sprite[i];
+            //                    WriteAt(c[j].ToString(), x * 2 + j, y + i);
+            //                }
 
-            }
+            //            }
+            //        }
+            //    }
+
+            //}
 
         }
 
