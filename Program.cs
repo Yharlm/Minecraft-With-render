@@ -122,7 +122,7 @@ namespace cammera
 
                                 else if (mob.Name == "Blue")
                                 {
-                                    
+
                                     Random random = new Random();
                                     int radius = mob.specialvalue + 6;
                                     int x = pos.x - radius / 2;
@@ -185,7 +185,7 @@ namespace cammera
                                     }
                                     foreach (Entity entity in game.Existing_Entities)
                                     {
-                                        
+
                                         if (GetRadius(entity, pos, 3, 3) && entity.Type != "Projectile")
                                         {
                                             entity.cordinates.x = pos.x;
@@ -198,22 +198,22 @@ namespace cammera
                                 }
                                 else if (mob.Name == "Red")
                                 {
-                                    foreach(Entity entity in game.Existing_Entities)
+                                    foreach (Entity entity in game.Existing_Entities)
                                     {
-                                        if(GetRadius(entity, pos, 3, 3) && entity.Name == "Blue")
+                                        if (GetRadius(entity, pos, 3, 3) && entity.Name == "Blue")
                                         {
                                             //Explosion(game, grid, pos, player, 12);
-                                            
+
                                             Kill_entity(game, mob);
                                             Kill_entity(game, entity);
                                         }
                                     }
-                                    if (grid[pos.y,pos.x] != 0)
+                                    if (grid[pos.y, pos.x] != 0)
                                     {
                                         Explosion(game, grid, pos, player, 5);
                                         game.Displayed_sprites.Add(game.Sprite_list[0]);
                                         Kill_entity(game, mob);
-                                        
+
                                     }
                                     pos.x++;
 
@@ -288,9 +288,10 @@ namespace cammera
 
             Sprites sprite = new Sprites();
             sprite.sprite = new string[3];
-            sprite.sprite[0] = "  ██  ";
-            sprite.sprite[1] = "██████";
-            sprite.sprite[2] = "  ██  ";
+            sprite.sprite[0] = "  RR  ";
+            sprite.sprite[1] = "RRRRRR";
+            sprite.sprite[2] = "  RR  ";
+            sprite.lifetime = 2;
             Game.Sprite_list.Add(sprite);
 
 
@@ -299,7 +300,7 @@ namespace cammera
             player.x = 500;
             player.Selected_block = Game.Get_ByID(0);
             BuildWorld(grid, player, Game);
-            double tick = 0.002;
+            double tick = 0.001;
             while (true)
             {
                 GetInput(grid, player, Game, camera);
@@ -320,48 +321,54 @@ namespace cammera
                 camera.Position.x = player.x - camera.View.GetLength(1) / 2;
                 camera.Position.y = player.y - camera.View.GetLength(0) / 2;
                 Entity_update(grid, Game.Existing_Entities, Game, player);
-                
+
 
 
                 for (int i = 0; i < camera.View.GetLength(0); i++)
                 {
                     for (int j = 0; j < camera.View.GetLength(1); j++)
                     {
-                        
-                        Render_block(Game.Get_ByID(grid[i + camera.Position.y, j + camera.Position.x]), j, i, Game, camera, player,grid);
-                        
+
+                        Render_block(Game.Get_ByID(grid[i + camera.Position.y, j + camera.Position.x]), j, i, Game, camera, player, grid);
+
                         //Fill_block(player.x, player.y, camera.View, Game.GetBlock("Stone"));
                         Console.BackgroundColor = ConsoleColor.White;
                         Console.ForegroundColor = ConsoleColor.Black;
                         //WriteAt("EE",player.x*2,player.y);
                         WriteAt("==", camera.View.GetLength(1) - 1, (camera.View.GetLength(0) / 2) - 1);
                         WriteAt("  ", camera.View.GetLength(1) - 1, camera.View.GetLength(0) / 2);
-                        foreach(Sprites sprites in Game.Displayed_sprites)
+                        
+
+                        Console.ForegroundColor = default;
+                        Console.BackgroundColor = ConsoleColor.Cyan;
+                    }
+                    foreach (Sprites Sprites in Game.Displayed_sprites)
+                    {
+                        int x = Sprites.pos.x - camera.Position.x;
+                        int y = Sprites.pos.y - camera.Position.y;
+
+
+                        if (Sprites.pos.x >= camera.Position.x && Sprites.pos.x <= camera.Position.x + camera.View.GetLength(1) &&
+                            Sprites.pos.y >= camera.Position.y && Sprites.pos.y <= camera.Position.y + camera.View.GetLength(0))
                         {
-                            int x = sprites.pos.x - camera.Position.x;
-                            int y = sprites.pos.y - camera.Position.y;
-                            
-                            
-                            for (int a = 0; a < sprites.sprite.GetLength(0); a++)
+                            for (int a = 0; a < Sprites.sprite.Length; a++)
                             {
-                                for (int j = 0; j < sprites.sprite[i].Length; j++)
+                                for (int b = 0; b < Sprites.sprite[a].Length; b++)
                                 {
-                                    if (grid[sprites.pos.y + i, sprites.pos.x + j] == 0 && j % 2 != 0)
+                                    char c = sprite.sprite[a][b];
+                                    if (c != ' ')
                                     {
-                                        var c = sprites.sprite[i];
-                                        WriteAt(c[j].ToString(), x * 2 + j, y + i);
+                                        WriteAt("█", x * 2 + b, y + a);
                                     }
 
                                 }
                             }
                         }
-
-                        Console.ForegroundColor = default;
-                        Console.BackgroundColor = ConsoleColor.Cyan;
+                        Sprites.despawn(Game);
                     }
-
                 }
-                
+
+
                 if (grid[player.y + 1, player.x] == 0 && Game.curent_tick)
                 {
 
@@ -391,7 +398,7 @@ namespace cammera
         static void Entity_update(int[,] grid, List<Entity> Entity_list, Game game, Player player)
         {
 
-            
+
 
             //Entity_behaviour(game, player, grid);
             Entity_behaviour(game, player, grid);
@@ -524,7 +531,7 @@ namespace cammera
 
                 case "Z":
                     player.Entity_hotbar++;
-                    if(player.Entity_hotbar== 2)
+                    if (player.Entity_hotbar == 2)
                     {
                         player.Entity_hotbar = 0;
                     }
@@ -549,13 +556,7 @@ namespace cammera
 
                     break;
                 case "C":
-                    Sprites temp = game.Sprite_list[0];
-                    Sprites test = new Sprites();
-                    test.sprite = temp.sprite;
-                    
-                    test.pos = player_cords;
-                    game.Displayed_sprites.Add(test);
-                    
+                    spawnSprite(0,game,player_cords);
                     //Craft(player, player.Recipes[player.Crafting_select]);
 
 
@@ -774,6 +775,17 @@ namespace cammera
 
         }
 
+        private static void spawnSprite(int v,Game game,Cordinates pos)
+        {
+            Sprites temp = game.Sprite_list[0];
+            Sprites test = new Sprites();
+            test.sprite = temp.sprite;
+
+            test.pos = pos;
+            game.Displayed_sprites.Add(test);
+
+        }
+
         static void Break_block(int x, int y, int[,] grid, Solid Block, Game game)
         {
 
@@ -787,14 +799,14 @@ namespace cammera
 
 
 
-        static void Render_block(Solid block, int x, int y, Game game, Camera camera, Player player,int [,]grid)
+        static void Render_block(Solid block, int x, int y, Game game, Camera camera, Player player, int[,] grid)
         {
             bool front = true;
             Console.ForegroundColor = block.FG;
             Console.BackgroundColor = block.BG;
-            
-             WriteAt(block.Texture, x * 2, y); 
-            
+
+            WriteAt(block.Texture, x * 2, y);
+
             Console.ForegroundColor = default;
             Console.BackgroundColor = default;
             foreach (Entity mob in game.Existing_Entities)
@@ -830,7 +842,7 @@ namespace cammera
 
         }
 
-        
+
 
         private static void BuildWorld(int[,] grid, object instance, Game game)
         {
@@ -1035,6 +1047,33 @@ namespace cammera
             }
 
         }
+
+        static void Fill_Index_Cord3(int x1, int y1, int x2, int y2, int[,] grid,Game game, Solid Block, int randomiser,int particles)
+        {
+            Random random = new Random();
+            for (int j = y1; j < y2; j++)
+            {
+                for (int i = x1; i < x2; i++)
+                {
+                    int e = random.Next(0, randomiser);
+                    if (e == 0)
+                    {
+                        continue;
+                    }
+                    int p = random.Next(0, particles);
+                    if (p <= particles)
+                    {
+                        spawnSprite(0, game, Convert_cor(i, j));
+                    }
+
+                    grid[j, i] = Block.id;
+
+
+
+                }
+            }
+
+        }
         static void Explosion(Game game, int[,] grid, Cordinates pos, Player player, int radius)
         {
 
@@ -1053,10 +1092,11 @@ namespace cammera
             cordinates.x1 = x + range_max + 1;
             cordinates.y1 = y + range_max + 1;
 
-            Fill_Index_Cord2(x - range, y - range, x + range + 1, y + range + 1, grid, air, 30);
-            Fill_Index_Cord2(x - range_max, y - range_max, x + range_max + 1, y + range_max + 1, grid, air, 2);
+            Fill_Index_Cord3(x - range, y - range, x + range + 1, y + range + 1, grid,game, air, 30,3);
+            Fill_Index_Cord3(x - range_max, y - range_max, x + range_max + 1, y + range_max + 1, grid,game, air, 2,3);
             Attack(game, pos, grid, 5, range, range_max);
-
+            
+            
             if (GetRadius_forplayer(pos, Convert_cor(player.x, player.y), range_max, range_max)) { player.health -= 50; }
             if (GetRadius_forplayer(pos, Convert_cor(player.x, player.y), range, range)) { player.health -= 50; }
 
