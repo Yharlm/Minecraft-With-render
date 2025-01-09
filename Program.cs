@@ -567,6 +567,7 @@ namespace cammera
             {
                 switch (player.Input)
                 {
+                    
                     case "X":
 
                         //player.Holding = true;
@@ -612,7 +613,7 @@ namespace cammera
 
                         break;
                     case "C":
-                        Craft(player.Recipes[player.Crafting_select],game);
+                        Craft(player.Recipes[player.hotbar],game);
 
 
                         Print_window(camera,game,player);
@@ -779,6 +780,13 @@ namespace cammera
 
                             x--;
                         }
+                        if (grid[player.y-1, player.x - 1] == 0 && grid[player.y - 2, player.x - 1] == 0 && player.special_key == "Spacebar")
+                        {
+
+                            x--; y--;
+                            player.special_key = null;
+
+                        }
                         if (grid[player.y - 1, player.x - 1] == 6)
                         {
                             x--; player.is_swiming = true;
@@ -809,6 +817,12 @@ namespace cammera
                         {
 
                             x++;
+                        }
+                        if (grid[player.y - 1, player.x + 1] == 0 && grid[player.y - 2, player.x + 1] == 0 && player.special_key == "Spacebar")
+                        {
+
+                            x++; y--;
+                            player.special_key = null;
                         }
                         if (grid[player.y - 1, player.x + 1] == 6)
                         {

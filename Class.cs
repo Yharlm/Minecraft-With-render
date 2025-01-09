@@ -1,8 +1,4 @@
-﻿using System.Numerics;
-using System.Xml.Linq;
-using System.Xml.Schema;
-
-namespace Minecraft
+﻿namespace Minecraft
 {
 
     class Player : Cordinates
@@ -56,6 +52,7 @@ namespace Minecraft
     }
     class Cordinates
     {
+        
         public int x = 11;
         public int y = 11;
         public int x1 = 0;
@@ -81,7 +78,7 @@ namespace Minecraft
     {
         protected static int origRow;
         protected static int origCol;
-
+        public Cordinates mosepos = new Cordinates();
         protected static void WriteAt(string s, int x, int y)
         {
             try
