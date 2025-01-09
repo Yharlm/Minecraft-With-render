@@ -16,6 +16,7 @@ namespace Minecraft
         public Entity held = null;
         public bool Holding = false;
         public List<Non_solid> Block_Back_list = new List<Non_solid>();
+        public Cordinates Spawnpoint = new Cordinates();
         
 
 

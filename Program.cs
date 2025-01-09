@@ -202,7 +202,7 @@ namespace cammera
                                     {
                                         if (GetRadius(entity, pos, 3, 3) && entity.Name == "Blue")
                                         {
-                                            //Explosion(game, grid, pos, player, 12);
+                                            Explosion(game, grid, pos, player, 32);
 
                                             Kill_entity(game, mob);
                                             Kill_entity(game, entity);
@@ -230,6 +230,9 @@ namespace cammera
 
         static void Main(string[] args)
         {
+            //var key = Console.ReadKey().Key;
+            //Console.WriteLine(key.ToString());
+            //Thread.Sleep(8000);
             Console.CursorVisible = false;
             Game Game = new Game();
             Player player = new Player();
@@ -264,7 +267,7 @@ namespace cammera
             Default = new Solid("Coal_ore", 8, "▄▀", ConsoleColor.DarkGray, ConsoleColor.Black); Game.Block_list.Add(Default);
             Default = new Solid("Iron_ore", 9, "▄▀", ConsoleColor.DarkGray, ConsoleColor.Magenta); Game.Block_list.Add(Default);
             Default = new Solid("Crafting_table", 10, "TT", ConsoleColor.Yellow, ConsoleColor.DarkYellow); Game.Block_list.Add(Default);
-            Default = new Solid("Wooden_planks", 11, "▄▄", ConsoleColor.Yellow, ConsoleColor.DarkYellow); Game.Block_list.Add(Default);
+            Default = new Solid("Wooden_planks", 11, "==", ConsoleColor.DarkYellow, ConsoleColor.Yellow); Game.Block_list.Add(Default);
 
 
             //Projectiles
@@ -299,16 +302,19 @@ namespace cammera
             Camera camera = new Camera();
             int[,] grid = new int[1000, 1000];
             BuildWorld(grid, player, Game);
+
+            player.Spawnpoint = Convert_cor(500, 40);
+            player.x = player.Spawnpoint.x;
+            player.y = player.Spawnpoint.y;
+            player.Selected_block = Game.Get_ByID(0);
+
+            double tick = 0.001;
             while (true)
 
             {
-                player.x = 500;
-            player.Selected_block = Game.Get_ByID(0);
+                
             
-                double tick = 0.001;
-            
-                while (player.health > 0)
-                {
+                
                     GetInput(grid, player, Game, camera);
                     //double timer = Math.Ceiling(overworld.time += 0.0002);
                     double timer = Game.time += 0.002;
@@ -381,6 +387,10 @@ namespace cammera
                                         }
                                     }
                                 }
+                                else
+                            {
+                                Game.Displayed_sprites.Remove(Sprites);
+                            }
                                 Sprites.despawn(Game);
                             }
                         }
@@ -408,9 +418,31 @@ namespace cammera
                     {
                         player.grounded = true;
                     }
+                
+                if(player.health <= 0)
+                {
+                    Console.BackgroundColor = ConsoleColor.Black;
+                    Console.Clear();
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    WriteAt("YOU ARE DEAD", 20, 11);
+                    Thread.Sleep(2000);
+                    WriteAt("[idiot]", 22, 12);
+                     Thread.Sleep(500);
+                    WriteAt("[idiot].", 22, 12);
+                    Thread.Sleep(500);
+                    WriteAt("[idiot]..", 22, 12);
+                    Thread.Sleep(500);
+                    WriteAt("[idiot]...", 22, 12);
+
+                    Console.ForegroundColor = default;
+                    
+                    Thread.Sleep(2000);
+                    player.health = 100;
+                    player.x = player.Spawnpoint.x;
+                    player.y = player.Spawnpoint.y;
+
                 }
                 
-                WriteAt("the only player died to what is supposed to be a pig..", 20, 20);
                 
 
             }
@@ -498,7 +530,7 @@ namespace cammera
             int x = player.x;
             int y = player.y;
 
-            if (Console.KeyAvailable == true)
+            if (Console.KeyAvailable == true )
             {
                 Console.ForegroundColor = ConsoleColor.Cyan;
                 WriteAt(" ", 0, 0);
@@ -531,270 +563,271 @@ namespace cammera
             player_cords.x = x;
             player_cords.y = y;
             //player.Selected_block = dirt;
-            switch (player.Input)
+            if (game.curent_tick)
             {
-                case "X":
+                switch (player.Input)
+                {
+                    case "X":
 
-                    //player.Holding = true;
-                    Shoot_Projectile(player, game, player_cords, player.Entity_hotbar);
-                    break;
-                case "Q":
-                    player.hotbar--;
+                        //player.Holding = true;
+                        Shoot_Projectile(player, game, player_cords, player.Entity_hotbar);
+                        break;
+                    case "D1":
+                        player.hotbar--;
 
-                    player.Selected_block = game.Block_list[player.hotbar];
+                        player.Selected_block = game.Block_list[player.hotbar];
 
-                    Console.ForegroundColor = ConsoleColor.Red;
-
-
-                    if (player.hotbar == 0) player.hotbar = game.Block_list.Count;
-                    Print_window(camera, game, player);
-
-                    break;
-
-                case "Z":
-                    player.Entity_hotbar++;
-                    if (player.Entity_hotbar == 2)
-                    {
-                        player.Entity_hotbar = 0;
-                    }
-                    break;
-                case "N":
-
-                    try
-                    {
-
-                        foreach (Entity entity in game.Existing_Entities)
-                        {
+                        Console.ForegroundColor = ConsoleColor.Red;
 
 
-
-
-                            game.Existing_Entities.Remove(entity);
-                            Explosion(game, grid, entity.cordinates, player, 4);
-
-                        }
-                    }
-                    catch { }
-
-                    break;
-                case "C":
-                    spawnSprite(0, game, player_cords);
-                    //Craft(player, player.Recipes[player.Crafting_select]);
-
-
-                    //Print_window(player);
-
-
-                    break;
-                case "Y":
-
-                    game.Existing_Entities.Clear();
-
-                    break;
-                case "T":
-                    {
-
-                        //WriteAt(game.Existing_Entities.Count().ToString(), 24, 3);
-
-                        Entity mob = game.Entity_list[1];
-                        Entity Default = new Entity(mob.Name, mob.Health, mob.Type, mob.Sprite);
-                        Default.Color = mob.Color;
-                        //Default.cordinates.x = random.Next(4, 55);
-                        Default.cordinates.x = player.x + 13;
-                        Default.cordinates.y = player.y - 4;
-
-
-
-                        game.Existing_Entities.Add(Default);
-                        //game.Spawn_entity(entity);
+                        if (player.hotbar == 0) player.hotbar = game.Block_list.Count;
+                        Print_window(camera, game, player);
 
                         break;
-                    }
-                case "E":
-                    player.hotbar++;
-                    if (player.hotbar == game.Block_list.Count - 1) player.hotbar = 0;
 
-                    player.Selected_block = game.Block_list[player.hotbar];
-                    Print_window(camera, game, player);
-                    Console.ForegroundColor = ConsoleColor.Red;
-
-
-
-
-                    break;
-                case "K":
-
-                    {
-
-                        if (player.special_key == "Spacebar")
+                    case "Z":
+                        player.Entity_hotbar++;
+                        if (player.Entity_hotbar == 2)
                         {
-                            if (player.special_key == "Spacebar")
+                            player.Entity_hotbar = 0;
+                        }
+                        break;
+                    case "N":
+
+                        try
+                        {
+
+                            foreach (Entity entity in game.Existing_Entities)
                             {
-                                Break_block(player.x, player.y - 2, grid, air, game); player.special_key = null;
+
+
+
+
+                                game.Existing_Entities.Remove(entity);
+                                Explosion(game, grid, entity.cordinates, player, 4);
 
                             }
+                        }
+                        catch { }
+
+                        break;
+                    case "C":
+                        Craft(player.Recipes[player.Crafting_select],game);
+
+
+                        Print_window(camera,game,player);
+
+
+                        break;
+                    case "Y":
+
+                        game.Existing_Entities.Clear();
+
+                        break;
+                    case "T":
+                        {
+
+                            //WriteAt(game.Existing_Entities.Count().ToString(), 24, 3);
+
+                            Entity mob = game.Entity_list[1];
+                            Entity Default = new Entity(mob.Name, mob.Health, mob.Type, mob.Sprite);
+                            Default.Color = mob.Color;
+                            //Default.cordinates.x = random.Next(4, 55);
+                            Default.cordinates.x = player.x + 13;
+                            Default.cordinates.y = player.y - 4;
+
+
+
+                            game.Existing_Entities.Add(Default);
+                            //game.Spawn_entity(entity);
+
+                            break;
+                        }
+                    case "D2":
+                        player.hotbar++;
+                        if (player.hotbar == game.Block_list.Count - 1) player.hotbar = 0;
+
+                        player.Selected_block = game.Block_list[player.hotbar];
+                        Print_window(camera, game, player);
+                        Console.ForegroundColor = ConsoleColor.Red;
+
+
+
+
+                        break;
+                    case "K":
+
+                        {
+
+                            if (player.special_key == "Spacebar")
+                            {
+                                if (player.special_key == "Spacebar")
+                                {
+                                    Break_block(player.x, player.y - 2, grid, air, game); player.special_key = null;
+
+                                }
+                                else if (player.last_key == "D")
+                                {
+                                    Break_block(player.x + 1, player.y - 2, grid, air, game);
+                                }
+                                else if (player.last_key == "A")
+                                {
+                                    Break_block(player.x - 1, player.y - 2, grid, air, game);
+                                }
+                            }
+
                             else if (player.last_key == "D")
                             {
-                                Break_block(player.x + 1, player.y - 2, grid, air, game);
+                                if (grid[player.y - 1, player.x + 1] != 0)
+                                    Break_block(player.x + 1, player.y - 1, grid, air, game);
+                                else if (grid[player.y, player.x + 1] != 0)
+                                    Break_block(player.x + 1, player.y, grid, air, game);
+                                else if (grid[player.y - 2, player.x + 1] != 0)
+                                    Break_block(player.x + 1, player.y - 2, grid, air, game);
                             }
                             else if (player.last_key == "A")
                             {
-                                Break_block(player.x - 1, player.y - 2, grid, air, game);
-                            }
-                        }
-
-                        else if (player.last_key == "D")
-                        {
-                            if (grid[player.y - 1, player.x + 1] != 0)
-                                Break_block(player.x + 1, player.y - 1, grid, air, game);
-                            else if (grid[player.y, player.x + 1] != 0)
-                                Break_block(player.x + 1, player.y, grid, air, game);
-                            else if (grid[player.y - 2, player.x + 1] != 0)
-                                Break_block(player.x + 1, player.y - 2, grid, air, game);
-                        }
-                        else if (player.last_key == "A")
-                        {
-                            if (grid[player.y - 1, player.x - 1] != 0)
-                                Break_block(player.x - 1, player.y - 1, grid, air, game);
-                            else if (grid[player.y, player.x - 1] != 0)
-                                Break_block(player.x - 1, player.y, grid, air, game);
-                            else if (grid[player.y - 2, player.x - 1] != 0)
-                                Break_block(player.x - 1, player.y - 2, grid, air, game);
-                        }
-                        else if (player.last_key == "S")
-                        {
-                            Break_block(player.x, player.y + 1, grid, air, game);
-                        }
-                    }
-
-                    Print_window(camera, game, player);
-
-                    break;
-                case "L":
-                    if (player.Selected_block.quantity > 0)
-                    {
-                        if (player.special_key == "Spacebar")
-                            if (grid[player.y + 1, player.x] == 0 && grid[player.y + 2, player.x] != 0)
-                            {
-                                Fill_block(player.x, player.y + 1, grid, player.Selected_block);
-                                player.last_key = null;
-                                player.Selected_block.quantity--;
+                                if (grid[player.y - 1, player.x - 1] != 0)
+                                    Break_block(player.x - 1, player.y - 1, grid, air, game);
+                                else if (grid[player.y, player.x - 1] != 0)
+                                    Break_block(player.x - 1, player.y, grid, air, game);
+                                else if (grid[player.y - 2, player.x - 1] != 0)
+                                    Break_block(player.x - 1, player.y - 2, grid, air, game);
                             }
                             else if (player.last_key == "S")
                             {
-                                player.last_key = "D"; player.Selected_block.quantity--;
+                                Break_block(player.x, player.y + 1, grid, air, game);
                             }
-                            else if (player.last_key == "D")
-                            {
-                                if (grid[player.y + 1, player.x + 1] == 0)
-                                    Fill_block(player.x + 1, player.y + 1, grid, player.Selected_block);
-                                else if (grid[player.y, player.x + 1] == 0)
-                                    Fill_block(player.x + 1, player.y, grid, player.Selected_block);
-                                else if (grid[player.y - 1, player.x + 1] == 0)
-                                    Fill_block(player.x + 1, player.y - 1, grid, player.Selected_block);
-                                player.Selected_block.quantity--;
-                            }
-                            else if (player.last_key == "A")
-                            {
-                                if (grid[player.y + 1, player.x - 1] == 0)
-                                    Fill_block(player.x - 1, player.y + 1, grid, player.Selected_block);
-                                else if (grid[player.y, player.x - 1] == 0)
-                                    Fill_block(player.x - 1, player.y, grid, player.Selected_block);
-                                else if (grid[player.y - 1, player.x - 1] == 0)
-                                    Fill_block(player.x - 1, player.y - 1, grid, player.Selected_block);
-                                player.Selected_block.quantity--;
-                            }
+                        }
+
                         Print_window(camera, game, player);
-                    }
-                    break;
-                case "Spacebar":
-                    if (grid[player.y + 1, player.x] != 0)
-                    {
 
-                        if (grid[player.y - 2, player.x] == 0)
+                        break;
+                    case "L":
+                        if (player.Selected_block.quantity > 0)
                         {
-                            y -= 1;
+                            if (player.special_key == "Spacebar")
+                                if (grid[player.y + 1, player.x] == 0 && grid[player.y + 2, player.x] != 0)
+                                {
+                                    Fill_block(player.x, player.y + 1, grid, player.Selected_block);
+                                    player.last_key = null;
+                                    player.Selected_block.quantity--;
+                                }
+                                else if (player.last_key == "S")
+                                {
+                                    player.last_key = "D"; player.Selected_block.quantity--;
+                                }
+                                else if (player.last_key == "D")
+                                {
+                                    if (grid[player.y + 1, player.x + 1] == 0)
+                                        Fill_block(player.x + 1, player.y + 1, grid, player.Selected_block);
+                                    else if (grid[player.y, player.x + 1] == 0)
+                                        Fill_block(player.x + 1, player.y, grid, player.Selected_block);
+                                    else if (grid[player.y - 1, player.x + 1] == 0)
+                                        Fill_block(player.x + 1, player.y - 1, grid, player.Selected_block);
+                                    player.Selected_block.quantity--;
+                                }
+                                else if (player.last_key == "A")
+                                {
+                                    if (grid[player.y + 1, player.x - 1] == 0)
+                                        Fill_block(player.x - 1, player.y + 1, grid, player.Selected_block);
+                                    else if (grid[player.y, player.x - 1] == 0)
+                                        Fill_block(player.x - 1, player.y, grid, player.Selected_block);
+                                    else if (grid[player.y - 1, player.x - 1] == 0)
+                                        Fill_block(player.x - 1, player.y - 1, grid, player.Selected_block);
+                                    player.Selected_block.quantity--;
+                                }
+                            Print_window(camera, game, player);
                         }
-                        if (grid[player.y - 3, player.x] == 0 && grid[player.y - 2, player.x] == 0)
+                        break;
+                    case "Spacebar":
+                        if (grid[player.y + 1, player.x] != 0)
                         {
-                            y -= 1;
+
+                            if (grid[player.y - 2, player.x] == 0)
+                            {
+                                y -= 1;
+                            }
+                            if (grid[player.y - 3, player.x] == 0 && grid[player.y - 2, player.x] == 0)
+                            {
+                                y -= 1;
+                            }
+                            if (grid[player.y - 3, player.x] == 0 && grid[player.y - 2, player.x] == 0 && grid[player.y - 4, player.x] == 0)
+                            {
+                                y -= 1;
+                            }
+
+
                         }
-                        if (grid[player.y - 3, player.x] == 0 && grid[player.y - 2, player.x] == 0 && grid[player.y - 4, player.x] == 0)
+
+
+
+                        break;
+                    case "A":
+
+                        camera.Position.x--;
+                        if (player.grounded == false)
                         {
-                            y -= 1;
+
+
                         }
 
+                        //grid[player.y , player.x - 1] = 0;
+                        //WriteAt("  ", (x-1) * 2, y );
+                        if (grid[player.y, player.x - 1] == 0 && grid[player.y - 1, player.x - 1] == 0)
+                        {
 
-                    }
+                            x--;
+                        }
+                        if (grid[player.y - 1, player.x - 1] == 6)
+                        {
+                            x--; player.is_swiming = true;
+                        }
+                        else
+                        {
+                            player.is_swiming = false;
+                        }
 
+                        break;
+                    case "S":
 
+                        if (grid[player.y + 1, player.x] == 0)
+                        {
 
-                    break;
-                case "A":
+                            y++;
+                        }
+                        break;
+                    case "D":
+                        camera.Position.x++;
 
-                    camera.Position.x--;
-                    if (player.grounded == false)
-                    {
-
-
-                    }
-
-                    //grid[player.y , player.x - 1] = 0;
-                    //WriteAt("  ", (x-1) * 2, y );
-                    if (grid[player.y, player.x - 1] == 0 && grid[player.y - 1, player.x - 1] == 0)
-                    {
-
-                        x--;
-                    }
-                    if (grid[player.y - 1, player.x - 1] == 6)
-                    {
-                        x--; player.is_swiming = true;
-                    }
-                    else
-                    {
-                        player.is_swiming = false;
-                    }
-
-                    break;
-                case "S":
-
-                    if (grid[player.y + 1, player.x] == 0)
-                    {
-
-                        y++;
-                    }
-                    break;
-                case "D":
-                    camera.Position.x++;
-
-                    if (player.grounded == false)
-                    {
+                        if (player.grounded == false)
+                        {
 
 
-                    }
-                    if (grid[player.y, player.x + 1] == 0 && grid[player.y - 1, player.x + 1] == 0)
-                    {
+                        }
+                        if (grid[player.y, player.x + 1] == 0 && grid[player.y - 1, player.x + 1] == 0)
+                        {
 
-                        x++;
-                    }
-                    if (grid[player.y - 1, player.x + 1] == 6)
-                    {
-                        x++; player.is_swiming = true;
-                    }
-                    else
-                    {
-                        player.is_swiming = false;
-                    }
-                    break;
+                            x++;
+                        }
+                        if (grid[player.y - 1, player.x + 1] == 6)
+                        {
+                            x++; player.is_swiming = true;
+                        }
+                        else
+                        {
+                            player.is_swiming = false;
+                        }
+                        break;
+                }
+
+                player.Input = null;
+                player.x = x;
+                player.y = y;
+
+
+
             }
-
-            player.Input = null;
-            player.x = x;
-            player.y = y;
-
-
-
-
         }
 
         private static void spawnSprite(int v, Game game, Cordinates pos)
@@ -1008,17 +1041,17 @@ namespace cammera
             }
 
 
-            //for (int j = 0; j < Width;)
-            //{
-            //    int coalN = random.Next(14, 24);
-            //    int vein = random.Next(1, 6);
+            for (int j = 0; j < Width;)
+            {
+                int coalN = random.Next(1, 40);
+                int vein = random.Next(1, 6);
 
-            //    if (random.Next(1, 30) < 4)
-            //    {
-            //        Fill_Index_Cord2(j, Height + coalN - vein, j + vein, Height + coalN, grid, game.GetBlock("Coal_ore"),5);
-            //    }
-            //    j++;
-            //}
+                if (random.Next(1, 30) < 4)
+                {
+                    Fill_Index_Cord2(j, Height + coalN - vein, j + vein, Height + coalN, grid, game.GetBlock("Coal_ore"), 5);
+                }
+                j++;
+            }
         }
 
         private static void Fill_block(int x, int y, int[,] grid, Solid Block)
@@ -1285,7 +1318,7 @@ namespace cammera
 
         static void Print_window(Camera camera, Game game, Player player)
         {
-
+            
             int c = 0;
             int UI = camera.View.GetLength(0) + 1;
             Console.BackgroundColor = ConsoleColor.Black;
@@ -1305,9 +1338,23 @@ namespace cammera
 
             }
             WriteAt("^^", player.Selected_block.id * 2, UI + 1);
+            WriteAt(player.x.ToString()+ ":"+ player.y.ToString(), 1, UI+3);
             Console.BackgroundColor = ConsoleColor.Cyan;
             Console.ForegroundColor = default;
 
+        }
+        static void Craft( Recipe name,Game game)
+        {
+
+            foreach (var Item in name.required)
+            {
+                if (game.GetBlock(Item.Name).quantity >= Item.Amount)
+                {
+                    game.GetBlock(name.item.Name).quantity += name.num;
+                    game.GetBlock(Item.Name).quantity -= Item.Amount;
+                }
+
+            }
         }
 
     }
