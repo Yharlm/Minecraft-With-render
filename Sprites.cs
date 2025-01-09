@@ -2,9 +2,8 @@
 {
     class Sprites
     {
-        
         public string[] sprite;
-        
+        public int frame = 0;
         public Cordinates pos = new Cordinates();
         public Cordinates center = new Cordinates();
         public double lifetime = 0;
@@ -14,9 +13,10 @@
             {
                 lifetime -= 0.02;
             }
-            if (lifetime > 0)
+            if (lifetime < 0)
             {
                 game.Displayed_sprites.Remove(this);
+                
             }
 
         }

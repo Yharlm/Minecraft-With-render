@@ -288,108 +288,130 @@ namespace cammera
 
             Sprites sprite = new Sprites();
             sprite.sprite = new string[3];
-            sprite.sprite[0] = "  RR  ";
-            sprite.sprite[1] = "RRRRRR";
-            sprite.sprite[2] = "  RR  ";
+            sprite.sprite[0] = "  WW  ";
+            sprite.sprite[1] = "WWWWWW";
+            sprite.sprite[2] = "  WW  ";
             sprite.lifetime = 2;
+
             Game.Sprite_list.Add(sprite);
 
 
             Camera camera = new Camera();
             int[,] grid = new int[1000, 1000];
-            player.x = 500;
-            player.Selected_block = Game.Get_ByID(0);
             BuildWorld(grid, player, Game);
-            double tick = 0.001;
             while (true)
+
             {
-                GetInput(grid, player, Game, camera);
-                //double timer = Math.Ceiling(overworld.time += 0.0002);
-                double timer = Game.time += 0.002;
-                if (Game.time >= tick)
+                player.x = 500;
+            player.Selected_block = Game.Get_ByID(0);
+            
+                double tick = 0.001;
+            
+                while (player.health > 0)
                 {
-
-                    Game.curent_tick = true;
-                    Game.time = 0;
-
-                }
-                else
-                {
-
-                    Game.curent_tick = false;
-                }
-                camera.Position.x = player.x - camera.View.GetLength(1) / 2;
-                camera.Position.y = player.y - camera.View.GetLength(0) / 2;
-                Entity_update(grid, Game.Existing_Entities, Game, player);
-
-
-
-                for (int i = 0; i < camera.View.GetLength(0); i++)
-                {
-                    for (int j = 0; j < camera.View.GetLength(1); j++)
+                    GetInput(grid, player, Game, camera);
+                    //double timer = Math.Ceiling(overworld.time += 0.0002);
+                    double timer = Game.time += 0.002;
+                    if (Game.time >= tick)
                     {
 
-                        Render_block(Game.Get_ByID(grid[i + camera.Position.y, j + camera.Position.x]), j, i, Game, camera, player, grid);
+                        Game.curent_tick = true;
+                        Game.time = 0;
 
-                        //Fill_block(player.x, player.y, camera.View, Game.GetBlock("Stone"));
-                        Console.BackgroundColor = ConsoleColor.White;
-                        Console.ForegroundColor = ConsoleColor.Black;
-                        //WriteAt("EE",player.x*2,player.y);
-                        WriteAt("==", camera.View.GetLength(1) - 1, (camera.View.GetLength(0) / 2) - 1);
-                        WriteAt("  ", camera.View.GetLength(1) - 1, camera.View.GetLength(0) / 2);
-                        
-
-                        Console.ForegroundColor = default;
-                        Console.BackgroundColor = ConsoleColor.Cyan;
                     }
-                    foreach (Sprites Sprites in Game.Displayed_sprites)
+                    else
                     {
-                        int x = Sprites.pos.x - camera.Position.x;
-                        int y = Sprites.pos.y - camera.Position.y;
+
+                        Game.curent_tick = false;
+                    }
+                    camera.Position.x = player.x - camera.View.GetLength(1) / 2;
+                    camera.Position.y = player.y - camera.View.GetLength(0) / 2;
+                    Entity_update(grid, Game.Existing_Entities, Game, player);
 
 
-                        if (Sprites.pos.x >= camera.Position.x && Sprites.pos.x <= camera.Position.x + camera.View.GetLength(1) &&
-                            Sprites.pos.y >= camera.Position.y && Sprites.pos.y <= camera.Position.y + camera.View.GetLength(0))
+
+                    for (int i = 0; i < camera.View.GetLength(0); i++)
+                    {
+                        for (int j = 0; j < camera.View.GetLength(1); j++)
                         {
-                            for (int a = 0; a < Sprites.sprite.Length; a++)
-                            {
-                                for (int b = 0; b < Sprites.sprite[a].Length; b++)
-                                {
-                                    char c = sprite.sprite[a][b];
-                                    if (c != ' ')
-                                    {
-                                        WriteAt("█", x * 2 + b, y + a);
-                                    }
 
+                            Render_block(Game.Get_ByID(grid[i + camera.Position.y, j + camera.Position.x]), j, i, Game, camera, player, grid);
+
+                            //Fill_block(player.x, player.y, camera.View, Game.GetBlock("Stone"));
+                            Console.BackgroundColor = ConsoleColor.White;
+                            Console.ForegroundColor = ConsoleColor.Black;
+                            //WriteAt("EE",player.x*2,player.y);
+                            WriteAt("==", camera.View.GetLength(1) - 1, (camera.View.GetLength(0) / 2) - 1);
+                            WriteAt("  ", camera.View.GetLength(1) - 1, camera.View.GetLength(0) / 2);
+
+
+                            Console.ForegroundColor = default;
+                            Console.BackgroundColor = ConsoleColor.Cyan;
+                        }
+                        try
+                        {
+                            foreach (Sprites Sprites in Game.Displayed_sprites)
+                            {
+                                int x = Sprites.pos.x - camera.Position.x;
+                                int y = Sprites.pos.y - camera.Position.y;
+
+
+                                if (Sprites.pos.x >= camera.Position.x && Sprites.pos.x <= camera.Position.x + camera.View.GetLength(1) &&
+                                    Sprites.pos.y >= camera.Position.y && Sprites.pos.y <= camera.Position.y + camera.View.GetLength(0))
+                                {
+                                    for (int a = 0; a < Sprites.sprite.Length; a++)
+                                    {
+                                        for (int b = 0; b < Sprites.sprite[a].Length; b++)
+                                        {
+                                            char c = sprite.sprite[a][b];
+                                            if (c != ' ')
+                                            {
+                                                switch (c)
+                                                {
+                                                    case 'R':
+                                                        Console.ForegroundColor = ConsoleColor.Red;
+                                                        break;
+                                                    case 'W':
+                                                        Console.ForegroundColor = ConsoleColor.White;
+                                                        break;
+                                                }
+                                                WriteAt("█", x * 2 + b, y + a);
+                                            }
+
+                                        }
+                                    }
                                 }
+                                Sprites.despawn(Game);
                             }
                         }
-                        Sprites.despawn(Game);
+                        catch { }
                     }
-                }
 
 
-                if (grid[player.y + 1, player.x] == 0 && Game.curent_tick)
-                {
-
-                    if (grid[player.y - 2, player.x] == 0)
+                    if (grid[player.y + 1, player.x] == 0 && Game.curent_tick)
                     {
 
+                        if (grid[player.y - 2, player.x] == 0)
+                        {
+
+                        }
+
+
+                        player.y++;
+                        player.grounded = false;
+
+                        //Thread.Sleep(100);
+
+
                     }
-
-
-                    player.y++;
-                    player.grounded = false;
-
-                    //Thread.Sleep(100);
-
-
+                    else
+                    {
+                        player.grounded = true;
+                    }
                 }
-                else
-                {
-                    player.grounded = true;
-                }
-
+                
+                WriteAt("the only player died to what is supposed to be a pig..", 20, 20);
+                
 
             }
 
@@ -422,7 +444,7 @@ namespace cammera
         static void Walk_to_player(Entity entity, Player player, int[,] grid, Game game)
         {
 
-            int speed = 10;
+            int speed = 3;
 
             if (player.x < entity.cordinates.x)
             {
@@ -556,7 +578,7 @@ namespace cammera
 
                     break;
                 case "C":
-                    spawnSprite(0,game,player_cords);
+                    spawnSprite(0, game, player_cords);
                     //Craft(player, player.Recipes[player.Crafting_select]);
 
 
@@ -775,7 +797,7 @@ namespace cammera
 
         }
 
-        private static void spawnSprite(int v,Game game,Cordinates pos)
+        private static void spawnSprite(int v, Game game, Cordinates pos)
         {
             Sprites temp = game.Sprite_list[0];
             Sprites test = new Sprites();
@@ -1048,7 +1070,7 @@ namespace cammera
 
         }
 
-        static void Fill_Index_Cord3(int x1, int y1, int x2, int y2, int[,] grid,Game game, Solid Block, int randomiser,int particles)
+        static void Fill_Index_Cord3(int x1, int y1, int x2, int y2, int[,] grid, Game game, Solid Block, int randomiser, int particles)
         {
             Random random = new Random();
             for (int j = y1; j < y2; j++)
@@ -1061,7 +1083,7 @@ namespace cammera
                         continue;
                     }
                     int p = random.Next(0, particles);
-                    if (p <= particles)
+                    if (p <= particles && p > 4)
                     {
                         spawnSprite(0, game, Convert_cor(i, j));
                     }
@@ -1092,11 +1114,12 @@ namespace cammera
             cordinates.x1 = x + range_max + 1;
             cordinates.y1 = y + range_max + 1;
 
-            Fill_Index_Cord3(x - range, y - range, x + range + 1, y + range + 1, grid,game, air, 30,3);
-            Fill_Index_Cord3(x - range_max, y - range_max, x + range_max + 1, y + range_max + 1, grid,game, air, 2,3);
+            Fill_Index_Cord3(x - range, y - range, x + range + 1, y + range + 1, grid, game, air, 30, 6);
+            //Fill_Index_Cord3(x - range_max, y - range_max, x + range_max + 1, y + range_max + 1, grid,game, air, 2,3);
+            Fill_Index_Cord2(x - range_max, y - range_max, x + range_max + 1, y + range_max + 1, grid, air, 2);
             Attack(game, pos, grid, 5, range, range_max);
-            
-            
+
+
             if (GetRadius_forplayer(pos, Convert_cor(player.x, player.y), range_max, range_max)) { player.health -= 50; }
             if (GetRadius_forplayer(pos, Convert_cor(player.x, player.y), range, range)) { player.health -= 50; }
 
