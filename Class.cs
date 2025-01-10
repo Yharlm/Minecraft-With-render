@@ -103,6 +103,7 @@
         public List<Entity> Entity_list = new List<Entity>();
         public List<Entity> Existing_Entities = new List<Entity>();
         public List<Entity> Projectiles = new List<Entity>();
+        public List<Recipe> recipes = new List<Recipe>();
         public Solid GetBlock(string name)
         {
             return Block_list.Find(x => x.Name == name);
@@ -189,6 +190,7 @@
     }
     class Solid(string name, int Id, string texture, ConsoleColor fG, ConsoleColor bG)
     {
+        public bool Collidable = true;
         public bool solid = true;
         public int quantity = 0;
         public string Name = name;

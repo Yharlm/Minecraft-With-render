@@ -230,9 +230,10 @@ namespace cammera
 
         static void Main(string[] args)
         {
+            
             //var key = Console.ReadKey().Key;
             //Console.WriteLine(key.ToString());
-            //Thread.Sleep(8000);
+            //Thread.Sleep(80000);
             Console.CursorVisible = false;
             Game Game = new Game();
             Player player = new Player();
@@ -253,13 +254,13 @@ namespace cammera
             Solid Default = new Solid("null", 0, null, default, default);
             Non_solid Background = new Non_solid("", 0, null, default, default);
 
-            Default = new Solid("Air", 0, "  ", ConsoleColor.DarkGray, ConsoleColor.Cyan); Game.Block_list.Add(Default);
+            Default = new Solid("Air", 0, "  ", ConsoleColor.DarkGray, ConsoleColor.Cyan); Default.Collidable = false; Game.Block_list.Add(Default);
             Default = new Solid("Grass", 1, "▀▀", ConsoleColor.DarkGreen, ConsoleColor.DarkYellow); Game.Block_list.Add(Default);
             Default = new Solid("Dirt", 2, "██", ConsoleColor.DarkYellow, ConsoleColor.DarkYellow); Game.Block_list.Add(Default);
             Default = new Solid("Stone", 3, "██", ConsoleColor.DarkGray, ConsoleColor.DarkGray); Game.Block_list.Add(Default);
             Default = new Solid("Log", 4, "||", ConsoleColor.Yellow, ConsoleColor.DarkYellow); Game.Block_list.Add(Default);
 
-            Default = new Solid("water", 5, "  ", ConsoleColor.DarkBlue, ConsoleColor.DarkBlue); Game.Block_list.Add(Default);
+            Default = new Solid("water", 5, "  ", ConsoleColor.DarkBlue, ConsoleColor.DarkBlue); Default.Collidable = false; Game.Block_list.Add(Default);
             //Default = new Solid("water", 5, "  ", ConsoleColor.DarkBlue, ConsoleColor.DarkBlue); Game.Block_list.Add(Default);
 
             Default = new Solid("waterTop", 6, "▄▄", ConsoleColor.DarkBlue, ConsoleColor.Cyan); Game.Block_list.Add(Default);
@@ -268,6 +269,15 @@ namespace cammera
             Default = new Solid("Iron_ore", 9, "▄▀", ConsoleColor.DarkGray, ConsoleColor.Magenta); Game.Block_list.Add(Default);
             Default = new Solid("Crafting_table", 10, "TT", ConsoleColor.Yellow, ConsoleColor.DarkYellow); Game.Block_list.Add(Default);
             Default = new Solid("Wooden_planks", 11, "==", ConsoleColor.DarkYellow, ConsoleColor.Yellow); Game.Block_list.Add(Default);
+
+            // recepies
+            Recipe recipe = new Recipe();
+            Non_Existent placehold = new Non_Existent(4, "Log", 1);
+            recipe = new Recipe(); recipe.item = Game.GetBlock("Crafting_table"); placehold = new Non_Existent(4, "Log", 1); recipe.num = 1; recipe.required.Add(placehold); player.Recipes.Add(recipe);
+
+            recipe = new Recipe(); recipe.item = Game.GetBlock("Crafting_table"); placehold = new Non_Existent(4, "Log", 1); recipe.num = 1; recipe.required.Add(placehold); player.Recipes.Add(recipe);
+            recipe = new Recipe(); recipe.item = Game.GetBlock("Wooden_planks"); placehold = new Non_Existent(4, "Log", 1); recipe.num = 4; recipe.required.Add(placehold); player.Recipes.Add(recipe);
+
 
 
             //Projectiles
@@ -312,114 +322,114 @@ namespace cammera
             while (true)
 
             {
-                
-            
-                
-                    GetInput(grid, player, Game, camera);
-                    //double timer = Math.Ceiling(overworld.time += 0.0002);
-                    double timer = Game.time += 0.002;
-                    if (Game.time >= tick)
+
+
+
+                GetInput(grid, player, Game, camera);
+                //double timer = Math.Ceiling(overworld.time += 0.0002);
+                double timer = Game.time += 0.002;
+                if (Game.time >= tick)
+                {
+
+                    Game.curent_tick = true;
+                    Game.time = 0;
+
+                }
+                else
+                {
+
+                    Game.curent_tick = false;
+                }
+                camera.Position.x = player.x - camera.View.GetLength(1) / 2;
+                camera.Position.y = player.y - camera.View.GetLength(0) / 2;
+                Entity_update(grid, Game.Existing_Entities, Game, player);
+
+
+
+                for (int i = 0; i < camera.View.GetLength(0); i++)
+                {
+                    for (int j = 0; j < camera.View.GetLength(1); j++)
                     {
 
-                        Game.curent_tick = true;
-                        Game.time = 0;
+                        Render_block(Game.Get_ByID(grid[i + camera.Position.y, j + camera.Position.x]), j, i, Game, camera, player, grid);
 
+                        //Fill_block(player.x, player.y, camera.View, Game.GetBlock("Stone"));
+                        Console.BackgroundColor = ConsoleColor.White;
+                        Console.ForegroundColor = ConsoleColor.Black;
+                        //WriteAt("EE",player.x*2,player.y);
+                        WriteAt("==", camera.View.GetLength(1) - 1, (camera.View.GetLength(0) / 2) - 1);
+                        WriteAt("  ", camera.View.GetLength(1) - 1, camera.View.GetLength(0) / 2);
+
+
+                        Console.ForegroundColor = default;
+                        Console.BackgroundColor = ConsoleColor.Cyan;
                     }
-                    else
+                    try
                     {
-
-                        Game.curent_tick = false;
-                    }
-                    camera.Position.x = player.x - camera.View.GetLength(1) / 2;
-                    camera.Position.y = player.y - camera.View.GetLength(0) / 2;
-                    Entity_update(grid, Game.Existing_Entities, Game, player);
-
-
-
-                    for (int i = 0; i < camera.View.GetLength(0); i++)
-                    {
-                        for (int j = 0; j < camera.View.GetLength(1); j++)
+                        foreach (Sprites Sprites in Game.Displayed_sprites)
                         {
-
-                            Render_block(Game.Get_ByID(grid[i + camera.Position.y, j + camera.Position.x]), j, i, Game, camera, player, grid);
-
-                            //Fill_block(player.x, player.y, camera.View, Game.GetBlock("Stone"));
-                            Console.BackgroundColor = ConsoleColor.White;
-                            Console.ForegroundColor = ConsoleColor.Black;
-                            //WriteAt("EE",player.x*2,player.y);
-                            WriteAt("==", camera.View.GetLength(1) - 1, (camera.View.GetLength(0) / 2) - 1);
-                            WriteAt("  ", camera.View.GetLength(1) - 1, camera.View.GetLength(0) / 2);
+                            int x = Sprites.pos.x - camera.Position.x;
+                            int y = Sprites.pos.y - camera.Position.y;
 
 
-                            Console.ForegroundColor = default;
-                            Console.BackgroundColor = ConsoleColor.Cyan;
-                        }
-                        try
-                        {
-                            foreach (Sprites Sprites in Game.Displayed_sprites)
+                            if (Sprites.pos.x >= camera.Position.x && Sprites.pos.x <= camera.Position.x + camera.View.GetLength(1) &&
+                                Sprites.pos.y >= camera.Position.y && Sprites.pos.y <= camera.Position.y + camera.View.GetLength(0))
                             {
-                                int x = Sprites.pos.x - camera.Position.x;
-                                int y = Sprites.pos.y - camera.Position.y;
-
-
-                                if (Sprites.pos.x >= camera.Position.x && Sprites.pos.x <= camera.Position.x + camera.View.GetLength(1) &&
-                                    Sprites.pos.y >= camera.Position.y && Sprites.pos.y <= camera.Position.y + camera.View.GetLength(0))
+                                for (int a = 0; a < Sprites.sprite.Length; a++)
                                 {
-                                    for (int a = 0; a < Sprites.sprite.Length; a++)
+                                    for (int b = 0; b < Sprites.sprite[a].Length; b++)
                                     {
-                                        for (int b = 0; b < Sprites.sprite[a].Length; b++)
+                                        char c = sprite.sprite[a][b];
+                                        if (c != ' ')
                                         {
-                                            char c = sprite.sprite[a][b];
-                                            if (c != ' ')
+                                            switch (c)
                                             {
-                                                switch (c)
-                                                {
-                                                    case 'R':
-                                                        Console.ForegroundColor = ConsoleColor.Red;
-                                                        break;
-                                                    case 'W':
-                                                        Console.ForegroundColor = ConsoleColor.White;
-                                                        break;
-                                                }
-                                                WriteAt("█", x * 2 + b, y + a);
+                                                case 'R':
+                                                    Console.ForegroundColor = ConsoleColor.Red;
+                                                    break;
+                                                case 'W':
+                                                    Console.ForegroundColor = ConsoleColor.White;
+                                                    break;
                                             }
-
+                                            WriteAt("█", x * 2 + b, y + a);
                                         }
+
                                     }
                                 }
-                                else
+                            }
+                            else
                             {
                                 Game.Displayed_sprites.Remove(Sprites);
                             }
-                                Sprites.despawn(Game);
-                            }
+                            Sprites.despawn(Game);
                         }
-                        catch { }
                     }
+                    catch { }
+                }
 
 
-                    if (grid[player.y + 1, player.x] == 0 && Game.curent_tick)
+                if (grid[player.y + 1, player.x] == 0 && Game.curent_tick)
+                {
+
+                    if (grid[player.y - 2, player.x] == 0)
                     {
 
-                        if (grid[player.y - 2, player.x] == 0)
-                        {
-
-                        }
-
-
-                        player.y++;
-                        player.grounded = false;
-
-                        //Thread.Sleep(100);
-
-
                     }
-                    else
-                    {
-                        player.grounded = true;
-                    }
-                
-                if(player.health <= 0)
+
+
+                    player.y++;
+                    player.grounded = false;
+
+                    //Thread.Sleep(100);
+
+
+                }
+                else
+                {
+                    player.grounded = true;
+                }
+
+                if (player.health <= 0)
                 {
                     Console.BackgroundColor = ConsoleColor.Black;
                     Console.Clear();
@@ -427,7 +437,7 @@ namespace cammera
                     WriteAt("YOU ARE DEAD", 20, 11);
                     Thread.Sleep(2000);
                     WriteAt("[idiot]", 22, 12);
-                     Thread.Sleep(500);
+                    Thread.Sleep(500);
                     WriteAt("[idiot].", 22, 12);
                     Thread.Sleep(500);
                     WriteAt("[idiot]..", 22, 12);
@@ -435,15 +445,15 @@ namespace cammera
                     WriteAt("[idiot]...", 22, 12);
 
                     Console.ForegroundColor = default;
-                    
+
                     Thread.Sleep(2000);
                     player.health = 100;
                     player.x = player.Spawnpoint.x;
                     player.y = player.Spawnpoint.y;
 
                 }
-                
-                
+
+
 
             }
 
@@ -526,11 +536,11 @@ namespace cammera
 
 
 
-            grid[player.y, player.x] = 0;
+            //grid[player.y, player.x] = 0;
             int x = player.x;
             int y = player.y;
 
-            if (Console.KeyAvailable == true )
+            if (Console.KeyAvailable == true)
             {
                 Console.ForegroundColor = ConsoleColor.Cyan;
                 WriteAt(" ", 0, 0);
@@ -567,7 +577,15 @@ namespace cammera
             {
                 switch (player.Input)
                 {
-                    
+
+                    case "E":
+                        player.Crafting_select ++;
+                        if (player.Crafting_select >= game.recipes.Count )
+                        {
+                            player.Crafting_select = 0;
+                        }
+                        Print_window(camera, game, player);
+                        break;
                     case "X":
 
                         //player.Holding = true;
@@ -613,10 +631,10 @@ namespace cammera
 
                         break;
                     case "C":
-                        Craft(player.Recipes[player.hotbar],game);
+                        Craft(player.Recipes[player.Crafting_select], game);
 
 
-                        Print_window(camera,game,player);
+                        Print_window(camera, game, player);
 
 
                         break;
@@ -646,13 +664,14 @@ namespace cammera
                         }
                     case "D2":
                         player.hotbar++;
-                        if (player.hotbar == game.Block_list.Count - 1) player.hotbar = 0;
+                        
+
 
                         player.Selected_block = game.Block_list[player.hotbar];
                         Print_window(camera, game, player);
                         Console.ForegroundColor = ConsoleColor.Red;
 
-
+                        if (player.hotbar == game.Block_list.Count - 1) player.hotbar = 0;
 
 
                         break;
@@ -780,7 +799,7 @@ namespace cammera
 
                             x--;
                         }
-                        if (grid[player.y-1, player.x - 1] == 0 && grid[player.y - 2, player.x - 1] == 0 && player.special_key == "Spacebar")
+                        if (grid[player.y - 1, player.x - 1] == 0 && grid[player.y - 2, player.x - 1] == 0 && player.special_key == "Spacebar")
                         {
 
                             x--; y--;
@@ -1332,7 +1351,7 @@ namespace cammera
 
         static void Print_window(Camera camera, Game game, Player player)
         {
-            
+
             int c = 0;
             int UI = camera.View.GetLength(0) + 1;
             Console.BackgroundColor = ConsoleColor.Black;
@@ -1352,12 +1371,13 @@ namespace cammera
 
             }
             WriteAt("^^", player.Selected_block.id * 2, UI + 1);
-            WriteAt(player.x.ToString()+ ":"+ player.y.ToString(), 1, UI+3);
+            WriteAt(player.Crafting_select.ToString() + "       ", 2, UI + 4);
+            WriteAt(player.x.ToString() + ":" + player.y.ToString(), 44, UI + 3);
             Console.BackgroundColor = ConsoleColor.Cyan;
             Console.ForegroundColor = default;
 
         }
-        static void Craft( Recipe name,Game game)
+        static void Craft(Recipe name, Game game)
         {
 
             foreach (var Item in name.required)
