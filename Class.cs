@@ -4,16 +4,17 @@
     class Player : Cordinates
 
     {
+        public string Looking = "";
         public List<Entity> Projectiles = new List<Entity>();
         public int Crafting_select = 0;
-        public List<Recipe> Recipes = new List<Recipe>();
+        //public List<Recipe> Recipes = new List<Recipe>();
         public Cordinates last_popup;
         public int health = 100;
         public Entity held = null;
         public bool Holding = false;
         public List<Non_solid> Block_Back_list = new List<Non_solid>();
         public Cordinates Spawnpoint = new Cordinates();
-        
+
 
 
         public bool is_swiming = false;
@@ -29,9 +30,9 @@
         public int x_size = 70;
         public int y_size = 34;
         public bool grounded = false;
-        
+
     }
-    
+
     class Projectile(string name, int damage)
     {
         public Cordinates cordinates = new Cordinates();
@@ -44,7 +45,7 @@
             cordinates.x += Velocity.x;
             cordinates.y += Velocity.y;
         }
-        
+
     }
     class Inventory : Player
     {
@@ -52,7 +53,7 @@
     }
     class Cordinates
     {
-        
+
         public int x = 11;
         public int y = 11;
         public int x1 = 0;
@@ -71,7 +72,7 @@
     class Camera
     {
 
-        public int[,] View = new int[19, 31];
+        public int[,] View = new int[15, 15];
         public Cordinates Position = new Cordinates();
     }
     class Game
@@ -113,7 +114,7 @@
             return Block_list.Find(x => x.id == id);
         }
 
-        
+
 
         public void Spawn_entity(Entity mob)
         {
@@ -122,8 +123,8 @@
             //number++;
         }
 
-        
-        public bool delay(int mob_time,int delay,bool tick)
+
+        public bool delay(int mob_time, int delay, bool tick)
         {
             if (tick)
             {
@@ -245,7 +246,7 @@
     }
     class Entity(string name, int health, string type, string sprite)
     {
-        public bool delay( int delay, bool tick)
+        public bool delay(int delay, bool tick)
         {
             if (tick)
             {
@@ -270,7 +271,7 @@
         protected static int origCol;
         public string Sprite = sprite;
         public Cordinates starting_pos;
-        public int time=0;
+        public int time = 0;
         public int specialvalue = 0;
         protected static void WriteAt(string s, int x, int y)
         {
@@ -293,7 +294,7 @@
         public void gravity(int[,] grid)
         {
 
-            
+
             //WriteAt("  ", cordinates.x, cordinates.y);
             if (grid[cordinates.y + 1, cordinates.x] == 0 && Type != "Projectile")
             {
@@ -316,7 +317,7 @@
             {
                 velocity = 0;
             }
-            
+
         }
 
 

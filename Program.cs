@@ -1,4 +1,5 @@
-﻿using Minecraft;
+﻿using System;
+using Minecraft;
 
 namespace cammera
 {
@@ -171,15 +172,24 @@ namespace cammera
                                     //    mob.specialvalue++;
                                     //}
                                     //if(mob.time %2  == 0) { pos.x++; }
+                                    int range = 5;
                                     if (mob.delay(3, game.curent_tick))
+                                        
                                     {
-                                        if (player.x + 12 > pos.x)
+                                        if (player.Looking == "Right")
                                         {
-                                            pos.x++;
+                                            if (player.x + range > pos.x)
+                                            {
+                                                mob.cordinates.x += 1;
+                                            }
                                         }
-                                        else if (player.x + 12 < pos.x)
+                                        if (player.Looking == "Left")
                                         {
-                                            pos.x--;
+                                            if (player.x - range < pos.x)
+                                            {
+                                                mob.cordinates.x -= 1;
+                                            }
+
                                         }
 
                                     }
@@ -215,11 +225,24 @@ namespace cammera
                                         Kill_entity(game, mob);
 
                                     }
-                                    pos.x++;
+                                    int range = 5;
+                                    if (player.Looking == "Right")
+                                    {
+                                        if (player.x + range < pos.x)
+                                        {
+                                            mob.cordinates.x += 1;
+                                        }
+                                    }
+                                    if (player.Looking == "Left")
+                                    {
+                                        if (player.x - range > pos.x)
+                                        {
+                                            mob.cordinates.x -= 1;
+                                        }
+
+                                    }
 
                                 }
-
-
                             }
                             break;
                     }
@@ -230,7 +253,7 @@ namespace cammera
 
         static void Main(string[] args)
         {
-            
+
             //var key = Console.ReadKey().Key;
             //Console.WriteLine(key.ToString());
             //Thread.Sleep(80000);
@@ -273,10 +296,9 @@ namespace cammera
             // recepies
             Recipe recipe = new Recipe();
             Non_Existent placehold = new Non_Existent(4, "Log", 1);
-            recipe = new Recipe(); recipe.item = Game.GetBlock("Crafting_table"); placehold = new Non_Existent(4, "Log", 1); recipe.num = 1; recipe.required.Add(placehold); player.Recipes.Add(recipe);
 
-            recipe = new Recipe(); recipe.item = Game.GetBlock("Crafting_table"); placehold = new Non_Existent(4, "Log", 1); recipe.num = 1; recipe.required.Add(placehold); player.Recipes.Add(recipe);
-            recipe = new Recipe(); recipe.item = Game.GetBlock("Wooden_planks"); placehold = new Non_Existent(4, "Log", 1); recipe.num = 4; recipe.required.Add(placehold); player.Recipes.Add(recipe);
+            recipe = new Recipe(); recipe.item = Game.GetBlock("Crafting_table"); placehold = new Non_Existent(4, "Log", 1); recipe.num = 1; recipe.required.Add(placehold); Game.recipes.Add(recipe);
+            recipe = new Recipe(); recipe.item = Game.GetBlock("Wooden_planks"); placehold = new Non_Existent(4, "Log", 1); recipe.num = 4; recipe.required.Add(placehold); Game.recipes.Add(recipe);
 
 
 
@@ -357,7 +379,7 @@ namespace cammera
                         Console.BackgroundColor = ConsoleColor.White;
                         Console.ForegroundColor = ConsoleColor.Black;
                         //WriteAt("EE",player.x*2,player.y);
-                        WriteAt("==", camera.View.GetLength(1) - 1, (camera.View.GetLength(0) / 2) - 1);
+                        WriteAt("..", camera.View.GetLength(1) - 1, (camera.View.GetLength(0) / 2) - 1);
                         WriteAt("  ", camera.View.GetLength(1) - 1, camera.View.GetLength(0) / 2);
 
 
@@ -555,16 +577,15 @@ namespace cammera
                 {
                     player.special_key = "Spacebar";
                 }
-                //if(grid[player.y - 1, player.x + 1] == 5)
-                //{
-                //    Fill_block(x, y,grid,water);
-                //    Fill_block(x, y-1, grid, water);
-                //}
-                //else if(grid[player.y - 1, player.x + 1] == 0)
-                //{
-                //    Fill_block(x, y, grid, air);
-                //    Fill_block(x, y - 1, grid, air);
-                //}
+                if (player.Input == "D")
+                {
+                    player.Looking = "Right";
+                }
+                if (player.Input == "A")
+                {
+                    player.Looking = "Left";
+                }
+
 
             }
 
@@ -579,12 +600,12 @@ namespace cammera
                 {
 
                     case "E":
-                        player.Crafting_select ++;
-                        if (player.Crafting_select >= game.recipes.Count )
+                        player.Crafting_select++;
+                        if (player.Crafting_select == game.recipes.Count)
                         {
                             player.Crafting_select = 0;
                         }
-                        Print_window(camera, game, player);
+
                         break;
                     case "X":
 
@@ -600,7 +621,7 @@ namespace cammera
 
 
                         if (player.hotbar == 0) player.hotbar = game.Block_list.Count;
-                        Print_window(camera, game, player);
+
 
                         break;
 
@@ -631,10 +652,10 @@ namespace cammera
 
                         break;
                     case "C":
-                        Craft(player.Recipes[player.Crafting_select], game);
+                        Craft(game.recipes[player.Crafting_select], game);
 
 
-                        Print_window(camera, game, player);
+
 
 
                         break;
@@ -664,11 +685,11 @@ namespace cammera
                         }
                     case "D2":
                         player.hotbar++;
-                        
+
 
 
                         player.Selected_block = game.Block_list[player.hotbar];
-                        Print_window(camera, game, player);
+
                         Console.ForegroundColor = ConsoleColor.Red;
 
                         if (player.hotbar == game.Block_list.Count - 1) player.hotbar = 0;
@@ -720,7 +741,7 @@ namespace cammera
                             }
                         }
 
-                        Print_window(camera, game, player);
+
 
                         break;
                     case "L":
@@ -757,7 +778,7 @@ namespace cammera
                                         Fill_block(player.x - 1, player.y - 1, grid, player.Selected_block);
                                     player.Selected_block.quantity--;
                                 }
-                            Print_window(camera, game, player);
+
                         }
                         break;
                     case "Spacebar":
@@ -851,9 +872,10 @@ namespace cammera
                         {
                             player.is_swiming = false;
                         }
+                        
                         break;
                 }
-
+                Print_window(camera, game, player);
                 player.Input = null;
                 player.x = x;
                 player.y = y;
@@ -1371,7 +1393,7 @@ namespace cammera
 
             }
             WriteAt("^^", player.Selected_block.id * 2, UI + 1);
-            WriteAt(player.Crafting_select.ToString() + "       ", 2, UI + 4);
+            WriteAt(player.Crafting_select.ToString() + ":" + game.recipes[player.Crafting_select].item.Name + "       ", 2, UI + 4);
             WriteAt(player.x.ToString() + ":" + player.y.ToString(), 44, UI + 3);
             Console.BackgroundColor = ConsoleColor.Cyan;
             Console.ForegroundColor = default;
