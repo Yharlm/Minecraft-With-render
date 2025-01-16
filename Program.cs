@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Minecraft;
 
 namespace cammera
@@ -225,19 +225,24 @@ namespace cammera
                                         Kill_entity(game, mob);
 
                                     }
-                                    int range = 5;
-                                    if (player.Looking == "Right")
+                                    int range = 15;
+                                    if (mob.delay(1, game.curent_tick))
+
                                     {
-                                        if (player.x + range < pos.x)
+                                        if (player.Looking == "Right")
                                         {
-                                            mob.cordinates.x += 1;
+                                            if (player.x + range > pos.x)
+                                            {
+                                                mob.cordinates.x += 1;
+                                            }
                                         }
-                                    }
-                                    if (player.Looking == "Left")
-                                    {
-                                        if (player.x - range > pos.x)
+                                        if (player.Looking == "Left")
                                         {
-                                            mob.cordinates.x -= 1;
+                                            if (player.x - range < pos.x)
+                                            {
+                                                mob.cordinates.x -= 1;
+                                            }
+
                                         }
 
                                     }
@@ -340,6 +345,8 @@ namespace cammera
             player.y = player.Spawnpoint.y;
             player.Selected_block = Game.Get_ByID(0);
 
+            Game.Block_list[5].quantity = 99;
+            double block_tick = 0;
             double tick = 0.001;
             while (true)
 
@@ -374,7 +381,7 @@ namespace cammera
                     {
 
                         Render_block(Game.Get_ByID(grid[i + camera.Position.y, j + camera.Position.x]), j, i, Game, camera, player, grid);
-
+                        Block_Update(camera, j + camera.Position.x, i + camera.Position.y,grid,Game);
                         //Fill_block(player.x, player.y, camera.View, Game.GetBlock("Stone"));
                         Console.BackgroundColor = ConsoleColor.White;
                         Console.ForegroundColor = ConsoleColor.Black;
@@ -480,7 +487,33 @@ namespace cammera
             }
 
         }
+        static void Block_Update(Camera camera,int x,int y, int[,] grid,Game game)
+        {
+            switch (grid[y,x])
+            {
+                case 5:
+                    
+                    if(grid[y+1, x] == 0)
+                    {
+                        
+                        grid[y+1, x] = 5;
+                        grid[y, x] = 0;
+                    }
+                    else if(grid[y,x+1] == 0 ) 
+                    {
+                        grid[y, x+1] = 5;
+                        grid[y, x] = 0;
+                    }
+                    else if (grid[y, x - 1] == 0)
+                    {
+                        grid[y, x - 1] = 5;
+                        grid[y, x] = 0;
+                    }
+                    
 
+                    break;
+            }
+        }
         static void Entity_update(int[,] grid, List<Entity> Entity_list, Game game, Player player)
         {
 
@@ -598,7 +631,9 @@ namespace cammera
             {
                 switch (player.Input)
                 {
-
+                    case "Q":
+                        Fill_block(x, y-5, grid, game.GetBlock("water"));
+                        break;
                     case "E":
                         player.Crafting_select++;
                         if (player.Crafting_select == game.recipes.Count)
@@ -704,6 +739,10 @@ namespace cammera
                             {
                                 if (player.special_key == "Spacebar")
                                 {
+                                    if (grid[player.y-2,player.x] == 0)
+                                    {
+                                        Break_block(player.x, player.y - 3, grid, air, game); player.special_key = null;
+                                    }
                                     Break_block(player.x, player.y - 2, grid, air, game); player.special_key = null;
 
                                 }
@@ -748,7 +787,7 @@ namespace cammera
                         if (player.Selected_block.quantity > 0)
                         {
                             if (player.special_key == "Spacebar")
-                                if (grid[player.y + 1, player.x] == 0 && grid[player.y + 2, player.x] != 0)
+                                if (grid[player.y - 1, player.x] == 0 && grid[player.y - 2, player.x] != 0)
                                 {
                                     Fill_block(player.x, player.y + 1, grid, player.Selected_block);
                                     player.last_key = null;
@@ -1144,7 +1183,7 @@ namespace cammera
                 for (int i = x1; i < x2; i++)
                 {
                     int e = random.Next(0, randomiser);
-                    if (e == 0)
+                    if (e == 0 && grid[j,i]==0)
                     {
                         continue;
                     }
