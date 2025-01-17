@@ -1,4 +1,3 @@
-using System;
 using Minecraft;
 
 namespace cammera
@@ -174,7 +173,7 @@ namespace cammera
                                     //if(mob.time %2  == 0) { pos.x++; }
                                     int range = 5;
                                     if (mob.delay(3, game.curent_tick))
-                                        
+
                                     {
                                         if (player.Looking == "Right")
                                         {
@@ -348,6 +347,7 @@ namespace cammera
             Game.Block_list[5].quantity = 99;
             double block_tick = 0;
             double tick = 0.001;
+            double time = 0;
             while (true)
 
             {
@@ -362,6 +362,7 @@ namespace cammera
 
                     Game.curent_tick = true;
                     Game.time = 0;
+                    time += 1;
 
                 }
                 else
@@ -381,7 +382,7 @@ namespace cammera
                     {
 
                         Render_block(Game.Get_ByID(grid[i + camera.Position.y, j + camera.Position.x]), j, i, Game, camera, player, grid);
-                        Block_Update(camera, j + camera.Position.x, i + camera.Position.y,grid,Game);
+                        
                         //Fill_block(player.x, player.y, camera.View, Game.GetBlock("Stone"));
                         Console.BackgroundColor = ConsoleColor.White;
                         Console.ForegroundColor = ConsoleColor.Black;
@@ -435,7 +436,17 @@ namespace cammera
                     }
                     catch { }
                 }
+                if (time % 2 == 0)
+                {
+                    for (int i = 0; i < camera.View.GetLength(0); i++)
+                    {
+                        for (int j = 0; j < camera.View.GetLength(1); j++)
+                        {
 
+                            Block_Update(camera, j + camera.Position.x, i + camera.Position.y, grid, Game, time);
+                        }
+                    }
+                }
 
                 if (grid[player.y + 1, player.x] == 0 && Game.curent_tick)
                 {
@@ -487,30 +498,49 @@ namespace cammera
             }
 
         }
-        static void Block_Update(Camera camera,int x,int y, int[,] grid,Game game)
+        static void Block_Update(Camera camera, int x, int y, int[,] grid, Game game,double time)
         {
-            switch (grid[y,x])
+            switch (grid[y, x])
             {
                 case 5:
                     
-                    if(grid[y+1, x] == 0)
                     {
-                        
-                        grid[y+1, x] = 5;
-                        grid[y, x] = 0;
-                    }
-                    else if(grid[y,x+1] == 0 ) 
-                    {
-                        grid[y, x+1] = 5;
-                        grid[y, x] = 0;
-                    }
-                    else if (grid[y, x - 1] == 0)
-                    {
-                        grid[y, x - 1] = 5;
-                        grid[y, x] = 0;
-                    }
-                    
+                        if (grid[y + 1, x] == 0)
+                        {
+                            grid[y, x] = 0;
+                            grid[y + 1, x] = 8;
 
+                        }
+                        else if (grid[y, x + 1] == 0)
+                        {
+                            grid[y, x] = 0;
+                            grid[y, x + 1] = 8;
+
+                        }
+                        else if (grid[y, x - 1] == 0)
+                        {
+                            grid[y, x] = 0;
+                            grid[y, x - 1] = 8;
+                        }
+                    }
+
+                    break;
+                case 8:
+                    if (grid[y, x] == 8)
+                    {
+                        grid[y, x] = 5;
+                    }
+                    else if (grid[y, x] == 8)
+                    {
+                        grid[y, x] = 5;
+                        
+
+                    }
+                    else if (grid[y, x] == 8)
+                    {
+                        grid[y, x] = 5;
+                        
+                    }
                     break;
             }
         }
@@ -632,7 +662,7 @@ namespace cammera
                 switch (player.Input)
                 {
                     case "Q":
-                        Fill_block(x, y-5, grid, game.GetBlock("water"));
+                        Fill_block(x, y - 5, grid, game.GetBlock("water"));
                         break;
                     case "E":
                         player.Crafting_select++;
@@ -739,7 +769,7 @@ namespace cammera
                             {
                                 if (player.special_key == "Spacebar")
                                 {
-                                    if (grid[player.y-2,player.x] == 0)
+                                    if (grid[player.y - 2, player.x] == 0)
                                     {
                                         Break_block(player.x, player.y - 3, grid, air, game); player.special_key = null;
                                     }
@@ -911,7 +941,7 @@ namespace cammera
                         {
                             player.is_swiming = false;
                         }
-                        
+
                         break;
                 }
                 Print_window(camera, game, player);
@@ -1183,7 +1213,7 @@ namespace cammera
                 for (int i = x1; i < x2; i++)
                 {
                     int e = random.Next(0, randomiser);
-                    if (e == 0 && grid[j,i]==0)
+                    if (e == 0 && grid[j, i] == 0)
                     {
                         continue;
                     }
