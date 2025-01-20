@@ -318,10 +318,39 @@ namespace cammera
 
             Game.Sprite_list.Add(sprite);
 
+            string option = "null";
+            Console.WriteLine("Welcome to bootleg-craft");
+            Console.WriteLine("/new");
+            Console.WriteLine("/load");
+            option = Console.ReadLine();
+            int[,] grid = new int[500, 1000];
+            switch (option)
+            {
+                case "/new":
+                    Console.WriteLine("Generating...");
+                    BuildWorld(grid, player, Game);
+
+                    
+                    break;
+                case "/load":
+                    Console.WriteLine("Loading...");
+                    grid = Save.LoadWorld(@"C:\MyGame", "World.json");
+                    break;
+            }
+
+
+
+
+
+
+
 
             Camera camera = new Camera();
-            int[,] grid = new int[1000, 1000];
-            BuildWorld(grid, player, Game);
+            //Co-pilot carried me through file creation and reading the file lol
+
+
+
+            
 
             player.Spawnpoint = Convert_cor(500, 40);
             player.x = player.Spawnpoint.x;
@@ -696,6 +725,15 @@ namespace cammera
             {
                 switch (player.Input)
                 {
+                    
+                    case "I":
+                        Files.Save_map(grid);
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.BackgroundColor = ConsoleColor.Black;
+                        WriteAt("Saved", 60, 4);
+                        Console.ForegroundColor = default;
+                        System.Environment.Exit(0);
+                        break;
                     case "Q":
                         Fill_block(x, y - 5, grid, game.GetBlock("water"));
                         break;
