@@ -278,25 +278,7 @@ namespace cammera
             Mob.Color = ConsoleColor.Blue;
             Game.Entity_list.Add(Mob);
 
-            Solid Default = new Solid("null", 0, null, default, default);
-            Non_solid Background = new Non_solid("", 0, null, default, default);
-
-            Default = new Solid("Air", 0, "  ", ConsoleColor.DarkGray, Game.Background); Default.Collidable = false; Game.Block_list.Add(Default);
-            Default = new Solid("Grass", 1, "▀▀", ConsoleColor.DarkGreen, ConsoleColor.DarkYellow); Game.Block_list.Add(Default);
-            Default = new Solid("Dirt", 2, "██", ConsoleColor.DarkYellow, ConsoleColor.DarkYellow); Game.Block_list.Add(Default);
-            Default = new Solid("Stone", 3, "██", ConsoleColor.DarkGray, ConsoleColor.DarkGray); Game.Block_list.Add(Default);
-            Default = new Solid("Log", 4, "||", ConsoleColor.Yellow, ConsoleColor.DarkYellow); Game.Block_list.Add(Default);
-
-            Default = new Solid("water", 5, "  ", ConsoleColor.DarkBlue, ConsoleColor.DarkBlue); Default.Collidable = false; Game.Block_list.Add(Default);
-            //Default = new Solid("water", 5, "  ", ConsoleColor.DarkBlue, ConsoleColor.DarkBlue); Game.Block_list.Add(Default);
-
-            Default = new Solid("waterTop", 6, "▄▄", ConsoleColor.DarkBlue, ConsoleColor.Cyan); Default.Collidable = false; Game.Block_list.Add(Default);
-            Default = new Solid("Leaves", 7, "▄▀", ConsoleColor.DarkGreen, ConsoleColor.Green); Default.Collidable = false; Game.Block_list.Add(Default);
-            Default = new Solid("Coal_ore", 8, "▄▀", ConsoleColor.DarkGray, ConsoleColor.Black); Game.Block_list.Add(Default);
-            Default = new Solid("Iron_ore", 9, "▄▀", ConsoleColor.DarkGray, ConsoleColor.Magenta); Game.Block_list.Add(Default);
-            Default = new Solid("Crafting_table", 10, "TT", ConsoleColor.Yellow, ConsoleColor.DarkYellow); Game.Block_list.Add(Default);
-            Default = new Solid("Wooden_planks", 11, "==", ConsoleColor.DarkYellow, ConsoleColor.Yellow); Game.Block_list.Add(Default);
-            Default = new Solid("Ladder", 12, "||", ConsoleColor.Yellow, ConsoleColor.DarkYellow); Default.Collidable = false; Game.Block_list.Add(Default);
+            Update_Textures(Game);
             
             // recepies
             Recipe recipe = new Recipe();
@@ -369,14 +351,16 @@ namespace cammera
                 }
                 else
                 {
-
+                    
                     Game.curent_tick = false;
                 }
                 camera.Position.x = player.x - camera.View.GetLength(1) / 2;
                 camera.Position.y = player.y - camera.View.GetLength(0) / 2;
                 Entity_update(grid, Game.Existing_Entities, Game, player);
-                if (player.y > 60) { Game.Background = ConsoleColor.DarkYellow;
-                Game.GetBlock("Air").BG = Game.Background;}
+                if (player.y > 80) { Game.Background = ConsoleColor.Gray;
+                Game.GetBlock("Air").BG = Game.Background;
+                    Game.Get_ByID(6).BG = Game.Background;
+                Game.GetBlock("Ladder").BG = Game.Background; }
                 else
                 {
                     Game.Background = ConsoleColor.Cyan;
@@ -528,6 +512,30 @@ namespace cammera
             }
 
         }
+
+        private static void Update_Textures(Game Game)
+        {
+            Solid Default = new Solid("null", 0, null, default, default);
+            Non_solid Background = new Non_solid("", 0, null, default, default);
+
+            Default = new Solid("Air", 0, "  ", ConsoleColor.DarkGray, Game.Background); Default.Collidable = false; Game.Block_list.Add(Default);
+            Default = new Solid("Grass", 1, "▀▀", ConsoleColor.DarkGreen, ConsoleColor.DarkYellow); Game.Block_list.Add(Default);
+            Default = new Solid("Dirt", 2, "██", ConsoleColor.DarkYellow, ConsoleColor.DarkYellow); Game.Block_list.Add(Default);
+            Default = new Solid("Stone", 3, "██", ConsoleColor.DarkGray, ConsoleColor.DarkGray); Game.Block_list.Add(Default);
+            Default = new Solid("Log", 4, "||", ConsoleColor.Yellow, ConsoleColor.DarkYellow); Game.Block_list.Add(Default);
+
+            Default = new Solid("water", 5, "  ", ConsoleColor.DarkBlue, ConsoleColor.DarkBlue); Default.Collidable = false; Game.Block_list.Add(Default);
+            //Default = new Solid("water", 5, "  ", ConsoleColor.DarkBlue, ConsoleColor.DarkBlue); Game.Block_list.Add(Default);
+
+            Default = new Solid("waterTop", 6, "▄▄", ConsoleColor.DarkBlue, ConsoleColor.Cyan); Default.Collidable = false; Game.Block_list.Add(Default);
+            Default = new Solid("Leaves", 7, "▄▀", ConsoleColor.DarkGreen, ConsoleColor.Green); Default.Collidable = false; Game.Block_list.Add(Default);
+            Default = new Solid("Coal_ore", 8, "▄▀", ConsoleColor.DarkGray, ConsoleColor.Black); Game.Block_list.Add(Default);
+            Default = new Solid("Iron_ore", 9, "▄▀", ConsoleColor.DarkGray, ConsoleColor.Magenta); Game.Block_list.Add(Default);
+            Default = new Solid("Crafting_table", 10, "TT", ConsoleColor.Yellow, ConsoleColor.DarkYellow); Game.Block_list.Add(Default);
+            Default = new Solid("Wooden_planks", 11, "==", ConsoleColor.DarkYellow, ConsoleColor.Yellow); Game.Block_list.Add(Default);
+            Default = new Solid("Ladder", 12, "||", ConsoleColor.Yellow, ConsoleColor.DarkYellow); Default.Collidable = false; Game.Block_list.Add(Default);
+        }
+
         static void Block_Update(Camera camera, int x, int y, int[,] grid, Game game,double time)
         {
             switch (grid[y, x])
@@ -1170,7 +1178,7 @@ namespace cammera
             int min = 1;
             int max = 5;
             int c = 0;
-
+            int sea_level = 70;
 
 
             for (int j = 2; j < Width; j++)
@@ -1208,6 +1216,17 @@ namespace cammera
                     Fill_Index_Cord2(j, Height + coalN - vein, j + vein, Height + coalN, grid, game.GetBlock("Coal_ore"), 5);
                 }
                 j++;
+            }
+
+            for(int j = 0;j < Width-30;j++)
+            {
+                for(int i = sea_level; i < sea_level+ 50; i++)
+                {
+                    if (grid[i,j] == 0)
+                    {
+                        Fill_block(j, i, grid, game.GetBlock("water"));
+                    }
+                }
             }
         }
 
