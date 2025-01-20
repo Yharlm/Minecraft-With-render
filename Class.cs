@@ -5,6 +5,8 @@
 
     {
         public string Looking = "";
+        public double oxygen = 20;
+
         public List<Entity> Projectiles = new List<Entity>();
         public int Crafting_select = 0;
         //public List<Recipe> Recipes = new List<Recipe>();
@@ -77,6 +79,7 @@
     }
     class Game
     {
+        public ConsoleColor Background = ConsoleColor.Cyan;
         protected static int origRow;
         protected static int origCol;
         public Cordinates mosepos = new Cordinates();

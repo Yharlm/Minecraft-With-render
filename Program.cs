@@ -281,7 +281,7 @@ namespace cammera
             Solid Default = new Solid("null", 0, null, default, default);
             Non_solid Background = new Non_solid("", 0, null, default, default);
 
-            Default = new Solid("Air", 0, "  ", ConsoleColor.DarkGray, ConsoleColor.Cyan); Default.Collidable = false; Game.Block_list.Add(Default);
+            Default = new Solid("Air", 0, "  ", ConsoleColor.DarkGray, Game.Background); Default.Collidable = false; Game.Block_list.Add(Default);
             Default = new Solid("Grass", 1, "▀▀", ConsoleColor.DarkGreen, ConsoleColor.DarkYellow); Game.Block_list.Add(Default);
             Default = new Solid("Dirt", 2, "██", ConsoleColor.DarkYellow, ConsoleColor.DarkYellow); Game.Block_list.Add(Default);
             Default = new Solid("Stone", 3, "██", ConsoleColor.DarkGray, ConsoleColor.DarkGray); Game.Block_list.Add(Default);
@@ -290,19 +290,21 @@ namespace cammera
             Default = new Solid("water", 5, "  ", ConsoleColor.DarkBlue, ConsoleColor.DarkBlue); Default.Collidable = false; Game.Block_list.Add(Default);
             //Default = new Solid("water", 5, "  ", ConsoleColor.DarkBlue, ConsoleColor.DarkBlue); Game.Block_list.Add(Default);
 
-            Default = new Solid("waterTop", 6, "▄▄", ConsoleColor.DarkBlue, ConsoleColor.Cyan); Game.Block_list.Add(Default);
-            Default = new Solid("Leaves", 7, "▄▀", ConsoleColor.DarkGreen, ConsoleColor.Green); Game.Block_list.Add(Default);
+            Default = new Solid("waterTop", 6, "▄▄", ConsoleColor.DarkBlue, ConsoleColor.Cyan); Default.Collidable = false; Game.Block_list.Add(Default);
+            Default = new Solid("Leaves", 7, "▄▀", ConsoleColor.DarkGreen, ConsoleColor.Green); Default.Collidable = false; Game.Block_list.Add(Default);
             Default = new Solid("Coal_ore", 8, "▄▀", ConsoleColor.DarkGray, ConsoleColor.Black); Game.Block_list.Add(Default);
             Default = new Solid("Iron_ore", 9, "▄▀", ConsoleColor.DarkGray, ConsoleColor.Magenta); Game.Block_list.Add(Default);
             Default = new Solid("Crafting_table", 10, "TT", ConsoleColor.Yellow, ConsoleColor.DarkYellow); Game.Block_list.Add(Default);
             Default = new Solid("Wooden_planks", 11, "==", ConsoleColor.DarkYellow, ConsoleColor.Yellow); Game.Block_list.Add(Default);
-
+            Default = new Solid("Ladder", 12, "||", ConsoleColor.Yellow, ConsoleColor.DarkYellow); Default.Collidable = false; Game.Block_list.Add(Default);
+            
             // recepies
             Recipe recipe = new Recipe();
             Non_Existent placehold = new Non_Existent(4, "Log", 1);
 
             recipe = new Recipe(); recipe.item = Game.GetBlock("Crafting_table"); placehold = new Non_Existent(4, "Log", 1); recipe.num = 1; recipe.required.Add(placehold); Game.recipes.Add(recipe);
             recipe = new Recipe(); recipe.item = Game.GetBlock("Wooden_planks"); placehold = new Non_Existent(4, "Log", 1); recipe.num = 4; recipe.required.Add(placehold); Game.recipes.Add(recipe);
+            recipe = new Recipe(); recipe.item = Game.GetBlock("Ladder"); placehold = new Non_Existent(11, "Wooden_planks", 2); recipe.num = 4; recipe.required.Add(placehold); Game.recipes.Add(recipe);
 
 
 
@@ -373,7 +375,13 @@ namespace cammera
                 camera.Position.x = player.x - camera.View.GetLength(1) / 2;
                 camera.Position.y = player.y - camera.View.GetLength(0) / 2;
                 Entity_update(grid, Game.Existing_Entities, Game, player);
-
+                if (player.y > 60) { Game.Background = ConsoleColor.DarkYellow;
+                Game.GetBlock("Air").BG = Game.Background;}
+                else
+                {
+                    Game.Background = ConsoleColor.Cyan;
+                    Game.GetBlock("Air").BG = Game.Background;
+                }
 
 
                 for (int i = 0; i < camera.View.GetLength(0); i++)
@@ -438,32 +446,53 @@ namespace cammera
                 }
                 if (time % 2 == 0)
                 {
-                    for (int i = 0; i < camera.View.GetLength(0); i++)
+                    for (int i = 0; i < camera.View.GetLength(0)*2; i++)
                     {
-                        for (int j = 0; j < camera.View.GetLength(1); j++)
+                        for (int j = 0; j < camera.View.GetLength(1)*2; j++)
                         {
 
                             Block_Update(camera, j + camera.Position.x, i + camera.Position.y, grid, Game, time);
                         }
                     }
                 }
-
-                if (grid[player.y + 1, player.x] == 0 && Game.curent_tick)
+                if (player.oxygen <= 0 && Game.curent_tick) { player.health -= 1; }
+                if (grid[player.y-1, player.x] == 5)
                 {
-
-                    if (grid[player.y - 2, player.x] == 0)
+                    player.is_swiming = true;
+                    if (Game.curent_tick)
                     {
-
+                        if(player.oxygen >= 0)player.oxygen -= 0.5;
+                        Print_window(camera, Game, player);
                     }
+                }
+                else
+                {
+                    player.is_swiming = false;
+                }
 
-
-                    player.y++;
-                    player.grounded = false;
+                if (Game.Get_ByID(grid[player.y + 1, player.x]).Collidable == false && Game.curent_tick && player.grounded)
+                {
+                    
+                    if (player.is_swiming)
+                    {
+                        if(time % 2 == 0) { player.y++; }
+                        
+                    }
+                    else
+                    {
+                        player.y++;
+                        if (player.oxygen < 20 && Game.curent_tick) { player.oxygen += 0.5; }
+                    }
 
                     //Thread.Sleep(100);
 
 
                 }
+                if(grid[player.y, player.x] == 12)
+                {
+                    player.grounded = false;
+                }
+                
                 else
                 {
                     player.grounded = true;
@@ -488,6 +517,7 @@ namespace cammera
 
                     Thread.Sleep(2000);
                     player.health = 100;
+                    
                     player.x = player.Spawnpoint.x;
                     player.y = player.Spawnpoint.y;
 
@@ -508,39 +538,29 @@ namespace cammera
                         if (grid[y + 1, x] == 0)
                         {
                             grid[y, x] = 0;
-                            grid[y + 1, x] = 8;
+                            grid[y + 1, x] = 6;
 
                         }
                         else if (grid[y, x + 1] == 0)
                         {
                             grid[y, x] = 0;
-                            grid[y, x + 1] = 8;
+                            grid[y, x + 1] = 6;
 
                         }
                         else if (grid[y, x - 1] == 0)
                         {
                             grid[y, x] = 0;
-                            grid[y, x - 1] = 8;
+                            grid[y, x - 1] = 6;
                         }
                     }
 
                     break;
-                case 8:
-                    if (grid[y, x] == 8)
+                case 6:
+                    if (grid[y, x] == 6)
                     {
                         grid[y, x] = 5;
                     }
-                    else if (grid[y, x] == 8)
-                    {
-                        grid[y, x] = 5;
-                        
-
-                    }
-                    else if (grid[y, x] == 8)
-                    {
-                        grid[y, x] = 5;
-                        
-                    }
+                    
                     break;
             }
         }
@@ -814,6 +834,14 @@ namespace cammera
 
                         break;
                     case "L":
+                        if (player.Selected_block == game.GetBlock("Ladder") && player.Selected_block.quantity > 0)
+                        {
+                            Fill_block(player.x, player.y, grid, player.Selected_block);
+                            player.last_key = null;
+                            player.Selected_block.quantity--;
+                            break;
+                        }
+
                         if (player.Selected_block.quantity > 0)
                         {
                             if (player.special_key == "Spacebar")
@@ -851,18 +879,18 @@ namespace cammera
                         }
                         break;
                     case "Spacebar":
-                        if (grid[player.y + 1, player.x] != 0)
+                        if (grid[player.y + 1, player.x] != 0 && grid[player.y + 1, player.x] != 6 && grid[player.y + 1, player.x] != 5)
                         {
 
-                            if (grid[player.y - 2, player.x] == 0)
+                            if (game.Get_ByID(grid[player.y - 2, player.x]).Collidable == false)
                             {
                                 y -= 1;
                             }
-                            if (grid[player.y - 3, player.x] == 0 && grid[player.y - 2, player.x] == 0)
+                            if (game.Get_ByID(grid[player.y - 3, player.x]).Collidable == false && game.Get_ByID(grid[player.y - 2, player.x]).Collidable == false)
                             {
                                 y -= 1;
                             }
-                            if (grid[player.y - 3, player.x] == 0 && grid[player.y - 2, player.x] == 0 && grid[player.y - 4, player.x] == 0)
+                            if (game.Get_ByID(grid[player.y - 3, player.x]).Collidable == false && game.Get_ByID(grid[player.y - 2, player.x]).Collidable == false && game.Get_ByID(grid[player.y - 4, player.x]).Collidable == false)
                             {
                                 y -= 1;
                             }
@@ -884,31 +912,36 @@ namespace cammera
 
                         //grid[player.y , player.x - 1] = 0;
                         //WriteAt("  ", (x-1) * 2, y );
-                        if (grid[player.y, player.x - 1] == 0 && grid[player.y - 1, player.x - 1] == 0)
+                        //   game.Get_ByID().Collidable == false
+                        if (game.Get_ByID(grid[player.y, player.x - 1]).Collidable == false && game.Get_ByID(grid[player.y - 1, player.x - 1]).Collidable == false)
                         {
 
                             x--;
                         }
-                        if (grid[player.y - 1, player.x - 1] == 0 && grid[player.y - 2, player.x - 1] == 0 && player.special_key == "Spacebar")
+                        if (game.Get_ByID(grid[player.y - 1, player.x - 1]).Collidable == false && game.Get_ByID(grid[player.y - 2, player.x - 1]).Collidable == false && player.special_key == "Spacebar")
                         {
 
                             x--; y--;
                             player.special_key = null;
 
                         }
-                        if (grid[player.y - 1, player.x - 1] == 6)
-                        {
-                            x--; player.is_swiming = true;
-                        }
-                        else
-                        {
-                            player.is_swiming = false;
-                        }
+
 
                         break;
+                    case "W":
+                        if (grid[player.y, player.x] == 12)
+                        {
+                            y--;
+                        }
+                        break;
                     case "S":
+                        if (grid[player.y, player.x] == 12 && game.Get_ByID(grid[player.y + 1, player.x ]).Collidable == false)
+                        {
+                            y++;
 
-                        if (grid[player.y + 1, player.x] == 0)
+                            break;
+                        }
+                        if (game.Get_ByID(grid[player.y + 1, player.x]).Collidable == false)
                         {
 
                             y++;
@@ -922,12 +955,12 @@ namespace cammera
 
 
                         }
-                        if (grid[player.y, player.x + 1] == 0 && grid[player.y - 1, player.x + 1] == 0)
+                        if (game.Get_ByID(grid[player.y, player.x + 1]).Collidable == false && game.Get_ByID(grid[player.y - 1, player.x + 1]).Collidable == false)
                         {
 
                             x++;
                         }
-                        if (grid[player.y - 1, player.x + 1] == 0 && grid[player.y - 2, player.x + 1] == 0 && player.special_key == "Spacebar")
+                        if (game.Get_ByID(grid[player.y - 1, player.x + 1]).Collidable == false && game.Get_ByID(grid[player.y - 2, player.x + 1]).Collidable == false && player.special_key == "Spacebar")
                         {
 
                             x++; y--;
@@ -1089,7 +1122,7 @@ namespace cammera
             int y = structure.Struct.GetLength(0);
 
             int Local_y = 0;
-            while (grid[Local_y, Local_x] == 0)
+            while (game.Get_ByID(grid[Local_y, Local_x]).Collidable == false)
             {
                 Local_y++;
             }
@@ -1165,7 +1198,7 @@ namespace cammera
             }
 
 
-            for (int j = 0; j < Width;)
+            for (int j = 0; j < Width-12;)
             {
                 int coalN = random.Next(1, 40);
                 int vein = random.Next(1, 6);
@@ -1448,6 +1481,7 @@ namespace cammera
             Console.BackgroundColor = ConsoleColor.Black;
             Console.ForegroundColor = ConsoleColor.Red;
             WriteAt("Health" + player.health.ToString(), 1, UI + 2);
+            WriteAt("Oxygen" + player.oxygen.ToString(), 1, UI + 3);
             WriteAt("                                    ", 1, UI + 1);
             foreach (Solid i in game.Block_list)
             {
