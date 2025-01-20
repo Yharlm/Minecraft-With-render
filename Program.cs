@@ -327,7 +327,14 @@ namespace cammera
             player.x = player.Spawnpoint.x;
             player.y = player.Spawnpoint.y;
             player.Selected_block = Game.Get_ByID(0);
-
+            int counter = 0;
+            while (grid[player.y+counter, player.x] == 0)
+            {
+                counter++;
+            }
+            if (grid[player.y + counter, player.x] == 5) { Fill_block(player.x, player.y + counter, grid, Game.GetBlock("Wooden_planks")); }
+            
+            
             Game.Block_list[5].quantity = 99;
             double block_tick = 0;
             double tick = 0.001;
@@ -1149,18 +1156,7 @@ namespace cammera
                     Solid block = game.Block_list.Find(x => x.id == structure.Struct[i - Local_y, j - Local_x]);
                     Fill_block(j, i, grid, block);
 
-                    //Console.ForegroundColor = block.FG;
-                    //Console.BackgroundColor = block.BG;
-                    //grid[i, j] = block.id;
-                    //WriteAt(block.Texture, j * 2, i);
-                    //Console.ForegroundColor = default;
-                    //Console.BackgroundColor = ConsoleColor.Cyan;
-
-
-                    //grid[i, j] = structure.Struct[i - Local_y, j - Local_x];
-                    //WriteAt(game.Block_list(1).t, j * 2, i);
-                    //Console.ForegroundColor = default;
-                    //Console.BackgroundColor = ConsoleColor.Cyan;
+                    
 
                 }
             }
@@ -1171,12 +1167,13 @@ namespace cammera
         {
             Random random = new Random();
             int Width = 1000;
-            ; int Height = 55
+            ; int Height = 45
             ;
             int dirt_Height = 5;
-            int stone_Height = 42;
+            int stone_Height = 142;
+            int min_level = 60;
             int min = 1;
-            int max = 5;
+            int max = 3;
             int c = 0;
             int sea_level = 70;
 
@@ -1217,10 +1214,20 @@ namespace cammera
                 }
                 j++;
             }
-
-            for(int j = 0;j < Width-30;j++)
+            for(int j = 0; j < Width - 12;)
             {
-                for(int i = sea_level; i < sea_level+ 50; i++)
+                int ironN = random.Next(1, 40);
+                int vein = random.Next(1, 6);
+                if (random.Next(1, 30) < 4)
+                {
+                    Fill_Index_Cord2(j, Height + ironN - vein, j + vein, Height + ironN, grid, game.GetBlock("Iron_ore"), 5);
+                }
+                j++;
+            }
+
+            for (int j = 0;j < Width-30;j++)
+            {
+                for(int i = sea_level-10; i < sea_level+ 50; i++)
                 {
                     if (grid[i,j] == 0)
                     {
@@ -1237,6 +1244,7 @@ namespace cammera
             grid[y, x] = Block.id;
             //WriteAt(Block.Texture, x * 2, y);
             Console.ForegroundColor = default;
+            
             Console.BackgroundColor = ConsoleColor.Cyan;
         }
 
@@ -1265,15 +1273,12 @@ namespace cammera
                 for (int i = x1; i < x2; i++)
                 {
                     int e = random.Next(0, randomiser);
-                    if (e == 0 && grid[j, i] == 0)
+                    if (e == 0 || grid[j, i] == 0)
                     {
                         continue;
                     }
 
                     grid[j, i] = Block.id;
-
-
-
                 }
             }
 
