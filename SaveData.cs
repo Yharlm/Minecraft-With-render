@@ -11,15 +11,15 @@ namespace Minecraft
     public class Files
     {
         public static void Save_map(int[,] grid) {
-        string folderPath = @"C:\MyGame";
+        string folderPath = @"C:\Users\Students\source\repos\Minecraft-With-render\SaveFile";
         string fileName = "World.json";
 
 
         Save.CreateFile(folderPath, fileName, grid); }
         
     }
-    public class Save{
-        public static void CreateFile(string folderPath, string fileName, int[,] grid, bool append = false)
+    public class Save {
+        public static void CreateFile(string folderPath, string fileName, int[,] grid)
         {
             // Ensure the directory exists
             Directory.CreateDirectory(folderPath);
@@ -37,10 +37,10 @@ namespace Minecraft
             }
 
             string jsonString = JsonSerializer.Serialize(jaggedArray);
-            
-                // Write the content to the file (overwrite if it exists)
+
+            // Write the content to the file (overwrite if it exists)
             File.WriteAllText(filePath, jsonString);
-            
+
         }
         public static string ReadFile(string folderPath, string fileName)
         {
@@ -51,10 +51,10 @@ namespace Minecraft
             catch { return "No file detected. lol"; }
         }
 
-        public static int[,] LoadWorld(string path,string filename)
+        public static int[,] LoadWorld(string path, string filename)
         {
             string filePath = Path.Combine(path, filename);
-
+            //string fileRoot = Path.Combine(Directory.GetCurrentDirectory(), @"\World.json");
             // Read the content of the file
             string jsonString = File.ReadAllText(filePath);
 
@@ -76,7 +76,12 @@ namespace Minecraft
 
             return grid;
         }
-
+        public static void Test()
+        {
+            Directory.CreateDirectory(@"C:\Users\Students\source\repos\Minecraft-With-render\SaveFile");
+            File.WriteAllText(@"C:\Users\Students\source\repos\Minecraft-With-render\SaveFile\World.json", "Hi");
+        }
+            
         
 
     }

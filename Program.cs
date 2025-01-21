@@ -258,9 +258,11 @@ namespace cammera
         static void Main(string[] args)
         {
 
+
             //var key = Console.ReadKey().Key;
             //Console.WriteLine(key.ToString());
             //Thread.Sleep(80000);
+            //Save.Test();
             Console.CursorVisible = false;
             Game Game = new Game();
             Player player = new Player();
@@ -334,7 +336,7 @@ namespace cammera
                     break;
                 case "/load":
                     Console.WriteLine("Loading...");
-                    grid = Save.LoadWorld(@"C:\MyGame", "World.json");
+                    grid = Save.LoadWorld(@"C:\Users\Students\source\repos\Minecraft-With-render\SaveFile","World.json");
                     break;
             }
 
@@ -365,6 +367,7 @@ namespace cammera
             
             
             Game.Block_list[5].quantity = 99;
+            Game.Block_list[13].quantity = 99;
             double block_tick = 0;
             double tick = 0.001;
             double time = 0;
@@ -570,10 +573,12 @@ namespace cammera
             Default = new Solid("Crafting_table", 10, "TT", ConsoleColor.Yellow, ConsoleColor.DarkYellow); Game.Block_list.Add(Default);
             Default = new Solid("Wooden_planks", 11, "==", ConsoleColor.DarkYellow, ConsoleColor.Yellow); Game.Block_list.Add(Default);
             Default = new Solid("Ladder", 12, "||", ConsoleColor.Yellow, ConsoleColor.DarkYellow); Default.Collidable = false; Game.Block_list.Add(Default);
+            Default = new Solid("Sand", 13, "██", ConsoleColor.DarkMagenta, ConsoleColor.Cyan); Game.Block_list.Add(Default);
         }
 
         static void Block_Update(Camera camera, int x, int y, int[,] grid, Game game,double time)
         {
+            Random random = new Random();
             switch (grid[y, x])
             {
                 case 5:
@@ -605,6 +610,25 @@ namespace cammera
                         grid[y, x] = 5;
                     }
                     
+                    break;
+                case 7:
+                    if (time % 32 == 0)
+                    {
+                        if(random.Next(1,30) < 12)
+                        {
+                            grid[y, x] = 0;
+                        }
+                    }
+                    break;
+                case 13:
+                    if(time % 2 == 0 && grid[y+1,x] == 0)
+                    {
+                        grid[y, x] = 0;
+                        grid[y + 1, x] = -13;
+                    }
+                    break;
+                case -13:
+                    grid[y, x] = 13;
                     break;
             }
         }
@@ -897,24 +921,24 @@ namespace cammera
 
                         if (player.Selected_block.quantity > 0)
                         {
-                            if (player.special_key == "Spacebar")
-                                if (grid[player.y - 1, player.x] == 0 && grid[player.y - 2, player.x] != 0)
+                            //if (player.special_key == "Spacebar")
+                            if (grid[player.y - 1, player.x] == 0 && grid[player.y - 2, player.x] != 0)
+                            {
+                                Fill_block(player.x, player.y + 1, grid, player.Selected_block);
+                                player.last_key = null;
+                                player.Selected_block.quantity--;
+                            }
+                            else if (player.last_key == "S")
                                 {
-                                    Fill_block(player.x, player.y + 1, grid, player.Selected_block);
-                                    player.last_key = null;
-                                    player.Selected_block.quantity--;
-                                }
-                                else if (player.last_key == "S")
-                                {
-                                    player.last_key = "D"; player.Selected_block.quantity--;
+                                Fill_block(player.x, player.y + 1, grid, player.Selected_block);player.y--; ; player.Selected_block.quantity--;
                                 }
                                 else if (player.last_key == "D")
                                 {
                                     if (grid[player.y + 1, player.x + 1] == 0)
                                         Fill_block(player.x + 1, player.y + 1, grid, player.Selected_block);
-                                    else if (grid[player.y, player.x + 1] == 0)
+                                    else if (grid[player.y, player.x + 1] == 0 && grid[player.y+1, player.x + 1] != 0)
                                         Fill_block(player.x + 1, player.y, grid, player.Selected_block);
-                                    else if (grid[player.y - 1, player.x + 1] == 0)
+                                    else if (grid[player.y - 1, player.x + 1] == 0&& grid[player.y, player.x + 1] != 0)
                                         Fill_block(player.x + 1, player.y - 1, grid, player.Selected_block);
                                     player.Selected_block.quantity--;
                                 }
@@ -922,9 +946,9 @@ namespace cammera
                                 {
                                     if (grid[player.y + 1, player.x - 1] == 0)
                                         Fill_block(player.x - 1, player.y + 1, grid, player.Selected_block);
-                                    else if (grid[player.y, player.x - 1] == 0)
+                                    else if (grid[player.y, player.x - 1] == 0 && grid[player.y + 1, player.x - 1] != 0)
                                         Fill_block(player.x - 1, player.y, grid, player.Selected_block);
-                                    else if (grid[player.y - 1, player.x - 1] == 0)
+                                    else if (grid[player.y - 1, player.x - 1] == 0 && grid[player.y, player.x - 1] != 0)
                                         Fill_block(player.x - 1, player.y - 1, grid, player.Selected_block);
                                     player.Selected_block.quantity--;
                                 }
@@ -1013,7 +1037,7 @@ namespace cammera
 
                             x++;
                         }
-                        if (game.Get_ByID(grid[player.y - 1, player.x + 1]).Collidable == false && game.Get_ByID(grid[player.y - 2, player.x + 1]).Collidable == false && player.special_key == "Spacebar")
+                        else if (game.Get_ByID(grid[player.y - 1, player.x + 1]).Collidable == false && game.Get_ByID(grid[player.y - 2, player.x + 1]).Collidable == false && player.special_key == "Spacebar")
                         {
 
                             x++; y--;
