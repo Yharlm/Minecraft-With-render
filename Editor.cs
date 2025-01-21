@@ -118,8 +118,8 @@ namespace Minecraft
             Default = new Solid("Tree", 15, "▀", ConsoleColor.Green, ConsoleColor.DarkYellow); Game.Block_list.Add(Default);
 
             int[,] grid = new int[1000, 1000];
-            grid = Files.LoadWorld(@"C:\Users\lambrin\source\repos\Minecraft-With-render\SaveFile", "World.json");
-            int x = 0;
+            grid = Files.LoadWorld(Files.GetSaveFilePath(), "World.json");
+            int x = 500;
             int y = 0;
             int id = 0;
             int size = 19;

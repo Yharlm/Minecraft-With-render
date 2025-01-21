@@ -211,7 +211,7 @@ namespace cammera
                                     {
                                         if (GetRadius(entity, pos, 3, 3) && entity.Name == "Blue")
                                         {
-                                            Explosion(game, grid, pos, player, 32);
+                                            Explosion(game, grid, pos, player, 22);
 
                                             Kill_entity(game, mob);
                                             Kill_entity(game, entity);
@@ -647,7 +647,7 @@ namespace cammera
                 case 7:
                     if (time % 32 == 0)
                     {
-                        if (random.Next(1, 30) < 12)
+                        if (random.Next(1, 30) < 2)
                         {
                             grid[y, x] = 0;
                         }
