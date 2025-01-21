@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
 using System.Text.Json;
 
@@ -10,15 +6,26 @@ namespace Minecraft
 {
     public class Files
     {
-        public static void Save_map(int[,] grid) {
-        string folderPath = @"C:\Users\Students\source\repos\Minecraft-With-render\SaveFile";
-        string fileName = "World.json";
+        public static void Save_map(int[,] grid)
+        {
+            string folderPath = GetSaveFilePath();
+            
+            
+            string fileName = "World.json";
 
+            Save.CreateFile(folderPath, fileName, grid);
+        }
 
-        Save.CreateFile(folderPath, fileName, grid); }
-        
+        public static string GetSaveFilePath()
+        {
+            string documentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            string saveFilePath = Path.Combine(documentsPath, "Minecraft-With-render", "SaveFile");
+            return saveFilePath;
+        }
     }
-    public class Save {
+
+    public class Save
+    {
         public static void CreateFile(string folderPath, string fileName, int[,] grid)
         {
             // Ensure the directory exists
@@ -27,6 +34,7 @@ namespace Minecraft
             // Combine the folder path and file name to get the full file path
             string filePath = Path.Combine(folderPath, fileName);
             int[][] jaggedArray = new int[grid.GetLength(0)][];
+
             for (int i = 0; i < grid.GetLength(0); i++)
             {
                 jaggedArray[i] = new int[grid.GetLength(1)];
@@ -40,16 +48,9 @@ namespace Minecraft
 
             // Write the content to the file (overwrite if it exists)
             File.WriteAllText(filePath, jsonString);
+        }
 
-        }
-        public static string ReadFile(string folderPath, string fileName)
-        {
-            // Combine the folder path and file name to get the full file path
-            string filePath = Path.Combine(folderPath, fileName);
-            // Read the content of the file
-            try { return File.ReadAllText(filePath); }
-            catch { return "No file detected. lol"; }
-        }
+       
 
         public static int[,] LoadWorld(string path, string filename)
         {
@@ -76,14 +77,12 @@ namespace Minecraft
 
             return grid;
         }
+
         public static void Test()
         {
-            Directory.CreateDirectory(@"C:\Users\Students\source\repos\Minecraft-With-render\SaveFile");
-            File.WriteAllText(@"C:\Users\Students\source\repos\Minecraft-With-render\SaveFile\World.json", "Hi");
+            string folderPath = Files.GetSaveFilePath();
+            Directory.CreateDirectory(folderPath);
+            File.WriteAllText(Path.Combine(folderPath, "World.json"), "Hi");
         }
-            
-        
-
     }
-
 }

@@ -281,7 +281,7 @@ namespace cammera
             Game.Entity_list.Add(Mob);
 
             Update_Textures(Game);
-            
+
             // recepies
             Recipe recipe = new Recipe();
             Non_Existent placehold = new Non_Existent(4, "Log", 1);
@@ -323,25 +323,41 @@ namespace cammera
             Game.Sprite_list.Add(sprite);
 
             string option = "null";
-            Console.WriteLine("Welcome to bootleg-craft");
-            Console.WriteLine("/new");
-            Console.WriteLine("/load");
-            option = Console.ReadLine();
+            
             int[,] grid = new int[500, 1000];
-            switch (option)
+            while (option == "null")
             {
-                case "/new":
-                    Console.WriteLine("Generating...");
-                    BuildWorld(grid, player, Game);
+                Console.ForegroundColor = ConsoleColor.White;
+                Console.BackgroundColor = ConsoleColor.Black;
+                Console.WriteLine("Welcome to bootleg-craft");
+                Console.WriteLine("/new");
+                Console.WriteLine("/load");
+                Console.WriteLine("/edit");
+                option = Console.ReadLine();
 
+                switch (option)
+                {
+                    case "/new":
+                        Console.WriteLine("Generating...");
+                        BuildWorld(grid, player, Game);
+
+
+                        break;
+                    case "/load":
+                        Console.WriteLine("Loading...");
+                        grid = Save.LoadWorld(Files.GetSaveFilePath(), "World.json");
+                        break;
+                    case "/edit":
+                        Console.WriteLine("Loading...");
+                        Editor.Editor_mode();
+                        option = "null";
+                        
+                        break;
                     
-                    break;
-                case "/load":
-                    Console.WriteLine("Loading...");
-                    grid = Save.LoadWorld(@"C:\Users\Students\source\repos\Minecraft-With-render\SaveFile","World.json");
-                    break;
+                    
+                }
+                
             }
-
 
 
 
@@ -354,20 +370,20 @@ namespace cammera
 
 
 
-            
+
 
             player.Spawnpoint = Convert_cor(500, 40);
             player.x = player.Spawnpoint.x;
             player.y = player.Spawnpoint.y;
             player.Selected_block = Game.Get_ByID(0);
             int counter = 0;
-            while (grid[player.y+counter, player.x] == 0)
+            while (grid[player.y + counter, player.x] == 0)
             {
                 counter++;
             }
             if (grid[player.y + counter, player.x] == 5) { Fill_block(player.x, player.y + counter, grid, Game.GetBlock("Wooden_planks")); }
-            
-            
+
+
             Game.Block_list[5].quantity = 99;
             Game.Block_list[13].quantity = 99;
             double block_tick = 0;
@@ -392,16 +408,19 @@ namespace cammera
                 }
                 else
                 {
-                    
+
                     Game.curent_tick = false;
                 }
                 camera.Position.x = player.x - camera.View.GetLength(1) / 2;
                 camera.Position.y = player.y - camera.View.GetLength(0) / 2;
                 Entity_update(grid, Game.Existing_Entities, Game, player);
-                if (player.y > 80) { Game.Background = ConsoleColor.Gray;
-                Game.GetBlock("Air").BG = Game.Background;
+                if (player.y > 80)
+                {
+                    Game.Background = ConsoleColor.Gray;
+                    Game.GetBlock("Air").BG = Game.Background;
                     Game.Get_ByID(6).BG = Game.Background;
-                Game.GetBlock("Ladder").BG = Game.Background; }
+                    Game.GetBlock("Ladder").BG = Game.Background;
+                }
                 else
                 {
                     Game.Background = ConsoleColor.Cyan;
@@ -415,7 +434,7 @@ namespace cammera
                     {
 
                         Render_block(Game.Get_ByID(grid[i + camera.Position.y, j + camera.Position.x]), j, i, Game, camera, player, grid);
-                        
+
                         //Fill_block(player.x, player.y, camera.View, Game.GetBlock("Stone"));
                         Console.BackgroundColor = ConsoleColor.White;
                         Console.ForegroundColor = ConsoleColor.Black;
@@ -471,9 +490,9 @@ namespace cammera
                 }
                 if (time % 2 == 0)
                 {
-                    for (int i = 0; i < camera.View.GetLength(0)*2; i++)
+                    for (int i = 0; i < camera.View.GetLength(0) * 2; i++)
                     {
-                        for (int j = 0; j < camera.View.GetLength(1)*2; j++)
+                        for (int j = 0; j < camera.View.GetLength(1) * 2; j++)
                         {
 
                             Block_Update(camera, j + camera.Position.x, i + camera.Position.y, grid, Game, time);
@@ -481,12 +500,12 @@ namespace cammera
                     }
                 }
                 if (player.oxygen <= 0 && Game.curent_tick) { player.health -= 1; }
-                if (grid[player.y-1, player.x] == 5)
+                if (grid[player.y - 1, player.x] == 5)
                 {
                     player.is_swiming = true;
                     if (Game.curent_tick)
                     {
-                        if(player.oxygen >= 0)player.oxygen -= 0.5;
+                        if (player.oxygen >= 0) player.oxygen -= 0.5;
                         Print_window(camera, Game, player);
                     }
                 }
@@ -497,11 +516,11 @@ namespace cammera
 
                 if (Game.Get_ByID(grid[player.y + 1, player.x]).Collidable == false && Game.curent_tick && player.grounded)
                 {
-                    
+
                     if (player.is_swiming)
                     {
-                        if(time % 2 == 0) { player.y++; }
-                        
+                        if (time % 2 == 0) { player.y++; }
+
                     }
                     else
                     {
@@ -513,11 +532,11 @@ namespace cammera
 
 
                 }
-                if(grid[player.y, player.x] == 12)
+                if (grid[player.y, player.x] == 12)
                 {
                     player.grounded = false;
                 }
-                
+
                 else
                 {
                     player.grounded = true;
@@ -542,7 +561,7 @@ namespace cammera
 
                     Thread.Sleep(2000);
                     player.health = 100;
-                    
+
                     player.x = player.Spawnpoint.x;
                     player.y = player.Spawnpoint.y;
 
@@ -581,13 +600,22 @@ namespace cammera
 
         }
 
-        static void Block_Update(Camera camera, int x, int y, int[,] grid, Game game,double time)
+        static void Block_Update(Camera camera, int x, int y, int[,] grid, Game game, double time)
         {
+            Structure tree = new Structure();
+            tree.Struct = new int[,]{
+                { 0,7,7,7,0 },
+                { 0,7,4,7,0 },
+                { 7,7,4,7,7 },
+                { 7,7,4,7,7 },
+                { 0,0,4,0,0 },
+                { 0,0,4,0,0 }
+            };
             Random random = new Random();
             switch (grid[y, x])
             {
                 case 5:
-                    
+
                     {
                         if (grid[y + 1, x] == 0)
                         {
@@ -614,19 +642,19 @@ namespace cammera
                     {
                         grid[y, x] = 5;
                     }
-                    
+
                     break;
                 case 7:
                     if (time % 32 == 0)
                     {
-                        if(random.Next(1,30) < 12)
+                        if (random.Next(1, 30) < 12)
                         {
                             grid[y, x] = 0;
                         }
                     }
                     break;
                 case 13:
-                    if(time % 2 == 0 && grid[y+1,x] == 0)
+                    if (time % 2 == 0 && grid[y + 1, x] == 0)
                     {
                         grid[y, x] = 0;
                         grid[y + 1, x] = -13;
@@ -637,9 +665,9 @@ namespace cammera
                     break;
 
                 case 15:
-                    if(random.Next(1, 100) < 10 && time % 4 == 0)
+                    if (random.Next(1, 100) < 10 && time % 4 == 0)
                     {
-                        
+                        structure(tree, x + 2, y + 5, grid, game);
                     }
                     break;
             }
@@ -761,13 +789,14 @@ namespace cammera
             {
                 switch (player.Input)
                 {
-                    
+
                     case "I":
                         Files.Save_map(grid);
                         Console.ForegroundColor = ConsoleColor.Green;
                         Console.BackgroundColor = ConsoleColor.Black;
                         WriteAt("Saved", 60, 4);
                         Console.ForegroundColor = default;
+                        Thread.Sleep(1000);
                         System.Environment.Exit(0);
                         break;
                     case "Q":
@@ -941,29 +970,29 @@ namespace cammera
                                 player.Selected_block.quantity--;
                             }
                             else if (player.last_key == "S")
-                                {
-                                Fill_block(player.x, player.y + 1, grid, player.Selected_block);player.y--; ; player.Selected_block.quantity--;
-                                }
-                                else if (player.last_key == "D")
-                                {
-                                    if (grid[player.y + 1, player.x + 1] == 0)
-                                        Fill_block(player.x + 1, player.y + 1, grid, player.Selected_block);
-                                    else if (grid[player.y, player.x + 1] == 0 && grid[player.y+1, player.x + 1] != 0)
-                                        Fill_block(player.x + 1, player.y, grid, player.Selected_block);
-                                    else if (grid[player.y - 1, player.x + 1] == 0&& grid[player.y, player.x + 1] != 0)
-                                        Fill_block(player.x + 1, player.y - 1, grid, player.Selected_block);
-                                    player.Selected_block.quantity--;
-                                }
-                                else if (player.last_key == "A")
-                                {
-                                    if (grid[player.y + 1, player.x - 1] == 0)
-                                        Fill_block(player.x - 1, player.y + 1, grid, player.Selected_block);
-                                    else if (grid[player.y, player.x - 1] == 0 && grid[player.y + 1, player.x - 1] != 0)
-                                        Fill_block(player.x - 1, player.y, grid, player.Selected_block);
-                                    else if (grid[player.y - 1, player.x - 1] == 0 && grid[player.y, player.x - 1] != 0)
-                                        Fill_block(player.x - 1, player.y - 1, grid, player.Selected_block);
-                                    player.Selected_block.quantity--;
-                                }
+                            {
+                                Fill_block(player.x, player.y + 1, grid, player.Selected_block); player.y--; ; player.Selected_block.quantity--;
+                            }
+                            else if (player.last_key == "D")
+                            {
+                                if (grid[player.y + 1, player.x + 1] == 0)
+                                    Fill_block(player.x + 1, player.y + 1, grid, player.Selected_block);
+                                else if (grid[player.y, player.x + 1] == 0 && grid[player.y + 1, player.x + 1] != 0)
+                                    Fill_block(player.x + 1, player.y, grid, player.Selected_block);
+                                else if (grid[player.y - 1, player.x + 1] == 0 && grid[player.y, player.x + 1] != 0)
+                                    Fill_block(player.x + 1, player.y - 1, grid, player.Selected_block);
+                                player.Selected_block.quantity--;
+                            }
+                            else if (player.last_key == "A")
+                            {
+                                if (grid[player.y + 1, player.x - 1] == 0)
+                                    Fill_block(player.x - 1, player.y + 1, grid, player.Selected_block);
+                                else if (grid[player.y, player.x - 1] == 0 && grid[player.y + 1, player.x - 1] != 0)
+                                    Fill_block(player.x - 1, player.y, grid, player.Selected_block);
+                                else if (grid[player.y - 1, player.x - 1] == 0 && grid[player.y, player.x - 1] != 0)
+                                    Fill_block(player.x - 1, player.y - 1, grid, player.Selected_block);
+                                player.Selected_block.quantity--;
+                            }
 
                         }
                         break;
@@ -1024,7 +1053,7 @@ namespace cammera
                         }
                         break;
                     case "S":
-                        if (grid[player.y, player.x] == 12 && game.Get_ByID(grid[player.y + 1, player.x ]).Collidable == false)
+                        if (grid[player.y, player.x] == 12 && game.Get_ByID(grid[player.y + 1, player.x]).Collidable == false)
                         {
                             y++;
 
@@ -1230,7 +1259,48 @@ namespace cammera
                     Solid block = game.Block_list.Find(x => x.id == structure.Struct[i - Local_y, j - Local_x]);
                     Fill_block(j, i, grid, block);
 
-                    
+
+
+                }
+            }
+
+
+        }
+        static void structure(object struc, int Local_x, int Local_y, int[,] grid, Game game)
+        {
+            Structure structure = (Structure)struc;
+            //Block_ids block = (Block_ids)Block;
+            //Solid tile = (Solid)Block;
+            //int[,] str =
+            //{
+            //    {0,0,1,0,0 },
+            //    {0,0,1,0,0 },
+            //    {0,1,1,0,0 },
+            //    {0,0,1,0,0 },
+            //    {0,0,1,0,0 }
+            //};
+
+            int x = structure.Struct.GetLength(1);
+            int y = structure.Struct.GetLength(0);
+
+
+
+            Local_y -= y;
+            for (int i = Local_y; i < Local_y + y; i++)
+            {
+                for (int j = Local_x; j < Local_x + x; j++)
+                {
+                    if (structure.Struct[i - Local_y, j - Local_x] == 0)
+                    {
+                        continue;
+                    }
+                    int ID = structure.Struct[i - Local_y, j - Local_x];
+
+
+                    Solid block = game.Block_list.Find(x => x.id == structure.Struct[i - Local_y, j - Local_x]);
+                    Fill_block(j, i, grid, block);
+
+
 
                 }
             }
@@ -1277,7 +1347,7 @@ namespace cammera
             }
 
 
-            for (int j = 0; j < Width-12;)
+            for (int j = 0; j < Width - 12;)
             {
                 int coalN = random.Next(1, 40);
                 int vein = random.Next(1, 6);
@@ -1288,7 +1358,7 @@ namespace cammera
                 }
                 j++;
             }
-            for(int j = 0; j < Width - 12;)
+            for (int j = 0; j < Width - 12;)
             {
                 int ironN = random.Next(1, 40);
                 int vein = random.Next(1, 6);
@@ -1299,11 +1369,11 @@ namespace cammera
                 j++;
             }
 
-            for (int j = 0;j < Width-30;j++)
+            for (int j = 0; j < Width - 30; j++)
             {
-                for(int i = sea_level-10; i < sea_level+ 50; i++)
+                for (int i = sea_level - 10; i < sea_level + 50; i++)
                 {
-                    if (grid[i,j] == 0)
+                    if (grid[i, j] == 0)
                     {
                         Fill_block(j, i, grid, game.GetBlock("water"));
                     }
@@ -1318,7 +1388,7 @@ namespace cammera
             grid[y, x] = Block.id;
             //WriteAt(Block.Texture, x * 2, y);
             Console.ForegroundColor = default;
-            
+
             Console.BackgroundColor = ConsoleColor.Cyan;
         }
 
