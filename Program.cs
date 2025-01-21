@@ -289,6 +289,8 @@ namespace cammera
             recipe = new Recipe(); recipe.item = Game.GetBlock("Crafting_table"); placehold = new Non_Existent(4, "Log", 1); recipe.num = 1; recipe.required.Add(placehold); Game.recipes.Add(recipe);
             recipe = new Recipe(); recipe.item = Game.GetBlock("Wooden_planks"); placehold = new Non_Existent(4, "Log", 1); recipe.num = 4; recipe.required.Add(placehold); Game.recipes.Add(recipe);
             recipe = new Recipe(); recipe.item = Game.GetBlock("Ladder"); placehold = new Non_Existent(11, "Wooden_planks", 2); recipe.num = 4; recipe.required.Add(placehold); Game.recipes.Add(recipe);
+            recipe = new Recipe(); recipe.item = Game.GetBlock("Furnace"); placehold = new Non_Existent(14, "Stone", 8); recipe.num = 1; recipe.required.Add(placehold); Game.recipes.Add(recipe);
+            recipe = new Recipe(); recipe.item = Game.GetBlock("Tree"); placehold = new Non_Existent(15, "Leaves", 1); recipe.num = 2; recipe.required.Add(placehold); Game.recipes.Add(recipe);
 
 
 
@@ -574,6 +576,9 @@ namespace cammera
             Default = new Solid("Wooden_planks", 11, "==", ConsoleColor.DarkYellow, ConsoleColor.Yellow); Game.Block_list.Add(Default);
             Default = new Solid("Ladder", 12, "||", ConsoleColor.Yellow, ConsoleColor.DarkYellow); Default.Collidable = false; Game.Block_list.Add(Default);
             Default = new Solid("Sand", 13, "██", ConsoleColor.DarkMagenta, ConsoleColor.Cyan); Game.Block_list.Add(Default);
+            Default = new Solid("Furnace", 14, "▀▀", ConsoleColor.DarkGray, ConsoleColor.Black); Game.Block_list.Add(Default);
+            Default = new Solid("Tree", 15, "▀ ", ConsoleColor.Green, ConsoleColor.DarkYellow); Game.Block_list.Add(Default);
+
         }
 
         static void Block_Update(Camera camera, int x, int y, int[,] grid, Game game,double time)
@@ -629,6 +634,13 @@ namespace cammera
                     break;
                 case -13:
                     grid[y, x] = 13;
+                    break;
+
+                case 15:
+                    if(random.Next(1, 100) < 10 && time % 4 == 0)
+                    {
+                        
+                    }
                     break;
             }
         }
