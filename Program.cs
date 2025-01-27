@@ -1,3 +1,4 @@
+using System.Data;
 using Minecraft;
 
 namespace cammera
@@ -255,9 +256,9 @@ namespace cammera
             catch { }
         }
 
+        
         static void Main(string[] args)
         {
-
 
             //var key = Console.ReadKey().Key;
             //Console.WriteLine(key.ToString());
@@ -271,10 +272,10 @@ namespace cammera
             Entity Mob = new Entity(null, 0, null, "EE"); Game.Entity_list.Add(Mob);
 
             Mob = new Entity("pig", 10, "Pig", "██"); Game.Entity_list.Add(Mob);
-            Mob.Color = ConsoleColor.Red;
+            Mob.Color = ConsoleColor.Blue;
 
             Mob = new Entity("TNT", 0, null, "██"); Game.Entity_list.Add(Mob);
-            Mob.Color = ConsoleColor.Red;
+            Mob.Color = ConsoleColor.Blue;
             Mob = new Entity("Boss", 30, "E", "██");
 
             Mob.Color = ConsoleColor.Blue;
@@ -394,7 +395,7 @@ namespace cammera
             {
 
 
-
+                
                 GetInput(grid, player, Game, camera);
                 //double timer = Math.Ceiling(overworld.time += 0.0002);
                 double timer = Game.time += 0.002;
@@ -592,7 +593,7 @@ namespace cammera
             Default = new Solid("Coal_ore", 8, "▄▀", ConsoleColor.DarkGray, ConsoleColor.Black); Game.Block_list.Add(Default);
             Default = new Solid("Iron_ore", 9, "▄▀", ConsoleColor.DarkGray, ConsoleColor.Magenta); Game.Block_list.Add(Default);
             Default = new Solid("Crafting_table", 10, "TT", ConsoleColor.Yellow, ConsoleColor.DarkYellow); Game.Block_list.Add(Default);
-            Default = new Solid("Wooden_planks", 11, "==", ConsoleColor.DarkYellow, ConsoleColor.Yellow); Game.Block_list.Add(Default);
+            Default = new Solid("Wooden_planks", 11, "--", ConsoleColor.DarkYellow, ConsoleColor.DarkMagenta); Game.Block_list.Add(Default);
             Default = new Solid("Ladder", 12, "||", ConsoleColor.Yellow, ConsoleColor.DarkYellow); Default.Collidable = false; Game.Block_list.Add(Default);
             Default = new Solid("Sand", 13, "██", ConsoleColor.DarkMagenta, ConsoleColor.Cyan); Game.Block_list.Add(Default);
             Default = new Solid("Furnace", 14, "▀▀", ConsoleColor.DarkGray, ConsoleColor.Black); Game.Block_list.Add(Default);
@@ -781,6 +782,7 @@ namespace cammera
             }
 
             else { player.Input = null; }
+
             Cordinates player_cords = new Cordinates();
             player_cords.x = x;
             player_cords.y = y;
@@ -789,7 +791,9 @@ namespace cammera
             {
                 switch (player.Input)
                 {
-
+                    case "U":
+                        Caves(x, y+3, grid);
+                        break;
                     case "I":
                         Files.Save_map(grid);
                         Console.ForegroundColor = ConsoleColor.Green;
@@ -1204,8 +1208,9 @@ namespace cammera
 
             Generate_terrain(game, grid);
 
-            int tree_rate = 34
-           ;
+
+
+            int tree_rate = 34;
             int Tree_r = 0;
             for (int i = 20; i < 700; i++)
             {
@@ -1216,6 +1221,8 @@ namespace cammera
                     structure(tree, i, grid, game);
                     i += 5;
                 }
+
+                
             }
 
 
@@ -1344,6 +1351,7 @@ namespace cammera
                     Fill_block(j, Height + count, grid, game.GetBlock("Stone"));
                     count++;
                 }
+                //Caves(j, random.Next(sea_level, 100), grid);
             }
 
 
@@ -1379,6 +1387,8 @@ namespace cammera
                     }
                 }
             }
+
+
         }
 
         private static void Fill_block(int x, int y, int[,] grid, Solid Block)
@@ -1392,6 +1402,30 @@ namespace cammera
             Console.BackgroundColor = ConsoleColor.Cyan;
         }
 
+        public static void Caves(int x,int y, int[,] grid)
+        {
+            Random random = new Random();
+
+            int size = random.Next(2, 5);
+            
+
+            for (int i = 0; i < size; i++)
+            {
+                for (int j = 0; j < size; j++)
+                {
+                    if(i == size-1 && j == size-1 || i == 0 && j == 0 || i == size - 1 && j == 0 || i == 0 && j == size - 1)
+                    {
+                        if(random.Next(0, 4) == 1 && grid[i+y,j+x] != 0)
+                        {
+                            Caves(x-size/2 + i, y-size / 2 + j, grid);
+                        }
+                        continue;
+                    }
+                    grid[j + y, i + x] = 0;
+                }
+            }
+
+        }
         static void Fill_Index_Cord(int x1, int y1, int x2, int y2, int[,] grid, Solid Block)
         {
 

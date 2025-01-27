@@ -79,6 +79,7 @@
     }
     class Game
     {
+        public bool Awaiting_update=false;
         public ConsoleColor Background = ConsoleColor.Cyan;
         protected static int origRow;
         protected static int origCol;

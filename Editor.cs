@@ -1,4 +1,6 @@
-﻿using System.Text.Json;
+﻿using System.Data;
+using System.Text.Json;
+using cammera;
 
 namespace Minecraft
 {
@@ -183,6 +185,11 @@ namespace Minecraft
                         Files.Save_map(grid);
                         exiting = true;
                         break;
+                    case "I":
+                        Files.Save_map(grid);
+                        
+
+                        break;
 
                 }
 
@@ -191,6 +198,7 @@ namespace Minecraft
             Console.Clear();
         }
 
+        
         static void Render(Solid block, int x, int y)
         {
             Console.ForegroundColor = block.FG;
