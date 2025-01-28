@@ -1,4 +1,6 @@
 using System.Data;
+using System.Diagnostics.Metrics;
+using System.Drawing;
 using Minecraft;
 
 namespace cammera
@@ -428,15 +430,16 @@ namespace cammera
                     Game.GetBlock("Air").BG = Game.Background;
                 }
 
-
+                
                 for (int i = 0; i < camera.View.GetLength(0); i++)
                 {
                     for (int j = 0; j < camera.View.GetLength(1); j++)
                     {
+                        //if (i <= size - 1 && j == size - 1 || i == 0 && j == 0 || i == size - 1 && j == 0 || i == 0 && j == size - 1)
+                        //{ continue; }
+                            Render_block(Game.Get_ByID(grid[i + camera.Position.y, j + camera.Position.x]), j, i, Game, camera, player, grid);
 
-                        Render_block(Game.Get_ByID(grid[i + camera.Position.y, j + camera.Position.x]), j, i, Game, camera, player, grid);
-
-                        //Fill_block(player.x, player.y, camera.View, Game.GetBlock("Stone"));
+                            //Fill_block(player.x, player.y, camera.View, Game.GetBlock("Stone"));
                         Console.BackgroundColor = ConsoleColor.White;
                         Console.ForegroundColor = ConsoleColor.Black;
                         //WriteAt("EE",player.x*2,player.y);
@@ -1321,7 +1324,7 @@ namespace cammera
             ; int Height = 45
             ;
             int dirt_Height = 5;
-            int stone_Height = 142;
+            int stone_Height = 302;
             int min_level = 60;
             int min = 1;
             int max = 3;
@@ -1388,11 +1391,32 @@ namespace cammera
                 }
             }
 
+            for (int j = 12; j < Width - 12; j++)
+            {
+                
+                int count = random.Next(0, 11);
+                while(count > 0)
+                {
+                    int y = random.Next(30, 460);
+                    if (grid[y, j] != 0)
+                    {
+                        
+                        Caves(j, y, grid, game, game.GetBlock("Dirt"),false);
+                        Caves(j, y, grid, game, game.GetBlock("Iron_ore"),false);
+                        Caves(j, y, grid);
+                    }
+                    count--;
+                }
+                    
+                
+            }
+
 
         }
 
         private static void Fill_block(int x, int y, int[,] grid, Solid Block)
         {
+            
             Console.ForegroundColor = Block.FG;
             Console.BackgroundColor = Block.BG;
             grid[y, x] = Block.id;
@@ -1415,13 +1439,43 @@ namespace cammera
                 {
                     if(i == size-1 && j == size-1 || i == 0 && j == 0 || i == size - 1 && j == 0 || i == 0 && j == size - 1)
                     {
-                        if(random.Next(0, 4) == 1 && grid[i+y,j+x] != 0)
+                        if(random.Next(0, 3) == 1 && grid[i+y,j+x] != 0)
                         {
                             Caves(x-size/2 + i, y-size / 2 + j, grid);
                         }
                         continue;
                     }
                     grid[j + y, i + x] = 0;
+                }
+            }
+
+        }
+
+        public static void Caves(int x, int y, int[,] grid,Game game,Solid solid, bool replace)
+        {
+            Random random = new Random();
+
+            int size = random.Next(2, 5);
+            int id = -1;
+            if(replace)
+            {
+                id =0;   
+            }
+            
+
+            for (int i = 0; i < size; i++)
+            {
+                for (int j = 0; j < size; j++)
+                {
+                    if (i == size - 1 && j == size - 1 || i == 0 && j == 0 || i == size - 1 && j == 0 || i == 0 && j == size - 1)
+                    {
+                        if (random.Next(0, j) == 1 && grid[i + y, j + x] != id)
+                        {
+                            Caves(x - size / 2 + i, y - size / 2 + j, grid);
+                        }
+                        continue;
+                    }
+                    grid[j + y, i + x] = solid.id;
                 }
             }
 
