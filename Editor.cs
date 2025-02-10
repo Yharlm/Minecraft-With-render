@@ -118,6 +118,7 @@ namespace Minecraft
             Default = new Solid("Sand", 13, "██", ConsoleColor.DarkMagenta, ConsoleColor.Cyan); Game.Block_list.Add(Default);
             Default = new Solid("Furnace", 14, "▀▀", ConsoleColor.DarkGray, ConsoleColor.Black); Game.Block_list.Add(Default);
             Default = new Solid("Tree", 15, "▀", ConsoleColor.Green, ConsoleColor.DarkYellow); Game.Block_list.Add(Default);
+            Default = new Solid("Torch", 16, "▀", ConsoleColor.DarkYellow, ConsoleColor.Yellow); Game.Block_list.Add(Default);
 
             int[,] grid = new int[1000, 1000];
             grid = Files.LoadWorld(Files.GetSaveFilePath(), "World.json");

@@ -1,6 +1,7 @@
 using System.Data;
 using System.Diagnostics.Metrics;
 using System.Drawing;
+using System.Linq.Expressions;
 using Minecraft;
 
 namespace cammera
@@ -294,6 +295,7 @@ namespace cammera
             recipe = new Recipe(); recipe.item = Game.GetBlock("Ladder"); placehold = new Non_Existent(11, "Wooden_planks", 2); recipe.num = 4; recipe.required.Add(placehold); Game.recipes.Add(recipe);
             recipe = new Recipe(); recipe.item = Game.GetBlock("Furnace"); placehold = new Non_Existent(14, "Stone", 8); recipe.num = 1; recipe.required.Add(placehold); Game.recipes.Add(recipe);
             recipe = new Recipe(); recipe.item = Game.GetBlock("Tree"); placehold = new Non_Existent(15, "Leaves", 1); recipe.num = 2; recipe.required.Add(placehold); Game.recipes.Add(recipe);
+            recipe = new Recipe(); recipe.item = Game.GetBlock("Torch"); placehold = new Non_Existent(15, "Wooden_planks", 1); recipe.num = 4; recipe.required.Add(placehold); placehold = new Non_Existent(8, "Coal_ore", 1); recipe.required.Add(placehold); Game.recipes.Add(recipe);
 
 
 
@@ -437,15 +439,25 @@ namespace cammera
                     {
                         //if (i <= size - 1 && j == size - 1 || i == 0 && j == 0 || i == size - 1 && j == 0 || i == 0 && j == size - 1)
                         //{ continue; }
-                            Render_block(Game.Get_ByID(grid[i + camera.Position.y, j + camera.Position.x]), j, i, Game, camera, player, grid);
+                        Render_block(Game.Get_ByID(grid[i + camera.Position.y, j + camera.Position.x]), j, i, Game, camera, player, grid);
 
-                            //Fill_block(player.x, player.y, camera.View, Game.GetBlock("Stone"));
+                        //Fill_block(player.x, player.y, camera.View, Game.GetBlock("Stone"));
                         Console.BackgroundColor = ConsoleColor.White;
                         Console.ForegroundColor = ConsoleColor.Black;
                         //WriteAt("EE",player.x*2,player.y);
-                        WriteAt("..", camera.View.GetLength(1) - 1, (camera.View.GetLength(0) / 2) - 1);
-                        WriteAt("  ", camera.View.GetLength(1) - 1, camera.View.GetLength(0) / 2);
 
+                        if (!Check_area(grid,player.x, player.y, 16, 6))
+                        {
+                            Console.BackgroundColor = ConsoleColor.Black;
+                            Console.ForegroundColor = ConsoleColor.White;
+                            WriteAt("..", camera.View.GetLength(1) - 1, (camera.View.GetLength(0) / 2) - 1);
+                            WriteAt("  ", camera.View.GetLength(1) - 1, camera.View.GetLength(0) / 2);
+                        }
+                        else
+                        {
+                            WriteAt("..", camera.View.GetLength(1) - 1, (camera.View.GetLength(0) / 2) - 1);
+                            WriteAt("  ", camera.View.GetLength(1) - 1, camera.View.GetLength(0) / 2);
+                        }
 
                         Console.ForegroundColor = default;
                         Console.BackgroundColor = ConsoleColor.Cyan;
@@ -594,13 +606,14 @@ namespace cammera
             Default = new Solid("waterTop", 6, "▄▄", ConsoleColor.DarkBlue, ConsoleColor.Cyan); Default.Collidable = false; Game.Block_list.Add(Default);
             Default = new Solid("Leaves", 7, "▄▀", ConsoleColor.DarkGreen, ConsoleColor.Green); Default.Collidable = false; Game.Block_list.Add(Default);
             Default = new Solid("Coal_ore", 8, "▄▀", ConsoleColor.DarkGray, ConsoleColor.Black); Game.Block_list.Add(Default);
-            Default = new Solid("Iron_ore", 9, "▄▀", ConsoleColor.DarkGray, ConsoleColor.Magenta); Game.Block_list.Add(Default);
+            Default = new Solid("Iron_ore", 9, "▄▀", ConsoleColor.DarkGray, ConsoleColor.Yellow); Game.Block_list.Add(Default);
             Default = new Solid("Crafting_table", 10, "TT", ConsoleColor.Yellow, ConsoleColor.DarkYellow); Game.Block_list.Add(Default);
             Default = new Solid("Wooden_planks", 11, "--", ConsoleColor.DarkYellow, ConsoleColor.DarkMagenta); Game.Block_list.Add(Default);
             Default = new Solid("Ladder", 12, "||", ConsoleColor.Yellow, ConsoleColor.DarkYellow); Default.Collidable = false; Game.Block_list.Add(Default);
             Default = new Solid("Sand", 13, "██", ConsoleColor.DarkMagenta, ConsoleColor.Cyan); Game.Block_list.Add(Default);
             Default = new Solid("Furnace", 14, "▀▀", ConsoleColor.DarkGray, ConsoleColor.Black); Game.Block_list.Add(Default);
-            Default = new Solid("Tree", 15, "▀ ", ConsoleColor.Green, ConsoleColor.DarkYellow); Game.Block_list.Add(Default);
+            Default = new Solid("Tree", 15, "▀▀", ConsoleColor.Green, ConsoleColor.DarkYellow); Game.Block_list.Add(Default);
+            Default = new Solid("Torch", 16, "▄▄", ConsoleColor.DarkYellow, ConsoleColor.Magenta); Game.Block_list.Add(Default);
 
         }
 
@@ -616,6 +629,8 @@ namespace cammera
                 { 0,0,4,0,0 }
             };
             Random random = new Random();
+            Cordinates torchpos = new Cordinates();
+            
             switch (grid[y, x])
             {
                 case 5:
@@ -674,7 +689,12 @@ namespace cammera
                         structure(tree, x + 2, y + 5, grid, game);
                     }
                     break;
+                
             }
+            
+            
+            
+            
         }
         static void Entity_update(int[,] grid, List<Entity> Entity_list, Game game, Player player)
         {
@@ -1139,8 +1159,38 @@ namespace cammera
         static void Render_block(Solid block, int x, int y, Game game, Camera camera, Player player, int[,] grid)
         {
             bool front = true;
-            Console.ForegroundColor = block.FG;
-            Console.BackgroundColor = block.BG;
+            int vision = 0;
+            if (player.x+ vision >= x + camera.Position.x && player.y+ vision >= y + camera.Position.y && player.x- vision <= x + camera.Position.x && player.y - vision <= y + camera.Position.y)
+            {
+                
+                Console.ForegroundColor = block.FG;
+                Console.BackgroundColor = block.BG;
+            }
+            else if (grid[y + camera.Position.y, x + camera.Position.x] != 0)
+            {
+                Console.ForegroundColor = ConsoleColor.Black;
+                Console.BackgroundColor = ConsoleColor.Black;
+            }
+            else if(grid[y + camera.Position.y, x + camera.Position.x] == 0)
+            {
+                
+                Console.BackgroundColor = ConsoleColor.Gray;
+            }
+            if (grid[y + camera.Position.y, x + camera.Position.x] == 8)
+            {
+
+                Console.BackgroundColor = ConsoleColor.White;
+            }
+            if(Check_area(grid,camera.Position.x+x,camera.Position.y+y,16,5))
+            {
+                Console.ForegroundColor = block.FG;
+                Console.BackgroundColor = block.BG;
+            }
+            
+
+
+
+
 
             WriteAt(block.Texture, x * 2, y);
 
@@ -1180,7 +1230,35 @@ namespace cammera
         }
 
 
+        static bool Check_area(int[,] grid,int x,int y,int id,int range)
+        {
+            bool result = false;
+            //if(
+            //    grid[y, x] == id ||
+            //    grid[y+1, x] == id ||
+            //    grid[y-1, x] == id ||
+            //    grid[y, x+1] == id ||
+            //    grid[y, x-1] == id
 
+            //    )
+            for (int i = 0; i < range; i++)
+            {
+                for (int j = 0; j < range; j++)
+                {
+                    if(i+j == 0|| i+j == range*2-2|| i == 0 && j == range-1 || j == 0 && i == range-1)
+                    {
+                        continue;
+                    }
+                        if (grid[y - i+ range/2, x - j+ range/2] == id)
+                    {
+                        result = true;
+                    }
+                }
+            }
+            
+
+            return result;
+        }
         private static void BuildWorld(int[,] grid, object instance, Game game)
         {
             Random random = new Random();
