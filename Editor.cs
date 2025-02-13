@@ -1,6 +1,4 @@
-﻿using System.Data;
-using System.Text.Json;
-using cammera;
+﻿using System.Text.Json;
 
 namespace Minecraft
 {
@@ -50,7 +48,7 @@ namespace Minecraft
 
                 string fileName = "World.json";
 
-                Save.CreateFile(folderPath,fileName, grid);
+                Save.CreateFile(folderPath, fileName, grid);
             }
         }
 
@@ -127,6 +125,9 @@ namespace Minecraft
             int id = 0;
             int size = 19;
             bool exiting = false;
+            bool select_point_2 = false;
+            Cordinates point1 = new Cordinates();
+            Cordinates point2 = new Cordinates();
             while (true)
             {
                 if (exiting == true)
@@ -153,7 +154,7 @@ namespace Minecraft
                 }
                 Console.ForegroundColor = Game.Block_list[id].FG;
                 Console.BackgroundColor = Game.Block_list[id].BG;
-                WriteAt(Game.Block_list[id].Texture, size-1, size / 2);
+                WriteAt(Game.Block_list[id].Texture, size - 1, size / 2);
                 var key = Console.ReadKey().Key;
                 switch (key.ToString())
                 {
@@ -170,7 +171,7 @@ namespace Minecraft
                         x--;
                         break;
                     case "Enter":
-                        grid[y + size/2, x + size/2] = id;
+                        grid[y + size / 2, x + size / 2] = id;
                         break;
                     case "Spacebar":
                         grid[y + size / 2, x + size / 2] = 0;
@@ -188,8 +189,54 @@ namespace Minecraft
                         break;
                     case "I":
                         Files.Save_map(grid);
-                        
 
+
+                        break;
+                    case "Q":
+                        if (select_point_2)
+                        {
+                            point2 = point2.Convert_cor(x + size / 2, y + size / 2);
+                            WriteAt("Point 2: " + point2.x + "," + point2.y, 20, 40);
+                            select_point_2 = false;
+                            continue;
+                        }
+                        point1 = point1.Convert_cor(x + size / 2+1, y + size / 2+1);
+                        WriteAt("Point 1: " + point1.x + "," + point1.y, 20, 41);
+
+                        select_point_2 = true;
+
+                        break;
+                    case "D1":
+                        Cordinates pos = new Cordinates();
+                        pos.x = Math.Min(point1.x, point2.x);
+                        pos.y = Math.Min(point1.y, point2.y);
+                        int width = point2.x - point1.x;
+                        width = Math.Abs(width);
+                        int height = point2.y - point1.y;
+                        height = Math.Abs(height);
+                        for (int i = 0; i < height; i++)
+                        {
+                            for (int j = 0; j < width; j++)
+                            {
+                                grid[pos.y + i, pos.x + j] = id;
+                            }
+                        }
+                        break;
+                    case "D2":
+                        pos = new Cordinates();
+                        pos.x = Math.Min(point1.x, point2.x);
+                        pos.y = Math.Min(point1.y, point2.y);
+                        width = point2.x - point1.x;
+                        width = Math.Abs(width);
+                        height = point2.y - point1.y;
+                        height = Math.Abs(height);
+                        for (int i = 0; i < height; i++)
+                        {
+                            for (int j = 0; j < width; j++)
+                            {
+                                grid[pos.y + i, pos.x + j] = id;
+                            }
+                        }
                         break;
 
                 }
@@ -199,7 +246,7 @@ namespace Minecraft
             Console.Clear();
         }
 
-        
+
         static void Render(Solid block, int x, int y)
         {
             Console.ForegroundColor = block.FG;

@@ -1181,7 +1181,12 @@ namespace cammera
 
                 Console.BackgroundColor = ConsoleColor.White;
             }
-            if(Check_area(grid,camera.Position.x+x,camera.Position.y+y,16,5))
+            if (Check_area(grid, camera.Position.x + x, camera.Position.y + y, 16, 5))
+            {
+                Console.ForegroundColor = block.FG;
+                Console.BackgroundColor = block.BG;
+            }
+            if (Check_area(grid, camera.Position.x+camera.View.GetLength(0), camera.Position.y+ camera.View.GetLength(0), Convert_cor(player.x,player.y),5))
             {
                 Console.ForegroundColor = block.FG;
                 Console.BackgroundColor = block.BG;
@@ -1256,6 +1261,21 @@ namespace cammera
                 }
             }
             
+
+            return result;
+        }
+        static bool Check_area(int[,] grid, int x, int y, Cordinates pos, int range)
+        {
+            bool result = false;
+            if
+            (Convert_cor(x,y-2) == pos)
+            //    Console.BackgroundColor = ConsoleColor.Red;
+            //WriteAt("Detected", 50, 20);
+            {
+                result = true;
+            }
+
+
 
             return result;
         }
