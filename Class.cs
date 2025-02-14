@@ -4,6 +4,7 @@
     class Player : Cordinates
 
     {
+        public bool Has_torch = false;
         public string Looking = "";
         public double oxygen = 20;
 
@@ -79,6 +80,9 @@
     }
     class Game
     {
+        public int player_pic_lv = 2;
+        public bool day = true;
+        public float cycle = 0f;
         public bool Awaiting_update=false;
         public ConsoleColor Background = ConsoleColor.Cyan;
         protected static int origRow;
@@ -195,6 +199,7 @@
     }
     class Solid(string name, int Id, string texture, ConsoleColor fG, ConsoleColor bG)
     {
+        public int level = 1;
         public bool Collidable = true;
         public bool solid = true;
         public int quantity = 0;

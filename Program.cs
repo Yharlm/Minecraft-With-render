@@ -1,3 +1,4 @@
+using System.ComponentModel.Design;
 using System.Data;
 using System.Diagnostics.Metrics;
 using System.Drawing;
@@ -432,7 +433,15 @@ namespace cammera
                     Game.GetBlock("Air").BG = Game.Background;
                 }
 
+                Game.cycle+= 0.01f;
+                if(Game.cycle >= 120)
+                { Game.day = false; }
+                else
+                { Game.day = true; }
+                if(Game.cycle == 240)
+                { Game.cycle = 0; }
                 
+
                 for (int i = 0; i < camera.View.GetLength(0); i++)
                 {
                     for (int j = 0; j < camera.View.GetLength(1); j++)
@@ -440,25 +449,23 @@ namespace cammera
                         //if (i <= size - 1 && j == size - 1 || i == 0 && j == 0 || i == size - 1 && j == 0 || i == 0 && j == size - 1)
                         //{ continue; }
                         Render_block(Game.Get_ByID(grid[i + camera.Position.y, j + camera.Position.x]), j, i, Game, camera, player, grid);
+                        
+                        
 
                         //Fill_block(player.x, player.y, camera.View, Game.GetBlock("Stone"));
                         Console.BackgroundColor = ConsoleColor.White;
                         Console.ForegroundColor = ConsoleColor.Black;
                         //WriteAt("EE",player.x*2,player.y);
 
-                        if (!Check_area(grid,player.x, player.y, 16, 6))
+                        if (!Check_area(grid,player.x, player.y, 16, 6) && !Game.day)
                         {
                             Console.BackgroundColor = ConsoleColor.Black;
                             Console.ForegroundColor = ConsoleColor.White;
-                            WriteAt("..", camera.View.GetLength(1) - 1, (camera.View.GetLength(0) / 2) - 1);
-                            WriteAt("  ", camera.View.GetLength(1) - 1, camera.View.GetLength(0) / 2);
+                            
                         }
-                        else
-                        {
-                            WriteAt("..", camera.View.GetLength(1) - 1, (camera.View.GetLength(0) / 2) - 1);
-                            WriteAt("  ", camera.View.GetLength(1) - 1, camera.View.GetLength(0) / 2);
-                        }
-
+                        
+                        WriteAt("..", camera.View.GetLength(1) - 1, (camera.View.GetLength(0) / 2) - 1);
+                        WriteAt("  ", camera.View.GetLength(1) - 1, camera.View.GetLength(0) / 2);
                         Console.ForegroundColor = default;
                         Console.BackgroundColor = ConsoleColor.Cyan;
                     }
@@ -597,7 +604,7 @@ namespace cammera
             Default = new Solid("Air", 0, "  ", ConsoleColor.DarkGray, Game.Background); Default.Collidable = false; Game.Block_list.Add(Default);
             Default = new Solid("Grass", 1, "▀▀", ConsoleColor.DarkGreen, ConsoleColor.DarkYellow); Game.Block_list.Add(Default);
             Default = new Solid("Dirt", 2, "██", ConsoleColor.DarkYellow, ConsoleColor.DarkYellow); Game.Block_list.Add(Default);
-            Default = new Solid("Stone", 3, "██", ConsoleColor.DarkGray, ConsoleColor.DarkGray); Game.Block_list.Add(Default);
+            Default = new Solid("Stone", 3, "██", ConsoleColor.DarkGray, ConsoleColor.DarkGray);Default.level = 2; Game.Block_list.Add(Default);
             Default = new Solid("Log", 4, "||", ConsoleColor.Yellow, ConsoleColor.DarkYellow); Game.Block_list.Add(Default);
 
             Default = new Solid("water", 5, "  ", ConsoleColor.DarkBlue, ConsoleColor.DarkBlue); Default.Collidable = false; Game.Block_list.Add(Default);
@@ -605,15 +612,16 @@ namespace cammera
 
             Default = new Solid("waterTop", 6, "▄▄", ConsoleColor.DarkBlue, ConsoleColor.Cyan); Default.Collidable = false; Game.Block_list.Add(Default);
             Default = new Solid("Leaves", 7, "▄▀", ConsoleColor.DarkGreen, ConsoleColor.Green); Default.Collidable = false; Game.Block_list.Add(Default);
-            Default = new Solid("Coal_ore", 8, "▄▀", ConsoleColor.DarkGray, ConsoleColor.Black); Game.Block_list.Add(Default);
-            Default = new Solid("Iron_ore", 9, "▄▀", ConsoleColor.DarkGray, ConsoleColor.Yellow); Game.Block_list.Add(Default);
+            Default = new Solid("Coal_ore", 8, "▄▀", ConsoleColor.DarkGray, ConsoleColor.Black); Default.level = 2; Game.Block_list.Add(Default);
+            Default = new Solid("Iron_ore", 9, "▄▀", ConsoleColor.DarkGray, ConsoleColor.Yellow); Default.level = 2; Game.Block_list.Add(Default);
             Default = new Solid("Crafting_table", 10, "TT", ConsoleColor.Yellow, ConsoleColor.DarkYellow); Game.Block_list.Add(Default);
             Default = new Solid("Wooden_planks", 11, "--", ConsoleColor.DarkYellow, ConsoleColor.DarkMagenta); Game.Block_list.Add(Default);
             Default = new Solid("Ladder", 12, "||", ConsoleColor.Yellow, ConsoleColor.DarkYellow); Default.Collidable = false; Game.Block_list.Add(Default);
             Default = new Solid("Sand", 13, "██", ConsoleColor.DarkMagenta, ConsoleColor.Cyan); Game.Block_list.Add(Default);
             Default = new Solid("Furnace", 14, "▀▀", ConsoleColor.DarkGray, ConsoleColor.Black); Game.Block_list.Add(Default);
-            Default = new Solid("Tree", 15, "▀▀", ConsoleColor.Green, ConsoleColor.DarkYellow); Game.Block_list.Add(Default);
-            Default = new Solid("Torch", 16, "▄▄", ConsoleColor.DarkYellow, ConsoleColor.Magenta); Game.Block_list.Add(Default);
+            Default = new Solid("Tree", 15, "▀▀", ConsoleColor.Green, ConsoleColor.DarkYellow); Default.Collidable = false; Game.Block_list.Add(Default);
+            Default = new Solid("Torch", 16, "▄▄", ConsoleColor.DarkYellow, ConsoleColor.Magenta); Default.Collidable = false; Game.Block_list.Add(Default);
+            Default = new Solid("Cave_Background", 17, "  ", ConsoleColor.DarkYellow, ConsoleColor.Gray); Default.level = 3; Default.Collidable = false; Game.Block_list.Add(Default);
 
         }
 
@@ -1146,16 +1154,17 @@ namespace cammera
         static void Break_block(int x, int y, int[,] grid, Solid Block, Game game)
         {
 
-
-            game.Block_list.Find(i => i.id == grid[y, x]).quantity++;
-            grid[y, x] = Block.id;
-
-
+            if(game.player_pic_lv > game.Get_ByID(grid[y, x]).level) 
+            {
+                game.Block_list.Find(i => i.id == grid[y, x]).quantity++;
+                grid[y, x] = Block.id;
+            }
+            
 
         }
 
 
-
+        
         static void Render_block(Solid block, int x, int y, Game game, Camera camera, Player player, int[,] grid)
         {
             bool front = true;
@@ -1186,18 +1195,19 @@ namespace cammera
                 Console.ForegroundColor = block.FG;
                 Console.BackgroundColor = block.BG;
             }
-            if (Check_area(grid, camera.Position.x+camera.View.GetLength(0), camera.Position.y+ camera.View.GetLength(0), Convert_cor(player.x,player.y),5))
+            if (game.day)
             {
                 Console.ForegroundColor = block.FG;
                 Console.BackgroundColor = block.BG;
             }
-            
 
 
 
 
 
-            WriteAt(block.Texture, x * 2, y);
+
+
+                WriteAt(block.Texture, x * 2, y);
 
             Console.ForegroundColor = default;
             Console.BackgroundColor = default;
@@ -1537,13 +1547,13 @@ namespace cammera
                 {
                     if(i == size-1 && j == size-1 || i == 0 && j == 0 || i == size - 1 && j == 0 || i == 0 && j == size - 1)
                     {
-                        if(random.Next(0, 3) == 1 && grid[i+y,j+x] != 0)
+                        if(random.Next(0, 3) == 1 && grid[i+y,j+x] == 3)
                         {
                             Caves(x-size/2 + i, y-size / 2 + j, grid);
                         }
                         continue;
                     }
-                    grid[j + y, i + x] = 0;
+                    grid[j + y, i + x] = 17;
                 }
             }
 
