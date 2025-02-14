@@ -7,11 +7,17 @@ namespace Minecraft
     {
 
 
+        class Selected
+        {
+            public int[,] selected_area;
+
+        }
+
         class Files
         {
-            public static int[,] LoadWorld(string path, string filename)
+            public static int[,] LoadWorld(string path,string folder, string filename)
             {
-                string filePath = Path.Combine(path, filename);
+                string filePath = Path.Combine(path, folder, filename);
                 //string fileRoot = Path.Combine(Directory.GetCurrentDirectory(), @"\World.json");
                 // Read the content of the file
                 string jsonString = File.ReadAllText(filePath);
@@ -38,17 +44,27 @@ namespace Minecraft
             public static string GetSaveFilePath()
             {
                 string documentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-                string saveFilePath = Path.Combine(documentsPath, "Minecraft-With-render", "SaveFile");
+                string saveFilePath = Path.Combine(documentsPath, "Minecraft-With-render");
                 return saveFilePath;
             }
             public static void Save_map(int[,] grid)
             {
-                string folderPath = GetSaveFilePath();
+                string folderPath = Path.Combine(GetSaveFilePath(),"SaveFile");
 
 
                 string fileName = "World.json";
 
                 Save.CreateFile(folderPath, fileName, grid);
+            }
+            public static void Save_structure(int[,] grid, string dir, int[,] area)
+            {
+                
+                string folderPath = Path.Combine(GetSaveFilePath(), "Structures");
+
+
+                
+
+                Save.CreateFile(folderPath, dir, area) ;
             }
         }
 
@@ -118,8 +134,9 @@ namespace Minecraft
             Default = new Solid("Tree", 15, "▀", ConsoleColor.Green, ConsoleColor.DarkYellow); Game.Block_list.Add(Default);
             Default = new Solid("Torch", 16, "▀", ConsoleColor.DarkYellow, ConsoleColor.Yellow); Game.Block_list.Add(Default);
 
+            Selected selected = new Selected();
             int[,] grid = new int[1000, 1000];
-            grid = Files.LoadWorld(Files.GetSaveFilePath(), "World.json");
+            grid = Files.LoadWorld(Files.GetSaveFilePath(), "SaveFile", "World.json");
             int x = 500;
             int y = 0;
             int id = 0;
@@ -156,6 +173,7 @@ namespace Minecraft
                 Console.BackgroundColor = Game.Block_list[id].BG;
                 WriteAt(Game.Block_list[id].Texture, size - 1, size / 2);
                 var key = Console.ReadKey().Key;
+
                 switch (key.ToString())
                 {
                     case "D":
@@ -200,7 +218,7 @@ namespace Minecraft
                             select_point_2 = false;
                             continue;
                         }
-                        point1 = point1.Convert_cor(x + size / 2+1, y + size / 2+1);
+                        point1 = point1.Convert_cor(x + size / 2 + 1, y + size / 2 + 1);
                         WriteAt("Point 1: " + point1.x + "," + point1.y, 20, 41);
 
                         select_point_2 = true;
@@ -230,14 +248,40 @@ namespace Minecraft
                         width = Math.Abs(width);
                         height = point2.y - point1.y;
                         height = Math.Abs(height);
-                        for (int i = 0; i < height; i++)
+                        selected.selected_area = new int[width, height];
+                        for (int i = 0; i < width; i++)
                         {
-                            for (int j = 0; j < width; j++)
+                            for (int j = 0; j < height; j++)
                             {
-                                grid[pos.y + i, pos.x + j] = id;
+                                selected.selected_area[i, j] = grid[pos.y + i, pos.x + j];
+                            }
+                        }
+
+                        break;
+                    case "D3":
+                        pos = new Cordinates();
+                        pos = pos.Convert_cor(x + size / 2, y + size / 2);
+                        
+                        for (int i = 0; i < selected.selected_area.GetLength(0); i++)
+                        {
+                            for (int j = 0; j < selected.selected_area.GetLength(1); j++)
+                            {
+                                grid[pos.y + i, pos.x + j] = selected.selected_area[i, j];
                             }
                         }
                         break;
+                    case "D4":
+                        
+                        string Struct = Console.ReadLine();
+                        Files.Save_structure(grid, Struct+".json", selected.selected_area);
+
+                        break;
+                    case "D5":
+                        Struct = Console.ReadLine();
+                        selected.selected_area = Files.LoadWorld(Files.GetSaveFilePath(), "Structures", Struct + ".json");
+
+                        break;
+
 
                 }
 

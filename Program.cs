@@ -350,7 +350,7 @@ namespace cammera
                         break;
                     case "/load":
                         Console.WriteLine("Loading...");
-                        grid = Save.LoadWorld(Files.GetSaveFilePath(), "World.json");
+                        grid = Save.LoadWorld(Files.GetSaveFilePath("SaveFile"), "World.json");
                         break;
                     case "/edit":
                         Console.WriteLine("Loading...");

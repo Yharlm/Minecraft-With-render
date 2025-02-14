@@ -126,7 +126,7 @@ namespace Minecraft
         }
         public static void Save_map(int[,] grid)
         {
-            string folderPath = GetSaveFilePath();
+            string folderPath = GetSaveFilePath("SaveFile");
             
             
             string fileName = "World.json";
@@ -135,10 +135,10 @@ namespace Minecraft
             Save.CreateFile(folderPath, fileName, grid);
         }
 
-        public static string GetSaveFilePath()
+        public static string GetSaveFilePath(string dir)
         {
             string documentsPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            string saveFilePath = Path.Combine(documentsPath, "Minecraft-With-render", "SaveFile");
+            string saveFilePath = Path.Combine(documentsPath, "Minecraft-With-render", dir);
             return saveFilePath;
         }
     }
@@ -200,7 +200,7 @@ namespace Minecraft
 
         public static void Test()
         {
-            string folderPath = Files.GetSaveFilePath();
+            string folderPath = Files.GetSaveFilePath("SaveFile");
             Directory.CreateDirectory(folderPath);
             File.WriteAllText(Path.Combine(folderPath, "World.json"), "Hi");
         }
