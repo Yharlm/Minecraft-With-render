@@ -1,8 +1,3 @@
-using System.ComponentModel.Design;
-using System.Data;
-using System.Diagnostics.Metrics;
-using System.Drawing;
-using System.Linq.Expressions;
 using Minecraft;
 
 namespace cammera
@@ -222,7 +217,7 @@ namespace cammera
                                             Kill_entity(game, entity);
                                         }
                                     }
-                                    if (grid[pos.y, pos.x] != 0)
+                                    if (grid[pos.y, pos.x] != 0 && grid[pos.y, pos.x] != 18 && grid[pos.y, pos.x] != 17)
                                     {
                                         Explosion(game, grid, pos, player, 5);
                                         game.Displayed_sprites.Add(game.Sprite_list[0]);
@@ -260,7 +255,7 @@ namespace cammera
             catch { }
         }
 
-        
+
         static void Main(string[] args)
         {
 
@@ -329,7 +324,7 @@ namespace cammera
             Game.Sprite_list.Add(sprite);
 
             string option = "null";
-            
+
             int[,] grid = new int[500, 1000];
             while (option == "null")
             {
@@ -357,12 +352,12 @@ namespace cammera
                         Console.WriteLine("Loading...");
                         Editor.Editor_mode();
                         option = "null";
-                        
+
                         break;
-                    
-                    
+
+
                 }
-                
+
             }
 
 
@@ -400,7 +395,7 @@ namespace cammera
             {
 
 
-                
+
                 GetInput(grid, player, Game, camera);
                 //double timer = Math.Ceiling(overworld.time += 0.0002);
                 double timer = Game.time += 0.002;
@@ -433,14 +428,14 @@ namespace cammera
                     Game.GetBlock("Air").BG = Game.Background;
                 }
 
-                Game.cycle+= 0.01f;
-                if(Game.cycle >= 120)
+                Game.cycle += 0.01f;
+                if (Game.cycle >= 120)
                 { Game.day = false; }
                 else
                 { Game.day = true; }
-                if(Game.cycle == 240)
+                if (Game.cycle == 240)
                 { Game.cycle = 0; }
-                
+
 
                 for (int i = 0; i < camera.View.GetLength(0); i++)
                 {
@@ -449,21 +444,21 @@ namespace cammera
                         //if (i <= size - 1 && j == size - 1 || i == 0 && j == 0 || i == size - 1 && j == 0 || i == 0 && j == size - 1)
                         //{ continue; }
                         Render_block(Game.Get_ByID(grid[i + camera.Position.y, j + camera.Position.x]), j, i, Game, camera, player, grid);
-                        
-                        
+
+
 
                         //Fill_block(player.x, player.y, camera.View, Game.GetBlock("Stone"));
                         Console.BackgroundColor = ConsoleColor.White;
                         Console.ForegroundColor = ConsoleColor.Black;
                         //WriteAt("EE",player.x*2,player.y);
 
-                        if (!Check_area(grid,player.x, player.y, 16, 6) && !Game.day)
+                        if (!Check_area(grid, player.x, player.y, 16, 6) && !Game.day)
                         {
                             Console.BackgroundColor = ConsoleColor.Black;
                             Console.ForegroundColor = ConsoleColor.White;
-                            
+
                         }
-                        
+
                         WriteAt("..", camera.View.GetLength(1) - 1, (camera.View.GetLength(0) / 2) - 1);
                         WriteAt("  ", camera.View.GetLength(1) - 1, camera.View.GetLength(0) / 2);
                         Console.ForegroundColor = default;
@@ -604,7 +599,7 @@ namespace cammera
             Default = new Solid("Air", 0, "  ", ConsoleColor.DarkGray, Game.Background); Default.Collidable = false; Game.Block_list.Add(Default);
             Default = new Solid("Grass", 1, "▀▀", ConsoleColor.DarkGreen, ConsoleColor.DarkYellow); Game.Block_list.Add(Default);
             Default = new Solid("Dirt", 2, "██", ConsoleColor.DarkYellow, ConsoleColor.DarkYellow); Game.Block_list.Add(Default);
-            Default = new Solid("Stone", 3, "██", ConsoleColor.DarkGray, ConsoleColor.DarkGray);Default.level = 2; Game.Block_list.Add(Default);
+            Default = new Solid("Stone", 3, "██", ConsoleColor.DarkGray, ConsoleColor.DarkGray); Default.level = 2; Game.Block_list.Add(Default);
             Default = new Solid("Log", 4, "||", ConsoleColor.Yellow, ConsoleColor.DarkYellow); Game.Block_list.Add(Default);
 
             Default = new Solid("water", 5, "  ", ConsoleColor.DarkBlue, ConsoleColor.DarkBlue); Default.Collidable = false; Game.Block_list.Add(Default);
@@ -616,12 +611,13 @@ namespace cammera
             Default = new Solid("Iron_ore", 9, "▄▀", ConsoleColor.DarkGray, ConsoleColor.Yellow); Default.level = 2; Game.Block_list.Add(Default);
             Default = new Solid("Crafting_table", 10, "TT", ConsoleColor.Yellow, ConsoleColor.DarkYellow); Game.Block_list.Add(Default);
             Default = new Solid("Wooden_planks", 11, "--", ConsoleColor.DarkYellow, ConsoleColor.DarkMagenta); Game.Block_list.Add(Default);
-            Default = new Solid("Ladder", 12, "||", ConsoleColor.Yellow, ConsoleColor.DarkYellow); Default.Collidable = false; Game.Block_list.Add(Default);
+            Default = new Solid("Ladder", 12, "||", ConsoleColor.Yellow, ConsoleColor.DarkYellow); Default.Collidable = false;Default.climbable = true; Game.Block_list.Add(Default);
             Default = new Solid("Sand", 13, "██", ConsoleColor.DarkMagenta, ConsoleColor.Cyan); Game.Block_list.Add(Default);
             Default = new Solid("Furnace", 14, "▀▀", ConsoleColor.DarkGray, ConsoleColor.Black); Game.Block_list.Add(Default);
             Default = new Solid("Tree", 15, "▀▀", ConsoleColor.Green, ConsoleColor.DarkYellow); Default.Collidable = false; Game.Block_list.Add(Default);
             Default = new Solid("Torch", 16, "▄▄", ConsoleColor.DarkYellow, ConsoleColor.Magenta); Default.Collidable = false; Game.Block_list.Add(Default);
             Default = new Solid("Cave_Background", 17, "  ", ConsoleColor.DarkYellow, ConsoleColor.Gray); Default.level = 3; Default.Collidable = false; Game.Block_list.Add(Default);
+            Default = new Solid("Wood_Background", 18, "==", ConsoleColor.DarkYellow, ConsoleColor.Magenta); Default.level = 1; Default.Collidable = false; Game.Block_list.Add(Default);
 
         }
 
@@ -637,26 +633,26 @@ namespace cammera
                 { 0,0,4,0,0 }
             };
             Random random = new Random();
-            Cordinates torchpos = new Cordinates();
             
+
             switch (grid[y, x])
             {
                 case 5:
 
                     {
-                        if (grid[y + 1, x] == 0)
+                        if (grid[y + 1, x] ==0 || grid[y + 1, x] == 18)
                         {
                             grid[y, x] = 0;
                             grid[y + 1, x] = 6;
 
                         }
-                        else if (grid[y, x + 1] == 0)
+                        else if (grid[y, x + 1] == 0 || grid[y, x+1] == 18)
                         {
                             grid[y, x] = 0;
                             grid[y, x + 1] = 6;
 
                         }
-                        else if (grid[y, x - 1] == 0)
+                        else if (grid[y, x - 1] == 0 || grid[y, x-1] == 18)
                         {
                             grid[y, x] = 0;
                             grid[y, x - 1] = 6;
@@ -681,7 +677,7 @@ namespace cammera
                     }
                     break;
                 case 13:
-                    if (time % 2 == 0 && grid[y + 1, x] == 0)
+                    if (time % 2 == 0 && grid[y + 1, x] == 0 || grid[y + 1, x] == 18 && time % 2 == 18)
                     {
                         grid[y, x] = 0;
                         grid[y + 1, x] = -13;
@@ -697,12 +693,12 @@ namespace cammera
                         structure(tree, x + 2, y + 5, grid, game);
                     }
                     break;
-                
+
             }
-            
-            
-            
-            
+
+
+
+
         }
         static void Entity_update(int[,] grid, List<Entity> Entity_list, Game game, Player player)
         {
@@ -823,7 +819,7 @@ namespace cammera
                 switch (player.Input)
                 {
                     case "U":
-                        Caves(x, y+3, grid);
+                        Caves(x, y + 3, grid);
                         break;
                     case "I":
                         Files.Save_map(grid);
@@ -1082,7 +1078,7 @@ namespace cammera
 
                         break;
                     case "W":
-                        if (grid[player.y, player.x] == 12)
+                        if (game.Get_ByID(grid[player.y, player.x]).climbable)
                         {
                             y--;
                         }
@@ -1154,24 +1150,24 @@ namespace cammera
         static void Break_block(int x, int y, int[,] grid, Solid Block, Game game)
         {
 
-            if(game.player_pic_lv > game.Get_ByID(grid[y, x]).level) 
+            if (game.player_pic_lv > game.Get_ByID(grid[y, x]).level)
             {
                 game.Block_list.Find(i => i.id == grid[y, x]).quantity++;
                 grid[y, x] = Block.id;
             }
-            
+
 
         }
 
 
-        
+
         static void Render_block(Solid block, int x, int y, Game game, Camera camera, Player player, int[,] grid)
         {
             bool front = true;
             int vision = 0;
-            if (player.x+ vision >= x + camera.Position.x && player.y+ vision >= y + camera.Position.y && player.x- vision <= x + camera.Position.x && player.y - vision <= y + camera.Position.y)
+            if (player.x + vision >= x + camera.Position.x && player.y + vision >= y + camera.Position.y && player.x - vision <= x + camera.Position.x && player.y - vision <= y + camera.Position.y)
             {
-                
+
                 Console.ForegroundColor = block.FG;
                 Console.BackgroundColor = block.BG;
             }
@@ -1180,9 +1176,9 @@ namespace cammera
                 Console.ForegroundColor = ConsoleColor.Black;
                 Console.BackgroundColor = ConsoleColor.Black;
             }
-            else if(grid[y + camera.Position.y, x + camera.Position.x] == 0)
+            else if (grid[y + camera.Position.y, x + camera.Position.x] == 0)
             {
-                
+
                 Console.BackgroundColor = ConsoleColor.Gray;
             }
             if (grid[y + camera.Position.y, x + camera.Position.x] == 8)
@@ -1207,7 +1203,7 @@ namespace cammera
 
 
 
-                WriteAt(block.Texture, x * 2, y);
+            WriteAt(block.Texture, x * 2, y);
 
             Console.ForegroundColor = default;
             Console.BackgroundColor = default;
@@ -1245,7 +1241,7 @@ namespace cammera
         }
 
 
-        static bool Check_area(int[,] grid,int x,int y,int id,int range)
+        static bool Check_area(int[,] grid, int x, int y, int id, int range)
         {
             bool result = false;
             //if(
@@ -1260,17 +1256,17 @@ namespace cammera
             {
                 for (int j = 0; j < range; j++)
                 {
-                    if(i+j == 0|| i+j == range*2-2|| i == 0 && j == range-1 || j == 0 && i == range-1)
+                    if (i + j == 0 || i + j == range * 2 - 2 || i == 0 && j == range - 1 || j == 0 && i == range - 1)
                     {
                         continue;
                     }
-                        if (grid[y - i+ range/2, x - j+ range/2] == id)
+                    if (grid[y - i + range / 2, x - j + range / 2] == id)
                     {
                         result = true;
                     }
                 }
             }
-            
+
 
             return result;
         }
@@ -1278,7 +1274,7 @@ namespace cammera
         {
             bool result = false;
             if
-            (Convert_cor(x,y-2) == pos)
+            (Convert_cor(x, y - 2) == pos)
             //    Console.BackgroundColor = ConsoleColor.Red;
             //WriteAt("Detected", 50, 20);
             {
@@ -1333,7 +1329,7 @@ namespace cammera
                     i += 5;
                 }
 
-                
+
             }
 
 
@@ -1501,22 +1497,22 @@ namespace cammera
 
             for (int j = 12; j < Width - 12; j++)
             {
-                
+
                 int count = random.Next(0, 11);
-                while(count > 0)
+                while (count > 0)
                 {
                     int y = random.Next(30, 460);
                     if (grid[y, j] != 0)
                     {
-                        
-                        Caves(j, y, grid, game, game.GetBlock("Dirt"),false);
-                        Caves(j, y, grid, game, game.GetBlock("Iron_ore"),false);
+
+                        Caves(j, y, grid, game, game.GetBlock("Dirt"), false);
+                        Caves(j, y, grid, game, game.GetBlock("Iron_ore"), false);
                         Caves(j, y, grid);
                     }
                     count--;
                 }
-                    
-                
+
+
             }
 
 
@@ -1524,7 +1520,7 @@ namespace cammera
 
         private static void Fill_block(int x, int y, int[,] grid, Solid Block)
         {
-            
+
             Console.ForegroundColor = Block.FG;
             Console.BackgroundColor = Block.BG;
             grid[y, x] = Block.id;
@@ -1534,22 +1530,22 @@ namespace cammera
             Console.BackgroundColor = ConsoleColor.Cyan;
         }
 
-        public static void Caves(int x,int y, int[,] grid)
+        public static void Caves(int x, int y, int[,] grid)
         {
             Random random = new Random();
 
             int size = random.Next(2, 5);
-            
+
 
             for (int i = 0; i < size; i++)
             {
                 for (int j = 0; j < size; j++)
                 {
-                    if(i == size-1 && j == size-1 || i == 0 && j == 0 || i == size - 1 && j == 0 || i == 0 && j == size - 1)
+                    if (i == size - 1 && j == size - 1 || i == 0 && j == 0 || i == size - 1 && j == 0 || i == 0 && j == size - 1)
                     {
-                        if(random.Next(0, 3) == 1 && grid[i+y,j+x] == 3)
+                        if (random.Next(0, 3) == 1 && grid[i + y, j + x] == 3)
                         {
-                            Caves(x-size/2 + i, y-size / 2 + j, grid);
+                            Caves(x - size / 2 + i, y - size / 2 + j, grid);
                         }
                         continue;
                     }
@@ -1559,17 +1555,17 @@ namespace cammera
 
         }
 
-        public static void Caves(int x, int y, int[,] grid,Game game,Solid solid, bool replace)
+        public static void Caves(int x, int y, int[,] grid, Game game, Solid solid, bool replace)
         {
             Random random = new Random();
 
             int size = random.Next(2, 5);
             int id = -1;
-            if(replace)
+            if (replace)
             {
-                id =0;   
+                id = 0;
             }
-            
+
 
             for (int i = 0; i < size; i++)
             {

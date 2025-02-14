@@ -173,15 +173,7 @@
         }
     }
 
-    class Block_ids(int Id, string texture, ConsoleColor fG, ConsoleColor bG)
-    {
-        public int id = Id;
-        public string Texture = texture;
-        public ConsoleColor FG = fG;
-        public ConsoleColor BG = bG;
-
-
-    }
+    
     class Non_Existent(int id, string name, int amount)
     {
         public int Id = id;
@@ -199,6 +191,7 @@
     }
     class Solid(string name, int Id, string texture, ConsoleColor fG, ConsoleColor bG)
     {
+        public bool climbable = false;
         public int level = 1;
         public bool Collidable = true;
         public bool solid = true;
