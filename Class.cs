@@ -201,7 +201,7 @@
         public string Texture = texture;
         public ConsoleColor FG = fG;
         public ConsoleColor BG = bG;
-
+        public string Category = "Block";
     }
     class Non_solid(string name, int Id, string texture, ConsoleColor fG, ConsoleColor bG)
     {

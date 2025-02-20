@@ -387,6 +387,7 @@ namespace cammera
 
             Game.Block_list[5].quantity = 99;
             Game.Block_list[13].quantity = 99;
+            Game.Block_list[19].quantity = 99;
             double block_tick = 0;
             double tick = 0.001;
             double time = 0;
@@ -395,8 +396,16 @@ namespace cammera
             {
 
 
-
+                
                 GetInput(grid, player, Game, camera);
+                if(player.Selected_block.Category == "Item" )
+                {
+                    Game.player_pic_lv = player.Selected_block.level;
+                }
+                else
+                {
+                    Game.player_pic_lv = 1;
+                }
                 //double timer = Math.Ceiling(overworld.time += 0.0002);
                 double timer = Game.time += 0.002;
                 if (Game.time >= tick)
@@ -618,6 +627,7 @@ namespace cammera
             Default = new Solid("Torch", 16, "▄▄", ConsoleColor.DarkYellow, ConsoleColor.Magenta); Default.Collidable = false; Game.Block_list.Add(Default);
             Default = new Solid("Cave_Background", 17, "  ", ConsoleColor.DarkYellow, ConsoleColor.Gray); Default.level = 3; Default.Collidable = false; Game.Block_list.Add(Default);
             Default = new Solid("Wood_Background", 18, "==", ConsoleColor.DarkYellow, ConsoleColor.Magenta); Default.level = 1; Default.Collidable = false; Game.Block_list.Add(Default);
+            Default = new Solid("Wooden_pickaxe", 19, "T ", ConsoleColor.DarkYellow, Game.Background); Default.level = 3; Default.Collidable = false; Default.Category = "Item"; Game.Block_list.Add(Default);
 
         }
 
@@ -1150,7 +1160,7 @@ namespace cammera
         static void Break_block(int x, int y, int[,] grid, Solid Block, Game game)
         {
 
-            if (game.player_pic_lv > game.Get_ByID(grid[y, x]).level)
+            if (game.player_pic_lv >= game.Get_ByID(grid[y, x]).level)
             {
                 game.Block_list.Find(i => i.id == grid[y, x]).quantity++;
                 grid[y, x] = Block.id;
@@ -1855,6 +1865,7 @@ namespace cammera
 
 
             }
+            WriteAt("Mining level " + game.player_pic_lv.ToString(), 40, 10);
             WriteAt("^^", player.Selected_block.id * 2, UI + 1);
             WriteAt(player.Crafting_select.ToString() + ":" + game.recipes[player.Crafting_select].item.Name + "       ", 2, UI + 4);
             WriteAt(player.x.ToString() + ":" + player.y.ToString(), 44, UI + 3);
