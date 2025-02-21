@@ -257,6 +257,12 @@ namespace cammera
             catch { }
         }
 
+        static async Task Cordinates(Cordinates Cords)
+        {
+            var db = new Database();
+            var cordinates = new Cordinates { x = Cords.x, y = Cords.y };
+            bool isSaved = await db.SaveCordinates(cordinates);
+        }
         
         static async Task Main(string[] args)
         {
@@ -270,10 +276,10 @@ namespace cammera
             {
                 Console.WriteLine($"X: {cordinate.x}, Y: {cordinate.y}");
             }
-            
 
-            Thread.Sleep(80000);
-            Save.Test();
+            Console.ReadLine();
+            //Thread.Sleep(80000);
+            //Save.Test();
             Console.CursorVisible = false;
             Game Game = new Game();
             Player player = new Player();
@@ -385,8 +391,8 @@ namespace cammera
 
 
             player.Spawnpoint = Convert_cor(500, 40);
-            player.x = player.Spawnpoint.x;
-            player.y = player.Spawnpoint.y;
+            player.x = cordinates.Last().x;
+            player.y = cordinates.Last().y;
             player.Selected_block = Game.Get_ByID(0);
             int counter = 0;
             while (grid[player.y + counter, player.x] == 0)
@@ -836,6 +842,7 @@ namespace cammera
                         Caves(x, y + 3, grid);
                         break;
                     case "I":
+                        Cordinates(player_cords);
                         Files.Save_map(grid);
                         Console.ForegroundColor = ConsoleColor.Green;
                         Console.BackgroundColor = ConsoleColor.Black;
