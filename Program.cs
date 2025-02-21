@@ -1,4 +1,6 @@
 using Minecraft;
+using MySql.Data.MySqlClient;
+using System.Threading.Tasks;
 
 namespace cammera
 {
@@ -255,14 +257,23 @@ namespace cammera
             catch { }
         }
 
-
-        static void Main(string[] args)
+        
+        static async Task Main(string[] args)
         {
+            var database = new Database();
 
-            //var key = Console.ReadKey().Key;
-            //Console.WriteLine(key.ToString());
-            //Thread.Sleep(80000);
-            //Save.Test();
+            // Call the async method and await its result
+            var cordinates = await database.GetCordinates();
+
+            // Use the result (for example, print the coordinates)
+            foreach (var cordinate in cordinates)
+            {
+                Console.WriteLine($"X: {cordinate.x}, Y: {cordinate.y}");
+            }
+            
+
+            Thread.Sleep(80000);
+            Save.Test();
             Console.CursorVisible = false;
             Game Game = new Game();
             Player player = new Player();
@@ -759,6 +770,9 @@ namespace cammera
 
             game.Existing_Entities.Remove(entity);
         }
+
+        
+
         private static void GetInput(int[,] grid, Player player, Game game, Camera camera)
         {
 

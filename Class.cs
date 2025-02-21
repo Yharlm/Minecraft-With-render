@@ -1,4 +1,5 @@
-﻿namespace Minecraft
+﻿using MySql.Data.MySqlClient;
+namespace Minecraft
 {
 
     class Player : Cordinates
@@ -17,7 +18,7 @@
         public bool Holding = false;
         public List<Non_solid> Block_Back_list = new List<Non_solid>();
         public Cordinates Spawnpoint = new Cordinates();
-
+        
 
 
         public bool is_swiming = false;
@@ -54,9 +55,10 @@
     {
         //public List<Solid> Block_list = new List<Solid>();
     }
-    class Cordinates
-    {
 
+    public class Cordinates
+    {
+      
         public int x = 11;
         public int y = 11;
         public int x1 = 0;
@@ -70,6 +72,8 @@
             cords.x = x;
             return cords;
         }
+
+
 
     }
     class Camera
