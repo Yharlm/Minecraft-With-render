@@ -602,32 +602,35 @@ namespace cammera
 
         private static void Update_Textures(Game Game)
         {
+            int id = 0;
             Solid Default = new Solid("null", 0, null, default, default);
             Non_solid Background = new Non_solid("", 0, null, default, default);
 
-            Default = new Solid("Air", 0, "  ", ConsoleColor.DarkGray, Game.Background); Default.Collidable = false; Game.Block_list.Add(Default);
-            Default = new Solid("Grass", 1, "▀▀", ConsoleColor.DarkGreen, ConsoleColor.DarkYellow); Game.Block_list.Add(Default);
-            Default = new Solid("Dirt", 2, "██", ConsoleColor.DarkYellow, ConsoleColor.DarkYellow); Game.Block_list.Add(Default);
-            Default = new Solid("Stone", 3, "██", ConsoleColor.DarkGray, ConsoleColor.DarkGray); Default.level = 2; Game.Block_list.Add(Default);
-            Default = new Solid("Log", 4, "||", ConsoleColor.Yellow, ConsoleColor.DarkYellow); Game.Block_list.Add(Default);
+            Default = new Solid("Air", id++, "  ", ConsoleColor.DarkGray, Game.Background); Default.Collidable = false; Game.Block_list.Add(Default);
+            Default = new Solid("Grass", id++, "▀▀", ConsoleColor.DarkGreen, ConsoleColor.DarkYellow); Game.Block_list.Add(Default);
+            Default = new Solid("Dirt", id++, "██", ConsoleColor.DarkYellow, ConsoleColor.DarkYellow); Game.Block_list.Add(Default);
+            Default = new Solid("Stone", id++, "██", ConsoleColor.DarkGray, ConsoleColor.DarkGray); Default.level = 2; Game.Block_list.Add(Default);
+            Default = new Solid("Log", id++, "||", ConsoleColor.Yellow, ConsoleColor.DarkYellow); Game.Block_list.Add(Default);
 
-            Default = new Solid("water", 5, "  ", ConsoleColor.DarkBlue, ConsoleColor.DarkBlue); Default.Collidable = false; Game.Block_list.Add(Default);
+            Default = new Solid("water", id++, "  ", ConsoleColor.DarkBlue, ConsoleColor.DarkBlue); Default.Collidable = false; Game.Block_list.Add(Default);
             //Default = new Solid("water", 5, "  ", ConsoleColor.DarkBlue, ConsoleColor.DarkBlue); Game.Block_list.Add(Default);
 
-            Default = new Solid("waterTop", 6, "▄▄", ConsoleColor.DarkBlue, ConsoleColor.Cyan); Default.Collidable = false; Game.Block_list.Add(Default);
-            Default = new Solid("Leaves", 7, "▄▀", ConsoleColor.DarkGreen, ConsoleColor.Green); Default.Collidable = false; Game.Block_list.Add(Default);
-            Default = new Solid("Coal_ore", 8, "▄▀", ConsoleColor.DarkGray, ConsoleColor.Black); Default.level = 2; Game.Block_list.Add(Default);
-            Default = new Solid("Iron_ore", 9, "▄▀", ConsoleColor.DarkGray, ConsoleColor.Yellow); Default.level = 2; Game.Block_list.Add(Default);
-            Default = new Solid("Crafting_table", 10, "TT", ConsoleColor.Yellow, ConsoleColor.DarkYellow); Game.Block_list.Add(Default);
-            Default = new Solid("Wooden_planks", 11, "--", ConsoleColor.DarkYellow, ConsoleColor.DarkMagenta); Game.Block_list.Add(Default);
-            Default = new Solid("Ladder", 12, "||", ConsoleColor.Yellow, ConsoleColor.DarkYellow); Default.Collidable = false;Default.climbable = true; Game.Block_list.Add(Default);
-            Default = new Solid("Sand", 13, "██", ConsoleColor.DarkMagenta, ConsoleColor.Cyan); Game.Block_list.Add(Default);
-            Default = new Solid("Furnace", 14, "▀▀", ConsoleColor.DarkGray, ConsoleColor.Black); Game.Block_list.Add(Default);
-            Default = new Solid("Tree", 15, "▀▀", ConsoleColor.Green, ConsoleColor.DarkYellow); Default.Collidable = false; Game.Block_list.Add(Default);
-            Default = new Solid("Torch", 16, "▄▄", ConsoleColor.DarkYellow, ConsoleColor.Magenta); Default.Collidable = false; Game.Block_list.Add(Default);
-            Default = new Solid("Cave_Background", 17, "  ", ConsoleColor.DarkYellow, ConsoleColor.Gray); Default.level = 3; Default.Collidable = false; Game.Block_list.Add(Default);
-            Default = new Solid("Wood_Background", 18, "==", ConsoleColor.DarkYellow, ConsoleColor.Magenta); Default.level = 1; Default.Collidable = false; Game.Block_list.Add(Default);
-            Default = new Solid("Wooden_pickaxe", 19, "T ", ConsoleColor.DarkYellow, Game.Background); Default.level = 3; Default.Collidable = false; Default.Category = "Item"; Game.Block_list.Add(Default);
+            Default = new Solid("waterTop", id++, "▄▄", ConsoleColor.DarkBlue, ConsoleColor.Cyan); Default.Collidable = false; Game.Block_list.Add(Default);
+            Default = new Solid("Leaves", id++, "▄▀", ConsoleColor.DarkGreen, ConsoleColor.Green); Default.Collidable = false; Game.Block_list.Add(Default);
+            Default = new Solid("Coal_ore", id++, "▄▀", ConsoleColor.DarkGray, ConsoleColor.Black); Default.level = 2; Game.Block_list.Add(Default);
+            Default = new Solid("Iron_ore", id++, "▄▀", ConsoleColor.DarkGray, ConsoleColor.Yellow); Default.level = 2; Game.Block_list.Add(Default);
+            Default = new Solid("Crafting_table", id++, "TT", ConsoleColor.Yellow, ConsoleColor.DarkYellow); Game.Block_list.Add(Default);
+            Default = new Solid("Wooden_planks", id++, "--", ConsoleColor.DarkYellow, ConsoleColor.DarkMagenta); Game.Block_list.Add(Default);
+            Default = new Solid("Ladder", id++, "||", ConsoleColor.Yellow, ConsoleColor.DarkYellow); Default.Collidable = false;Default.climbable = true; Game.Block_list.Add(Default);
+            Default = new Solid("Sand", id++, "██", ConsoleColor.DarkMagenta, ConsoleColor.Cyan); Game.Block_list.Add(Default);
+            Default = new Solid("Furnace", id++, "▀▀", ConsoleColor.DarkGray, ConsoleColor.Black); Game.Block_list.Add(Default);
+            Default = new Solid("Tree", id++, "▀▀", ConsoleColor.Green, ConsoleColor.DarkYellow); Default.Collidable = false; Game.Block_list.Add(Default);
+            Default = new Solid("Torch", id++, "▄▄", ConsoleColor.DarkYellow, ConsoleColor.Magenta); Default.Collidable = false; Game.Block_list.Add(Default);
+            Default = new Solid("Cave_Background", id++, "  ", ConsoleColor.DarkYellow, ConsoleColor.Gray); Default.level = 3; Default.Collidable = false; Game.Block_list.Add(Default);
+            Default = new Solid("Wood_Background", id++, "==", ConsoleColor.DarkYellow, ConsoleColor.Magenta); Default.level = 1; Default.Collidable = false; Game.Block_list.Add(Default);
+            Default = new Solid("Wooden_pickaxe", id++, "T ", ConsoleColor.DarkYellow, Game.Background); Default.level = 3; Default.Collidable = false; Default.Category = "Item"; Game.Block_list.Add(Default);
+            Default = new Solid("Iron_ingot", id++, "▄▄", ConsoleColor.DarkYellow, Game.Background); Default.level = 3; Default.Collidable = false; Default.Category = "Item"; Game.Block_list.Add(Default);
+            Default = new Solid("Furnace_active", id++, "▀▀", ConsoleColor.DarkGray, ConsoleColor.DarkMagenta); Default.level = 3; Default.Collidable = false; Game.Block_list.Add(Default);
 
         }
 
