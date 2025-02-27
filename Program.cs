@@ -1,5 +1,7 @@
 using System;
 using Minecraft;
+using MySql.Data.MySqlClient;
+using System.Threading.Tasks;
 
 namespace cammera
 {
@@ -256,12 +258,27 @@ namespace cammera
             catch { }
         }
 
-
-        static void Main(string[] args)
+        static async Task Cordinates(Cordinates Cords)
         {
+            var db = new Database();
+            var cordinates = new Cordinates { x = Cords.x, y = Cords.y };
+            bool isSaved = await db.SaveCordinates(cordinates);
+        }
+        
+        static async Task Main(string[] args)
+        {
+            var database = new Database();
 
-            //var key = Console.ReadKey().Key;
-            //Console.WriteLine(key.ToString());
+            // Call the async method and await its result
+            var cordinates = await database.GetCordinates();
+
+            // Use the result (for example, print the coordinates)
+            foreach (var cordinate in cordinates)
+            {
+                Console.WriteLine($"X: {cordinate.x}, Y: {cordinate.y}");
+            }
+
+            Console.ReadLine();
             //Thread.Sleep(80000);
             //Save.Test();
             Console.CursorVisible = false;
@@ -809,6 +826,9 @@ namespace cammera
 
             game.Existing_Entities.Remove(entity);
         }
+
+        
+
         private static void GetInput(int[,] grid, Player player, Game game, Camera camera)
         {
 
@@ -872,6 +892,7 @@ namespace cammera
                         Caves(x, y + 3, grid);
                         break;
                     case "I":
+                        Cordinates(player_cords);
                         Files.Save_map(grid);
                         Console.ForegroundColor = ConsoleColor.Green;
                         Console.BackgroundColor = ConsoleColor.Black;
