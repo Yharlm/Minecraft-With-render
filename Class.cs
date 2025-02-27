@@ -4,6 +4,7 @@
     class Player : Cordinates
 
     {
+        public bool creative = true;
         public bool Has_torch = false;
         public string Looking = "";
         public double oxygen = 20;
