@@ -267,16 +267,16 @@ namespace cammera
         
         static async Task Main(string[] args)
         {
-            var database = new Database();
+            //var database = new Database();
 
-            // Call the async method and await its result
-            var cordinates = await database.GetCordinates();
+            //// Call the async method and await its result
+            //var cordinates = await database.GetCordinates();
 
-            // Use the result (for example, print the coordinates)
-            foreach (var cordinate in cordinates)
-            {
-                Console.WriteLine($"X: {cordinate.x}, Y: {cordinate.y}");
-            }
+            //// Use the result (for example, print the coordinates)
+            //foreach (var cordinate in cordinates)
+            //{
+            //    Console.WriteLine($"X: {cordinate.x}, Y: {cordinate.y}");
+            //}
 
             Console.ReadLine();
             //Thread.Sleep(80000);
