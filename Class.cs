@@ -5,7 +5,7 @@ namespace Minecraft
     class Player : Cordinates
 
     {
-        public bool creative = true;
+        public bool creative = false;
         public bool Has_torch = false;
         public string Looking = "";
         public double oxygen = 20;

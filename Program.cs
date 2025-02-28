@@ -1,7 +1,4 @@
-using System;
 using Minecraft;
-using MySql.Data.MySqlClient;
-using System.Threading.Tasks;
 
 namespace cammera
 {
@@ -264,7 +261,7 @@ namespace cammera
             var cordinates = new Cordinates { x = Cords.x, y = Cords.y };
             bool isSaved = await db.SaveCordinates(cordinates);
         }
-        
+
         static async Task Main(string[] args)
         {
             //var database = new Database();
@@ -300,6 +297,7 @@ namespace cammera
 
             Update_Textures(Game);
 
+
             // recepies
             Recipe recipe = new Recipe();
             Non_Existent placehold = new Non_Existent(4, "Log", 1);
@@ -309,7 +307,9 @@ namespace cammera
             recipe = new Recipe(); recipe.item = Game.GetBlock("Ladder"); placehold = new Non_Existent(11, "Wooden_planks", 2); recipe.num = 4; recipe.required.Add(placehold); Game.recipes.Add(recipe);
             recipe = new Recipe(); recipe.item = Game.GetBlock("Furnace"); placehold = new Non_Existent(14, "Stone", 8); recipe.num = 1; recipe.required.Add(placehold); Game.recipes.Add(recipe);
             recipe = new Recipe(); recipe.item = Game.GetBlock("Tree"); placehold = new Non_Existent(15, "Leaves", 1); recipe.num = 2; recipe.required.Add(placehold); Game.recipes.Add(recipe);
+            recipe = new Recipe(); recipe.item = Game.GetBlock("Wood_Background"); placehold = new Non_Existent(15, "Wooden_planks", 1); recipe.num = 2; recipe.required.Add(placehold); Game.recipes.Add(recipe);
             recipe = new Recipe(); recipe.item = Game.GetBlock("Torch"); placehold = new Non_Existent(15, "Wooden_planks", 1); recipe.num = 4; recipe.required.Add(placehold); placehold = new Non_Existent(8, "Coal_ore", 1); recipe.required.Add(placehold); Game.recipes.Add(recipe);
+            recipe = new Recipe(); recipe.item = Game.GetBlock("Wooden_pickaxe"); placehold = new Non_Existent(15, "Wooden_planks", 5); recipe.num = 1; recipe.required.Add(placehold); Game.recipes.Add(recipe);
 
 
 
@@ -342,7 +342,8 @@ namespace cammera
             Game.Sprite_list.Add(sprite);
 
             string option = "null";
-
+            int[] backpack = new int[Game.Block_list.Count()];
+            bool saved = true;
             int[,] grid = new int[500, 1000];
             while (option == "null")
             {
@@ -365,6 +366,7 @@ namespace cammera
                     case "/load":
                         Console.WriteLine("Loading...");
                         grid = Save.LoadWorld(Files.GetSaveFilePath("SaveFile"), "World.json");
+                        backpack = Save.Load_inventory(Files.GetSaveFilePath("SaveFile"), "Backpack.json");
                         break;
                     case "/edit":
                         Console.WriteLine("Loading...");
@@ -401,7 +403,13 @@ namespace cammera
                 counter++;
             }
             if (grid[player.y + counter, player.x] == 5) { Fill_block(player.x, player.y + counter, grid, Game.GetBlock("Wooden_planks")); }
-
+            if (saved)
+            {
+                for (int i = 0; i < backpack.Length; i++)
+                {
+                    Game.Block_list[i].quantity = backpack[i];
+                }
+            }
             if (player.creative)
             {
                 foreach (Solid item in Game.Block_list)
@@ -409,9 +417,7 @@ namespace cammera
                     item.quantity = 99;
                 }
             }
-            Game.Block_list[5].quantity = 99;
-            Game.Block_list[13].quantity = 99;
-            Game.Block_list[19].quantity = 99;
+
             double block_tick = 0;
             double tick = 0.001;
             double time = 0;
@@ -420,9 +426,9 @@ namespace cammera
             {
 
 
-                
+
                 GetInput(grid, player, Game, camera);
-                if(player.Selected_block.Category == "Item" )
+                if (player.Selected_block.Category == "Item")
                 {
                     Game.player_pic_lv = player.Selected_block.level;
                 }
@@ -470,9 +476,9 @@ namespace cammera
                     }
 
                 }
-                
 
-                Game.cycle += 0.01f;
+
+                Game.cycle += 0.1f;
                 if (Game.cycle >= 120)
                 { Game.day = false; }
                 else
@@ -576,7 +582,7 @@ namespace cammera
                     player.is_swiming = false;
                 }
 
-                if (Game.Get_ByID(grid[player.y + 1, player.x]).Collidable == false && Game.curent_tick && player.grounded && !player.creative)
+                if (Game.Get_ByID(grid[player.y + 1, player.x]).Collidable == false && Game.curent_tick && player.grounded)
                 {
 
                     if (player.is_swiming)
@@ -654,9 +660,9 @@ namespace cammera
             Default = new Solid("Leaves", id++, "▄▀", ConsoleColor.DarkGreen, ConsoleColor.Green); Default.Collidable = false; Game.Block_list.Add(Default);
             Default = new Solid("Coal_ore", id++, "▄▀", ConsoleColor.DarkGray, ConsoleColor.Black); Default.level = 2; Game.Block_list.Add(Default);
             Default = new Solid("Iron_ore", id++, "▄▀", ConsoleColor.DarkGray, ConsoleColor.Yellow); Default.level = 2; Game.Block_list.Add(Default);
-            Default = new Solid("Crafting_table", id++, "TT", ConsoleColor.Yellow, ConsoleColor.DarkYellow); Game.Block_list.Add(Default);
+            Default = new Solid("Crafting_table", id++, "TT", ConsoleColor.Yellow, ConsoleColor.DarkYellow); Default.Collidable = false; Game.Block_list.Add(Default);
             Default = new Solid("Wooden_planks", id++, "--", ConsoleColor.DarkYellow, ConsoleColor.DarkMagenta); Game.Block_list.Add(Default);
-            Default = new Solid("Ladder", id++, "||", ConsoleColor.Yellow, ConsoleColor.DarkYellow); Default.Collidable = false;Default.climbable = true; Game.Block_list.Add(Default);
+            Default = new Solid("Ladder", id++, "||", ConsoleColor.Yellow, ConsoleColor.DarkYellow); Default.Collidable = false; Default.climbable = true; Game.Block_list.Add(Default);
             Default = new Solid("Sand", id++, "██", ConsoleColor.DarkMagenta, ConsoleColor.Cyan); Game.Block_list.Add(Default);
             Default = new Solid("Furnace", id++, "▀▀", ConsoleColor.DarkGray, ConsoleColor.Black); Default.Collidable = false; Game.Block_list.Add(Default);//15
             Default = new Solid("Tree", id++, "▀▀", ConsoleColor.Green, ConsoleColor.DarkYellow); Default.Collidable = false; Game.Block_list.Add(Default);
@@ -743,21 +749,33 @@ namespace cammera
                     break;
 
                 case 14:
-                    if (grid[y-1,x]== game.GetBlock("Coal_ore").id)
+                    if (grid[y - 1, x] == game.GetBlock("Coal_ore").id)
                     {
                         grid[y - 1, x] = 0;
                         grid[y, x] = 21;
                     }
                     break;
                 case 21:
-                    if(time % 11 == 0 && grid[y-1,x] == game.GetBlock("Iron_ore").id)
+                    if (time % 11 == 0 && grid[y - 1, x] == game.GetBlock("Iron_ore").id)
                     {
-                        grid[y-1,x] = game.GetBlock("Iron_ingot").id;
-                        
+                        grid[y - 1, x] = game.GetBlock("Iron_ingot").id;
+
                     }
-                    if(time % 500 == 0)
+                    if (time % 500 == 0)
                     {
                         grid[y, x] = game.GetBlock("Furnace").id;
+                    }
+                    break;
+                case 2:
+                    if (time%15==0 && grid[y-1,x] == 0)
+                    {
+                        grid[y, x] = 1;
+                    }
+                    break;
+                case 1:
+                    if (time % 15 == 0 && grid[y - 1, x] != 0)
+                    {
+                        grid[y, x] = 2;
                     }
                     break;
 
@@ -827,7 +845,7 @@ namespace cammera
             game.Existing_Entities.Remove(entity);
         }
 
-        
+
 
         private static void GetInput(int[,] grid, Player player, Game game, Camera camera)
         {
@@ -892,11 +910,22 @@ namespace cammera
                         Caves(x, y + 3, grid);
                         break;
                     case "I":
+                        int blocks_num = game.Block_list.Count();
+                        int[] invent = new int[blocks_num];
+                        for (int i = 0; i < blocks_num; i++)
+                        {
+                            invent[i] = game.Block_list[i].quantity;
+                        }
+
+
+
                         Cordinates(player_cords);
                         Files.Save_map(grid);
+                        Files.Save_Inventory(invent);
                         Console.ForegroundColor = ConsoleColor.Green;
                         Console.BackgroundColor = ConsoleColor.Black;
                         WriteAt("Saved", 60, 4);
+
                         Console.ForegroundColor = default;
                         Thread.Sleep(1000);
                         System.Environment.Exit(0);
@@ -920,12 +949,12 @@ namespace cammera
                     case "D1":
                         player.hotbar--;
 
-                        player.Selected_block = game.Block_list[player.hotbar];
+
 
                         Console.ForegroundColor = ConsoleColor.Red;
 
 
-                        if (player.hotbar == 0) player.hotbar = game.Block_list.Count;
+                        if (player.hotbar == 0) player.hotbar = game.Block_list.Count; player.Selected_block = game.Block_list[player.hotbar];
 
 
                         break;
@@ -957,7 +986,7 @@ namespace cammera
 
                         break;
                     case "C":
-                        if(player.Crafting_select == 0 || grid[player.y,player.x] == game.GetBlock("Crafting_table").id)
+                        if (player.Crafting_select == 0 || grid[player.y, player.x] == game.GetBlock("Crafting_table").id)
                         {
                             Craft(game.recipes[player.Crafting_select], game);
                         }
@@ -996,11 +1025,12 @@ namespace cammera
 
 
 
-                        player.Selected_block = game.Block_list[player.hotbar];
+
 
                         Console.ForegroundColor = ConsoleColor.Red;
 
-                        if (player.hotbar == game.Block_list.Count - 1) player.hotbar = 0;
+                        if (player.hotbar == game.Block_list.Count - 1) player.hotbar = 0; player.Selected_block = game.Block_list[player.hotbar];
+
 
 
                         break;
@@ -1260,7 +1290,7 @@ namespace cammera
 
                 Console.BackgroundColor = ConsoleColor.White;
             }
-            if (Check_area(grid, camera.Position.x + x, camera.Position.y + y, 16, 5))
+            if (Check_area(grid, camera.Position.x + x, camera.Position.y + y, 16, 5) || Check_area(grid, camera.Position.x + x, camera.Position.y + y, 16, game.GetBlock("Furnace_active").id))
             {
                 Console.ForegroundColor = block.FG;
                 Console.BackgroundColor = block.BG;
