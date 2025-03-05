@@ -348,12 +348,51 @@ namespace cammera
             while (option == "null")
             {
                 Console.ForegroundColor = ConsoleColor.White;
-                Console.BackgroundColor = ConsoleColor.Black;
-                Console.WriteLine("Welcome to bootleg-craft");
-                Console.WriteLine("/new");
-                Console.WriteLine("/load");
-                Console.WriteLine("/edit");
+                Console.BackgroundColor = ConsoleColor.Cyan;
+                Console.Clear();
+                Console.WriteLine("████         ██ ████ ████      ████ ██████████ ████████ █████████  ██████████ █████████ ████████████ ");
+                Console.WriteLine("█████     █████ ████ ████████  ████ ████       ████████ ████ █████ ██  ██  ██ ████          ████    ");
+                Console.WriteLine("███████████████ ████ ████████  ████ ████▄▄▄▄▄▄ ██       ████████▀▀ ███▀  ▀███ ████▄▄▄▄▄     ████    ");
+                Console.WriteLine("████  ███  ████ ████ ████  ████████ ████▀▀▀▀▀▀ ██       █████████  ███▄██▄███ █████████     ████    ");
+                Console.WriteLine("████       ████ ████ ████  ████████ ████       ████████ ████  ████ ████▀▀████ ████          ████    ");
+                Console.WriteLine("████       ████ ████ ████    ██████ ██████████ ████████ ████  ████ ████  ████ ████          ████    ");
+
+
+
+
+
+                
+                //Console.WriteLine("Welcome to bootleg-craft");
+                int counter2 = 12;
+                while (counter2 > 0)
+                {
+                    Console.WriteLine();
+                    counter2--;
+                }
+                Console.WriteLine("                   ");
+                Console.BackgroundColor = ConsoleColor.Gray;
+
+                Console.Write ("Create World");
+                Console.BackgroundColor = ConsoleColor.Cyan;
+                Console.WriteLine();
+                Console.BackgroundColor = ConsoleColor.Gray;
+                Console.Write ("Load World");
+                Console.BackgroundColor = ConsoleColor.Cyan;
+                Console.WriteLine();
+                Console.BackgroundColor = ConsoleColor.Gray;
+                Console.Write (" Editor");
+                Console.BackgroundColor = ConsoleColor.Cyan;
+
                 option = Console.ReadLine();
+
+
+
+
+
+
+
+
+
 
                 switch (option)
                 {
@@ -1960,8 +1999,10 @@ namespace cammera
             WriteAt("Health" + player.health.ToString(), 1, UI + 2);
             WriteAt("Oxygen" + player.oxygen.ToString(), 1, UI + 3);
             WriteAt("                                                                    ", 1, UI + 1);
-            foreach (Solid i in game.Block_list)
+            int offset = 0;
+            for(int e = 0; e < 10;e++)
             {
+                var i = game.Block_list[e+ offset];
                 Console.ForegroundColor = i.FG;
                 Console.BackgroundColor = i.BG;
                 WriteAt(i.Texture.ToString(), c * 2, UI);
