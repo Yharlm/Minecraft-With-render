@@ -374,6 +374,10 @@ namespace cammera
                         option = "null";
 
                         break;
+                    case "/sky":
+                        grid[50,500] = 2;
+                        grid[49, 500] = Game.GetBlock("Tree").id;
+                        break;
 
 
                 }
@@ -660,7 +664,7 @@ namespace cammera
             Default = new Solid("Leaves", id++, "▄▀", ConsoleColor.DarkGreen, ConsoleColor.Green); Default.Collidable = false; Game.Block_list.Add(Default);
             Default = new Solid("Coal_ore", id++, "▄▀", ConsoleColor.DarkGray, ConsoleColor.Black); Default.level = 2; Game.Block_list.Add(Default);
             Default = new Solid("Iron_ore", id++, "▄▀", ConsoleColor.DarkGray, ConsoleColor.Yellow); Default.level = 2; Game.Block_list.Add(Default);
-            Default = new Solid("Crafting_table", id++, "TT", ConsoleColor.Yellow, ConsoleColor.DarkYellow); Default.Collidable = false; Game.Block_list.Add(Default);
+            Default = new Solid("Crafting_table", id++, "TT", ConsoleColor.Yellow, ConsoleColor.DarkYellow); Default.Collidable = true; Game.Block_list.Add(Default);
             Default = new Solid("Wooden_planks", id++, "--", ConsoleColor.DarkYellow, ConsoleColor.DarkMagenta); Game.Block_list.Add(Default);
             Default = new Solid("Ladder", id++, "||", ConsoleColor.Yellow, ConsoleColor.DarkYellow); Default.Collidable = false; Default.climbable = true; Game.Block_list.Add(Default);
             Default = new Solid("Sand", id++, "██", ConsoleColor.DarkMagenta, ConsoleColor.Cyan); Game.Block_list.Add(Default);
@@ -744,7 +748,7 @@ namespace cammera
                 case 15:
                     if (random.Next(1, 100) < 10 && time % 4 == 0)
                     {
-                        structure(tree, x + 2, y + 5, grid, game);
+                        structure(tree, x - 2, y+1, grid, game);
                     }
                     break;
 
@@ -986,7 +990,7 @@ namespace cammera
 
                         break;
                     case "C":
-                        if (player.Crafting_select == 0 || grid[player.y, player.x] == game.GetBlock("Crafting_table").id)
+                        if (player.Crafting_select == 0 || grid[player.y+1, player.x] == game.GetBlock("Crafting_table").id)
                         {
                             Craft(game.recipes[player.Crafting_select], game);
                         }
@@ -1094,11 +1098,20 @@ namespace cammera
                             player.Selected_block.quantity--;
                             break;
                         }
-
+                        
                         if (player.Selected_block.quantity > 0)
                         {
-                            //if (player.special_key == "Spacebar")
-                            if (grid[player.y - 1, player.x] == 0 && grid[player.y - 2, player.x] != 0)
+                            if (grid[player.y+1,player.x] != 0 &&grid[player.y+1,player.x+1] == 0)
+                            {
+                                
+                                Fill_block(player.x+1, player.y + 1, grid, player.Selected_block);
+                                player.Selected_block.quantity--;
+                            }
+                            else if (player.special_key == "Spacebar") {
+                                Fill_block(player.x, player.y, grid, player.Selected_block);
+                                player.Selected_block.quantity--;
+                            }
+                                else if (grid[player.y - 1, player.x] == 0 && grid[player.y - 2, player.x] != 0)
                             {
                                 Fill_block(player.x, player.y + 1, grid, player.Selected_block);
                                 player.last_key = null;
@@ -1171,7 +1184,7 @@ namespace cammera
 
                             x--;
                         }
-                        if (game.Get_ByID(grid[player.y - 1, player.x - 1]).Collidable == false && game.Get_ByID(grid[player.y - 2, player.x - 1]).Collidable == false && player.special_key == "Spacebar")
+                        else if (game.Get_ByID(grid[player.y - 1, player.x - 1]).Collidable == false && game.Get_ByID(grid[player.y - 2, player.x - 1]).Collidable == false && player.special_key == "Spacebar")
                         {
 
                             x--; y--;
@@ -1208,7 +1221,7 @@ namespace cammera
 
 
                         }
-                        if (game.Get_ByID(grid[player.y, player.x + 1]).Collidable == false && game.Get_ByID(grid[player.y - 1, player.x + 1]).Collidable == false)
+                        else if(game.Get_ByID(grid[player.y, player.x + 1]).Collidable == false && game.Get_ByID(grid[player.y - 1, player.x + 1]).Collidable == false)
                         {
 
                             x++;
