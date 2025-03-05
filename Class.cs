@@ -5,6 +5,7 @@ namespace Minecraft
     class Player : Cordinates
 
     {
+        public int hotbar_offset = 1;
         public bool creative = false;
         public bool Has_torch = false;
         public string Looking = "";

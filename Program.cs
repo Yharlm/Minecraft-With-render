@@ -340,13 +340,19 @@ namespace cammera
             sprite.lifetime = 2;
 
             Game.Sprite_list.Add(sprite);
-
-            string option = "null";
+            bool selected = false;
+            var option = 0;
             int[] backpack = new int[Game.Block_list.Count()];
             bool saved = true;
             int[,] grid = new int[500, 1000];
-            while (option == "null")
+            int selected_button = 0;
+            
+            while (option != null && !selected)
             {
+                if (selected_button > 3)
+                {
+                    selected_button = 1;
+                }
                 Console.ForegroundColor = ConsoleColor.White;
                 Console.BackgroundColor = ConsoleColor.Cyan;
                 Console.Clear();
@@ -360,61 +366,77 @@ namespace cammera
 
 
 
-
+                var not_selected_color = ConsoleColor.Gray;
+                var selected_color = ConsoleColor.Blue;
                 
+                
+
                 //Console.WriteLine("Welcome to bootleg-craft");
                 int counter2 = 12;
-                while (counter2 > 0)
+
+                
+                Console.BackgroundColor = ConsoleColor.Gray;
+                if (selected_button == 1) { Console.BackgroundColor = selected_color; }
+                WriteAt("   Create World    ",40,25);
+                Console.BackgroundColor = ConsoleColor.Cyan;
+
+                Console.BackgroundColor = ConsoleColor.Gray;
+                if (selected_button == 2) { Console.BackgroundColor = selected_color; }
+                WriteAt("     Load World    ", 40, 27);
+                Console.BackgroundColor = ConsoleColor.Cyan;
+
+                Console.BackgroundColor = ConsoleColor.Gray;
+                if (selected_button == 3) { Console.BackgroundColor = selected_color; }
+                WriteAt("       Editor      ", 40, 29);
+                Console.BackgroundColor = ConsoleColor.Cyan;
+
+                //option = Console.ReadLine();
+                if(Console.ReadKey().Key == ConsoleKey.Spacebar)
                 {
-                    Console.WriteLine();
-                    counter2--;
+                    selected_button++;
                 }
-                Console.WriteLine("                   ");
-                Console.BackgroundColor = ConsoleColor.Gray;
-
-                Console.Write ("Create World");
-                Console.BackgroundColor = ConsoleColor.Cyan;
-                Console.WriteLine();
-                Console.BackgroundColor = ConsoleColor.Gray;
-                Console.Write ("Load World");
-                Console.BackgroundColor = ConsoleColor.Cyan;
-                Console.WriteLine();
-                Console.BackgroundColor = ConsoleColor.Gray;
-                Console.Write (" Editor");
-                Console.BackgroundColor = ConsoleColor.Cyan;
-
-                option = Console.ReadLine();
-
-
-
-
-
-
-
-
-
-
-                switch (option)
+                else if (Console.ReadKey().Key == ConsoleKey.Enter)
                 {
-                    case "/new":
+                    option = selected_button;
+                }
+
+
+
+
+
+
+
+
+
+
+                    switch (option)
+                {
+                    case 1:
+                        selected = true;
                         Console.WriteLine("Generating...");
                         BuildWorld(grid, player, Game);
 
 
                         break;
-                    case "/load":
+                    case 2:
+                        selected = true;
+
                         Console.WriteLine("Loading...");
                         grid = Save.LoadWorld(Files.GetSaveFilePath("SaveFile"), "World.json");
                         backpack = Save.Load_inventory(Files.GetSaveFilePath("SaveFile"), "Backpack.json");
                         break;
-                    case "/edit":
+                    case 3:
+                        selected = true;
+
                         Console.WriteLine("Loading...");
                         Editor.Editor_mode();
-                        option = "null";
+                        option = 0;
 
                         break;
-                    case "/sky":
-                        grid[50,500] = 2;
+                    case 4:
+                        selected = true;
+
+                        grid[50, 500] = 2;
                         grid[49, 500] = Game.GetBlock("Tree").id;
                         break;
 
@@ -422,7 +444,8 @@ namespace cammera
                 }
 
             }
-
+            Console.BackgroundColor= ConsoleColor.Black;
+            Console.Clear();
 
 
 
@@ -787,7 +810,7 @@ namespace cammera
                 case 15:
                     if (random.Next(1, 100) < 10 && time % 4 == 0)
                     {
-                        structure(tree, x - 2, y+1, grid, game);
+                        structure(tree, x - 2, y + 1, grid, game);
                     }
                     break;
 
@@ -810,7 +833,7 @@ namespace cammera
                     }
                     break;
                 case 2:
-                    if (time%15==0 && grid[y-1,x] == 0)
+                    if (time % 15 == 0 && grid[y - 1, x] == 0)
                     {
                         grid[y, x] = 1;
                     }
@@ -1029,7 +1052,7 @@ namespace cammera
 
                         break;
                     case "C":
-                        if (player.Crafting_select == 0 || grid[player.y+1, player.x] == game.GetBlock("Crafting_table").id)
+                        if (player.Crafting_select == 0 || grid[player.y + 1, player.x] == game.GetBlock("Crafting_table").id)
                         {
                             Craft(game.recipes[player.Crafting_select], game);
                         }
@@ -1072,10 +1095,14 @@ namespace cammera
 
                         Console.ForegroundColor = ConsoleColor.Red;
 
-                        if (player.hotbar == game.Block_list.Count - 1) player.hotbar = 0; player.Selected_block = game.Block_list[player.hotbar];
+                        if (player.hotbar == 10) player.hotbar = 0 * player.hotbar_offset;
+                        player.Selected_block = game.Block_list[player.hotbar];
 
 
 
+                        break;
+                    case "D3":
+                        player.hotbar_offset++;
                         break;
                     case "K":
 
@@ -1137,20 +1164,21 @@ namespace cammera
                             player.Selected_block.quantity--;
                             break;
                         }
-                        
+
                         if (player.Selected_block.quantity > 0)
                         {
-                            if (grid[player.y+1,player.x] != 0 &&grid[player.y+1,player.x+1] == 0)
+                            if (grid[player.y + 1, player.x] != 0 && grid[player.y + 1, player.x + 1] == 0)
                             {
-                                
-                                Fill_block(player.x+1, player.y + 1, grid, player.Selected_block);
+
+                                Fill_block(player.x + 1, player.y + 1, grid, player.Selected_block);
                                 player.Selected_block.quantity--;
                             }
-                            else if (player.special_key == "Spacebar") {
+                            else if (player.special_key == "Spacebar")
+                            {
                                 Fill_block(player.x, player.y, grid, player.Selected_block);
                                 player.Selected_block.quantity--;
                             }
-                                else if (grid[player.y - 1, player.x] == 0 && grid[player.y - 2, player.x] != 0)
+                            else if (grid[player.y - 1, player.x] == 0 && grid[player.y - 2, player.x] != 0)
                             {
                                 Fill_block(player.x, player.y + 1, grid, player.Selected_block);
                                 player.last_key = null;
@@ -1260,7 +1288,7 @@ namespace cammera
 
 
                         }
-                        else if(game.Get_ByID(grid[player.y, player.x + 1]).Collidable == false && game.Get_ByID(grid[player.y - 1, player.x + 1]).Collidable == false)
+                        else if (game.Get_ByID(grid[player.y, player.x + 1]).Collidable == false && game.Get_ByID(grid[player.y - 1, player.x + 1]).Collidable == false)
                         {
 
                             x++;
@@ -2000,9 +2028,9 @@ namespace cammera
             WriteAt("Oxygen" + player.oxygen.ToString(), 1, UI + 3);
             WriteAt("                                                                    ", 1, UI + 1);
             int offset = 0;
-            for(int e = 0; e < 10;e++)
+            for (int e = 0; e < 10; e++)
             {
-                var i = game.Block_list[e+ offset];
+                var i = game.Block_list[e + offset];
                 Console.ForegroundColor = i.FG;
                 Console.BackgroundColor = i.BG;
                 WriteAt(i.Texture.ToString(), c * 2, UI);
@@ -2014,7 +2042,10 @@ namespace cammera
 
             }
             WriteAt("Mining level " + game.player_pic_lv.ToString(), 40, 10);
-            WriteAt("^^", player.Selected_block.id * 2, UI + 1);
+
+            int hotbar_selected = player.hotbar * player.hotbar_offset;
+
+            WriteAt("^^", hotbar_selected * 2, UI + 1);
             WriteAt(player.Crafting_select.ToString() + ":" + game.recipes[player.Crafting_select].item.Name + "       ", 2, UI + 4);
             WriteAt(player.x.ToString() + ":" + player.y.ToString(), 44, UI + 3);
             Console.BackgroundColor = ConsoleColor.Cyan;
