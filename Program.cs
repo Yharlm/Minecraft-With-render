@@ -349,6 +349,7 @@ namespace cammera
             
             while (option != null && !selected)
             {
+                Console.Title = "Minecraft";
                 if (selected_button > 3)
                 {
                     selected_button = 1;
@@ -356,12 +357,14 @@ namespace cammera
                 Console.ForegroundColor = ConsoleColor.White;
                 Console.BackgroundColor = ConsoleColor.Cyan;
                 Console.Clear();
-                Console.WriteLine("████         ██ ████ ████      ████ ██████████ ████████ █████████  ██████████ █████████ ████████████ ");
-                Console.WriteLine("█████     █████ ████ ████████  ████ ████       ████████ ████ █████ ██  ██  ██ ████          ████    ");
-                Console.WriteLine("███████████████ ████ ████████  ████ ████▄▄▄▄▄▄ ██       ████████▀▀ ███▀  ▀███ ████▄▄▄▄▄     ████    ");
-                Console.WriteLine("████  ███  ████ ████ ████  ████████ ████▀▀▀▀▀▀ ██       █████████  ███▄██▄███ █████████     ████    ");
-                Console.WriteLine("████       ████ ████ ████  ████████ ████       ████████ ████  ████ ████▀▀████ ████          ████    ");
-                Console.WriteLine("████       ████ ████ ████    ██████ ██████████ ████████ ████  ████ ████  ████ ████          ████    ");
+                int logo_x = 45;
+                int logo_y = 11;
+                WriteAt("████         ██ ████ ████      ████ ██████████ ████████ █████████  ██████████ █████████ ████████████", logo_x, logo_y++);
+                WriteAt("█████     █████ ████ ████████  ████ ████       ████████ ████ █████ ██  ██  ██ ████          ████    ", logo_x, logo_y++);
+                WriteAt("███████████████ ████ ████████  ████ ████▄▄▄▄▄▄ ██       ████████▀▀ ███▀  ▀███ ████▄▄▄▄▄     ████    ", logo_x, logo_y++);
+                WriteAt("████  ███  ████ ████ ████  ████████ ████▀▀▀▀▀▀ ██       █████████  ███▄██▄███ █████████     ████    ", logo_x, logo_y++);
+                WriteAt("████       ████ ████ ████  ████████ ████       ████████ ████  ████ ████▀▀████ ████          ████    ", logo_x, logo_y++);
+                WriteAt("████       ████ ████ ████    ██████ ██████████ ████████ ████  ████ ████  ████ ████          ████    ", logo_x, logo_y++);
 
 
 
@@ -374,33 +377,35 @@ namespace cammera
                 //Console.WriteLine("Welcome to bootleg-craft");
                 int counter2 = 12;
 
-                
+                int buttons_x = 86;
+                int buttons_y = 30;
                 Console.BackgroundColor = ConsoleColor.Gray;
                 if (selected_button == 1) { Console.BackgroundColor = selected_color; }
-                WriteAt("   Create World    ",40,25);
+                WriteAt("    Create World   ", buttons_x, buttons_y);
                 Console.BackgroundColor = ConsoleColor.Cyan;
 
                 Console.BackgroundColor = ConsoleColor.Gray;
                 if (selected_button == 2) { Console.BackgroundColor = selected_color; }
-                WriteAt("     Load World    ", 40, 27);
+                WriteAt("     Load World    ", buttons_x, buttons_y+3);
                 Console.BackgroundColor = ConsoleColor.Cyan;
 
                 Console.BackgroundColor = ConsoleColor.Gray;
                 if (selected_button == 3) { Console.BackgroundColor = selected_color; }
-                WriteAt("       Editor      ", 40, 29);
+                WriteAt("       Editor      ", buttons_x, buttons_y+6);
                 Console.BackgroundColor = ConsoleColor.Cyan;
 
                 //option = Console.ReadLine();
-                if(Console.ReadKey().Key == ConsoleKey.Spacebar)
+                var inputed = Console.ReadKey().Key;
+                if (inputed == ConsoleKey.Spacebar)
                 {
                     selected_button++;
                 }
-                else if (Console.ReadKey().Key == ConsoleKey.Enter)
+                else if (inputed == ConsoleKey.Enter)
                 {
                     option = selected_button;
                 }
 
-
+                
 
 
 
@@ -1020,7 +1025,7 @@ namespace cammera
                         Console.ForegroundColor = ConsoleColor.Red;
 
 
-                        if (player.hotbar == 0) player.hotbar = game.Block_list.Count; player.Selected_block = game.Block_list[player.hotbar];
+                        if (player.hotbar == 0) player.hotbar = game.Block_list.Count; player.Selected_block = game.Block_list[player.hotbar + player.hotbar_offset];
 
 
                         break;
@@ -1095,14 +1100,19 @@ namespace cammera
 
                         Console.ForegroundColor = ConsoleColor.Red;
 
-                        if (player.hotbar == 10) player.hotbar = 0 * player.hotbar_offset;
-                        player.Selected_block = game.Block_list[player.hotbar];
+                        if (player.hotbar == 10) player.hotbar = 0;
+                        player.Selected_block = game.Block_list[player.hotbar+player.hotbar_offset];
 
 
 
                         break;
                     case "D3":
                         player.hotbar_offset++;
+                        if(player.hotbar_offset == game.Block_list.Count-10)
+                        {
+                            player.hotbar_offset = 0;
+                        }
+                        
                         break;
                     case "K":
 
@@ -2027,7 +2037,7 @@ namespace cammera
             WriteAt("Health" + player.health.ToString(), 1, UI + 2);
             WriteAt("Oxygen" + player.oxygen.ToString(), 1, UI + 3);
             WriteAt("                                                                    ", 1, UI + 1);
-            int offset = 0;
+            int offset = player.hotbar_offset;
             for (int e = 0; e < 10; e++)
             {
                 var i = game.Block_list[e + offset];
@@ -2041,9 +2051,11 @@ namespace cammera
 
 
             }
+            WriteAt("Selected id:" + player.Selected_block.id.ToString() + "   ", 40, 12);
+
             WriteAt("Mining level " + game.player_pic_lv.ToString(), 40, 10);
 
-            int hotbar_selected = player.hotbar * player.hotbar_offset;
+            int hotbar_selected = player.hotbar ;
 
             WriteAt("^^", hotbar_selected * 2, UI + 1);
             WriteAt(player.Crafting_select.ToString() + ":" + game.recipes[player.Crafting_select].item.Name + "       ", 2, UI + 4);

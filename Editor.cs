@@ -109,7 +109,8 @@ namespace Minecraft
 
         public static void Editor_mode()
         {
-
+            Console.BackgroundColor = ConsoleColor.Black;
+            Console.Clear();
             Solid Default = new Solid("null", 0, null, default, default);
             Game Game = new Game();
 
