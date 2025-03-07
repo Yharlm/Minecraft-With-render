@@ -743,6 +743,22 @@ namespace cammera
             Default = new Solid("Wooden_pickaxe", id++, "T ", ConsoleColor.DarkYellow, Game.Background); Default.level = 3; Default.Collidable = false; Default.Category = "Item"; Game.Block_list.Add(Default);
             Default = new Solid("Iron_ingot", id++, "▄▄", ConsoleColor.DarkGray, Game.Background); Default.Collidable = false; Default.Category = "Item"; Game.Block_list.Add(Default);
             Default = new Solid("Furnace_active", id++, "▀▀", ConsoleColor.DarkGray, ConsoleColor.Magenta); Default.level = 3; Default.Collidable = false; Game.Block_list.Add(Default); // 21
+            Default = new Solid("Soil", id++, "'.", ConsoleColor.DarkYellow, ConsoleColor.Yellow); Default.level = 1; Default.Collidable = true; Game.Block_list.Add(Default);
+            Default = new Solid("Weeds", id++, "WW", ConsoleColor.DarkGreen, Game.Background); Default.level = 1; Default.Collidable = false; Game.Block_list.Add(Default);
+            Default = new Solid("Wheat", id++, "WW", ConsoleColor.Yellow, Game.Background); Default.level = 1; Default.Collidable = false; Game.Block_list.Add(Default);
+            Default = new Solid("Planted_seeds_wheat", id++, ",,", ConsoleColor.Green, Game.Background); Default.level = 1; Default.Collidable = false; Game.Block_list.Add(Default);// 25
+            Default = new Solid("Growing_seeds_wheat", id++, ";;", ConsoleColor.Green, Game.Background); Default.level = 1; Default.Collidable = false; Game.Block_list.Add(Default);
+            Default = new Solid("Growing_wheat", id++, "ii", ConsoleColor.Yellow, Game.Background); Default.level = 1; Default.Collidable = false; Game.Block_list.Add(Default);
+            Default = new Solid("Apple", id++, " `", ConsoleColor.White, ConsoleColor.Red); Default.level = 1; Default.Collidable = false; Game.Block_list.Add(Default);
+            Default = new Solid("infected_leaves", id++, "▄▀", ConsoleColor.White, ConsoleColor.DarkGray); Default.level = 1; Default.Collidable = false; Game.Block_list.Add(Default);
+
+
+
+
+
+
+
+
 
         }
 
@@ -844,9 +860,44 @@ namespace cammera
                     }
                     break;
                 case 1:
-                    if (time % 15 == 0 && grid[y - 1, x] != 0)
+                    if (time % 15 == 0 && game.Get_ByID(grid[y - 1, x]).Collidable != false)
                     {
                         grid[y, x] = 2;
+                    }
+                    if(time % 34 == 0 && grid[y - 1, x] == 0 && random.Next(1, 44) == 3)
+                    {
+                        grid[y-1, x] = game.GetBlock("Weeds").id;
+                    }
+                    break;
+
+                case 25:
+                    if (time % 34 == 0 && grid[y + 1, x] != 23 && random.Next(1, 30) == 3)
+                    {
+                        grid[y, x] = 26;
+                    }
+                    if (time % 10 == 0 && grid[y + 1, x] == 0)
+                    {
+                        grid[y, x] = 0;
+                    }
+                    break;
+                case 26:
+                    if (time % 74 == 0 && grid[y + 1, x] != 23 && random.Next(1, 30) == 3)
+                    {
+                        grid[y, x] = 27;
+                    }
+                    if (time % 10 == 0 && grid[y + 1, x] == 0)
+                    {
+                        grid[y, x] = 0;
+                    }
+                    break;
+                case 27:
+                    if (time % 74 == 0 && grid[y + 1, x] != 23 && random.Next(1,30) == 3)
+                    {
+                        grid[y, x] = 24;
+                    }
+                    if (time % 10 == 0 && grid[y + 1, x] == 0)
+                    {
+                        grid[y, x] = 0;
                     }
                     break;
 
@@ -977,6 +1028,8 @@ namespace cammera
             {
                 switch (player.Input)
                 {
+                    case "J":
+                        player.Selected_block.quantity = 99; break;
                     case "U":
                         Caves(x, y + 3, grid);
                         break;
