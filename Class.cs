@@ -5,7 +5,7 @@ namespace Minecraft
     class Player : Cordinates
 
     {
-        
+        public List<Solid> Inventory = new List<Solid>();
         public int hotbar_offset = 1;
         public bool creative = false;
         public bool Has_torch = false;

@@ -1,4 +1,5 @@
 using Minecraft;
+using System.Numerics;
 
 namespace cammera
 {
@@ -80,14 +81,14 @@ namespace cammera
                                 {
                                     if (pos.x <= pos.x1 + 8)
                                     {
-                                        Break_block(pos.x, pos.y, grid, game.GetBlock("Air"), game);
-                                        Break_block(pos.x - 1, pos.y - 1, grid, game.GetBlock("Air"), game);
-                                        Break_block(pos.x - 1, pos.y + 1, grid, game.GetBlock("Air"), game);
+                                        Break_block(pos.x, pos.y, grid, game.GetBlock("Air"), game, player);
+                                        Break_block(pos.x - 1, pos.y - 1, grid, game.GetBlock("Air"), game, player);
+                                        Break_block(pos.x - 1, pos.y + 1, grid, game.GetBlock("Air"), game, player);
                                     }
                                     if (pos.x >= pos.x1 + 14)
                                     {
-                                        Break_block(pos.x + 1, pos.y, grid, game.GetBlock("Air"), game);
-                                        Break_block(pos.x + 2, pos.y, grid, game.GetBlock("Air"), game);
+                                        Break_block(pos.x + 1, pos.y, grid, game.GetBlock("Air"), game, player);
+                                        Break_block(pos.x + 2, pos.y, grid, game.GetBlock("Air"), game, player);
 
                                     }
                                     if (pos.x >= pos.x1 + 20)
@@ -1078,7 +1079,7 @@ namespace cammera
                         Console.ForegroundColor = ConsoleColor.Red;
 
 
-                        if (player.hotbar == 0) player.hotbar = game.Block_list.Count; player.Selected_block = game.Block_list[player.hotbar + player.hotbar_offset];
+                        if (player.hotbar == 0) player.hotbar = player.Inventory.Count-1; player.Selected_block = player.Inventory[player.hotbar + player.hotbar_offset];
 
 
                         break;
@@ -1152,9 +1153,10 @@ namespace cammera
 
 
                         Console.ForegroundColor = ConsoleColor.Red;
-
+                        if (player.hotbar == player.Inventory.Count-1)
+                        { player.hotbar = 0; }
                         if (player.hotbar == 10) player.hotbar = 0;
-                        player.Selected_block = game.Block_list[player.hotbar+player.hotbar_offset];
+                        player.Selected_block = player.Inventory[player.hotbar+player.hotbar_offset];
 
 
 
@@ -1177,42 +1179,42 @@ namespace cammera
                                 {
                                     if (grid[player.y - 2, player.x] == 0)
                                     {
-                                        Break_block(player.x, player.y - 3, grid, air, game); player.special_key = null;
+                                        Break_block(player.x, player.y - 3, grid, air, game, player); player.special_key = null;
                                     }
-                                    Break_block(player.x, player.y - 2, grid, air, game); player.special_key = null;
+                                    Break_block(player.x, player.y - 2, grid, air, game, player); player.special_key = null;
 
                                 }
                                 else if (player.last_key == "D")
                                 {
-                                    Break_block(player.x + 1, player.y - 2, grid, air, game);
+                                    Break_block(player.x + 1, player.y - 2, grid, air, game, player);
                                 }
                                 else if (player.last_key == "A")
                                 {
-                                    Break_block(player.x - 1, player.y - 2, grid, air, game);
+                                    Break_block(player.x - 1, player.y - 2, grid, air, game, player);
                                 }
                             }
 
                             else if (player.last_key == "D")
                             {
                                 if (grid[player.y - 1, player.x + 1] != 0)
-                                    Break_block(player.x + 1, player.y - 1, grid, air, game);
+                                    Break_block(player.x + 1, player.y - 1, grid, air, game, player);
                                 else if (grid[player.y, player.x + 1] != 0)
-                                    Break_block(player.x + 1, player.y, grid, air, game);
+                                    Break_block(player.x + 1, player.y, grid, air, game, player);
                                 else if (grid[player.y - 2, player.x + 1] != 0)
-                                    Break_block(player.x + 1, player.y - 2, grid, air, game);
+                                    Break_block(player.x + 1, player.y - 2, grid, air, game, player);
                             }
                             else if (player.last_key == "A")
                             {
                                 if (grid[player.y - 1, player.x - 1] != 0)
-                                    Break_block(player.x - 1, player.y - 1, grid, air, game);
+                                    Break_block(player.x - 1, player.y - 1, grid, air, game, player);
                                 else if (grid[player.y, player.x - 1] != 0)
-                                    Break_block(player.x - 1, player.y, grid, air, game);
+                                    Break_block(player.x - 1, player.y, grid, air, game, player);
                                 else if (grid[player.y - 2, player.x - 1] != 0)
-                                    Break_block(player.x - 1, player.y - 2, grid, air, game);
+                                    Break_block(player.x - 1, player.y - 2, grid, air, game, player);
                             }
                             else if (player.last_key == "S")
                             {
-                                Break_block(player.x, player.y + 1, grid, air, game);
+                                Break_block(player.x, player.y + 1, grid, air, game, player);
                             }
                         }
 
@@ -1394,13 +1396,22 @@ namespace cammera
 
         }
 
-        static void Break_block(int x, int y, int[,] grid, Solid Block, Game game)
+        static void Break_block(int x, int y, int[,] grid, Solid Block, Game game, Player player)
         {
 
-            if (game.player_pic_lv >= game.Get_ByID(grid[y, x]).level)
+            if (game.player_pic_lv >= game.Get_ByID(grid[y, x]).level && grid[y,x] != 0)
             {
-                game.Block_list.Find(i => i.id == grid[y, x]).quantity++;
-                grid[y, x] = Block.id;
+                var selected = game.Block_list.Find(i => i.id == grid[y, x]);
+                if(player.Inventory.Contains(selected))
+                {
+                    selected.quantity++;
+                }
+                else
+                {
+                    player.Inventory.Add(selected);
+                    selected.quantity++;
+                }
+                grid[y, x] = 0;
             }
 
 
@@ -2091,9 +2102,28 @@ namespace cammera
             WriteAt("Oxygen" + player.oxygen.ToString(), 1, UI + 3);
             WriteAt("                                                                    ", 1, UI + 1);
             int offset = player.hotbar_offset;
-            for (int e = 0; e < 10; e++)
+            //for (int e = 0; e < 10; e++)
+            //{
+            //    if (player.Inventory.Count == 0)
+            //    {
+            //        continue;
+            //    };
+            //    var i = player.Inventory[e + offset];
+                
+            //    Console.ForegroundColor = i.FG;
+            //    Console.BackgroundColor = i.BG;
+            //    WriteAt(i.Texture.ToString(), c * 2, UI);
+            //    Console.BackgroundColor = ConsoleColor.Black;
+            //    Console.ForegroundColor = ConsoleColor.White;
+            //    WriteAt(i.quantity.ToString(), c * 2, UI - 1);
+            //    c++;
+
+
+            //}
+
+            foreach(var i in player.Inventory)
             {
-                var i = game.Block_list[e + offset];
+                
                 Console.ForegroundColor = i.FG;
                 Console.BackgroundColor = i.BG;
                 WriteAt(i.Texture.ToString(), c * 2, UI);
@@ -2101,8 +2131,6 @@ namespace cammera
                 Console.ForegroundColor = ConsoleColor.White;
                 WriteAt(i.quantity.ToString(), c * 2, UI - 1);
                 c++;
-
-
             }
             WriteAt("Selected id:" + player.Selected_block.id.ToString() + "   ", 40, 12);
 
