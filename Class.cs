@@ -21,7 +21,7 @@ namespace Minecraft
         public bool Holding = false;
         public List<Non_solid> Block_Back_list = new List<Non_solid>();
         public Cordinates Spawnpoint = new Cordinates();
-        
+
 
 
         public bool is_swiming = false;
@@ -61,7 +61,7 @@ namespace Minecraft
 
     public class Cordinates
     {
-      
+
         public int x = 11;
         public int y = 11;
         public int x1 = 0;
@@ -91,7 +91,7 @@ namespace Minecraft
         public int player_pic_lv = 2;
         public bool day = true;
         public float cycle = 0f;
-        public bool Awaiting_update=false;
+        public bool Awaiting_update = false;
         public ConsoleColor Background = ConsoleColor.Cyan;
         protected static int origRow;
         protected static int origCol;

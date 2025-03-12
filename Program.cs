@@ -1,5 +1,6 @@
 using Minecraft;
 using System.Numerics;
+using System.Runtime.Intrinsics.X86;
 
 namespace cammera
 {
@@ -347,7 +348,7 @@ namespace cammera
             bool saved = true;
             int[,] grid = new int[500, 1000];
             int selected_button = 0;
-            
+
             while (option != null && !selected)
             {
                 Console.Title = "Minecraft";
@@ -372,8 +373,8 @@ namespace cammera
 
                 var not_selected_color = ConsoleColor.Gray;
                 var selected_color = ConsoleColor.Blue;
-                
-                
+
+
 
                 //Console.WriteLine("Welcome to bootleg-craft");
                 int counter2 = 12;
@@ -387,12 +388,12 @@ namespace cammera
 
                 Console.BackgroundColor = ConsoleColor.Gray;
                 if (selected_button == 2) { Console.BackgroundColor = selected_color; }
-                WriteAt("     Load World    ", buttons_x, buttons_y+3);
+                WriteAt("     Load World    ", buttons_x, buttons_y + 3);
                 Console.BackgroundColor = ConsoleColor.Cyan;
 
                 Console.BackgroundColor = ConsoleColor.Gray;
                 if (selected_button == 3) { Console.BackgroundColor = selected_color; }
-                WriteAt("       Editor      ", buttons_x, buttons_y+6);
+                WriteAt("       Editor      ", buttons_x, buttons_y + 6);
                 Console.BackgroundColor = ConsoleColor.Cyan;
 
                 //option = Console.ReadLine();
@@ -406,7 +407,6 @@ namespace cammera
                     option = selected_button;
                 }
 
-                
 
 
 
@@ -415,7 +415,8 @@ namespace cammera
 
 
 
-                    switch (option)
+
+                switch (option)
                 {
                     case 1:
                         selected = true;
@@ -450,7 +451,7 @@ namespace cammera
                 }
 
             }
-            Console.BackgroundColor= ConsoleColor.Black;
+            Console.BackgroundColor = ConsoleColor.Black;
             Console.Clear();
 
 
@@ -865,9 +866,9 @@ namespace cammera
                     {
                         grid[y, x] = 2;
                     }
-                    if(time % 34 == 0 && grid[y - 1, x] == 0 && random.Next(1, 44) == 3)
+                    if (time % 34 == 0 && grid[y - 1, x] == 0 && random.Next(1, 44) == 3)
                     {
-                        grid[y-1, x] = game.GetBlock("Weeds").id;
+                        grid[y - 1, x] = game.GetBlock("Weeds").id;
                     }
                     break;
 
@@ -892,7 +893,7 @@ namespace cammera
                     }
                     break;
                 case 27:
-                    if (time % 74 == 0 && grid[y + 1, x] != 23 && random.Next(1,30) == 3)
+                    if (time % 74 == 0 && grid[y + 1, x] != 23 && random.Next(1, 30) == 3)
                     {
                         grid[y, x] = 24;
                     }
@@ -1072,8 +1073,8 @@ namespace cammera
                         Shoot_Projectile(player, game, player_cords, player.Entity_hotbar);
                         break;
                     case "D1":
-                        
-                        if(player.hotbar == 0)
+
+                        if (player.hotbar == 0)
                         {
                             break;
                         }
@@ -1150,7 +1151,7 @@ namespace cammera
                             break;
                         }
                     case "D2":
-                        if (player.hotbar == player.Inventory.Count-1)
+                        if (player.hotbar == player.Inventory.Count - 1)
                         {
                             break;
                         }
@@ -1161,11 +1162,11 @@ namespace cammera
                         break;
                     case "D3":
                         player.hotbar_offset++;
-                        if(player.hotbar_offset == game.Block_list.Count-10)
+                        if (player.hotbar_offset == game.Block_list.Count - 10)
                         {
                             player.hotbar_offset = 0;
                         }
-                        
+
                         break;
                     case "K":
 
@@ -1397,10 +1398,10 @@ namespace cammera
         static void Break_block(int x, int y, int[,] grid, Solid Block, Game game, Player player)
         {
 
-            if (game.player_pic_lv >= game.Get_ByID(grid[y, x]).level && grid[y,x] != 0)
+            if (game.player_pic_lv >= game.Get_ByID(grid[y, x]).level && grid[y, x] != 0)
             {
                 var selected = game.Block_list.Find(i => i.id == grid[y, x]);
-                if(player.Inventory.Contains(selected))
+                if (player.Inventory.Contains(selected))
                 {
                     selected.quantity++;
                 }
@@ -1685,7 +1686,7 @@ namespace cammera
             Biome Desert = new Biome();
             Desert.Blocks = new List<Solid>();
             Desert.Blocks.Add(game.GetBlock("Sand"));
-            Desert.x1 = random.Next(122, 888);
+            Desert.x1 =500;
             Desert.length = random.Next(46, 178);
 
 
@@ -1705,17 +1706,34 @@ namespace cammera
             int c = 0;
             int sea_level = 70;
 
-            
+
             for (int j = 2; j < Width; j++)
             {
-                if(j == Desert.x1)
+                if (Desert.x1 <= j && Desert.length+ Desert.x1 >= j)
                 {
-                    for (int i = 0; i < Desert.length; i++)
+                    c = random.Next(min, max + 1);
+                    if (c == min)
+                    { Height++; }
+                    else if (c == max)
+                    { Height--; }
+
+                    Fill_block(j, Height, grid, game.GetBlock("Sand"));
+
+                    int C = 1;
+                    while (C < dirt_Height)
                     {
-                        Fill_block(j, Height, grid, game.GetBlock("Sand"));
-                        continue;
+                        Fill_block(j, Height + C, grid, game.GetBlock("Sand"));
+                        C++;
                     }
+
+                    while (C < stone_Height)
+                    {
+                        Fill_block(j, Height + C, grid, game.GetBlock("Sand"));
+                        C++;
+                    }
+                    continue;
                 }
+                
                 c = random.Next(min, max + 1);
                 if (c == min)
                 { Height++; }
@@ -1738,9 +1756,9 @@ namespace cammera
                 }
                 //Caves(j, random.Next(sea_level, 100), grid);
             }
+            
 
-
-            for (int j = 0; j < Width - 12;)
+                for (int j = 13; j < Width - 12;)
             {
                 int coalN = random.Next(1, 40);
                 int vein = random.Next(1, 6);
@@ -1751,7 +1769,7 @@ namespace cammera
                 }
                 j++;
             }
-            for (int j = 0; j < Width - 12;)
+            for (int j =13; j < Width - 12;)
             {
                 int ironN = random.Next(1, 40);
                 int vein = random.Next(1, 6);
@@ -1762,7 +1780,7 @@ namespace cammera
                 j++;
             }
 
-            for (int j = 0; j < Width - 30; j++)
+            for (int j = 13; j < Width - 30; j++)
             {
                 for (int i = sea_level - 10; i < sea_level + 50; i++)
                 {
@@ -1772,10 +1790,13 @@ namespace cammera
                     }
                 }
             }
-
+            
             for (int j = 12; j < Width - 12; j++)
             {
-
+                if (Desert.x1 <= j && Desert.length + Desert.x1 >= j)
+                {
+                    continue;
+                }
                 int count = random.Next(0, 11);
                 while (count > 0)
                 {
@@ -2129,7 +2150,7 @@ namespace cammera
             //        continue;
             //    };
             //    var i = player.Inventory[e + offset];
-                
+
             //    Console.ForegroundColor = i.FG;
             //    Console.BackgroundColor = i.BG;
             //    WriteAt(i.Texture.ToString(), c * 2, UI);
@@ -2141,9 +2162,9 @@ namespace cammera
 
             //}
 
-            foreach(var i in player.Inventory)
+            foreach (var i in player.Inventory)
             {
-                
+
                 Console.ForegroundColor = i.FG;
                 Console.BackgroundColor = i.BG;
                 WriteAt(i.Texture.ToString(), c * 2, UI);
@@ -2156,7 +2177,7 @@ namespace cammera
 
             WriteAt("Mining level " + game.player_pic_lv.ToString(), 40, 10);
 
-            int hotbar_selected = player.hotbar ;
+            int hotbar_selected = player.hotbar;
 
             WriteAt("^^", hotbar_selected * 2, UI + 1);
             WriteAt(player.Crafting_select.ToString() + ":" + game.recipes[player.Crafting_select].item.Name + "       ", 2, UI + 4);
