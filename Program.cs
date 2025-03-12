@@ -489,7 +489,7 @@ namespace cammera
                     item.quantity = 99;
                 }
             }
-
+            player.Inventory.Add(Game.GetBlock("Air"));
             double block_tick = 0;
             double tick = 0.001;
             double time = 0;
@@ -1072,14 +1072,18 @@ namespace cammera
                         Shoot_Projectile(player, game, player_cords, player.Entity_hotbar);
                         break;
                     case "D1":
+                        
+                        if(player.hotbar == 0)
+                        {
+                            break;
+                        }
                         player.hotbar--;
-
+                        player.Selected_block = player.Inventory[player.hotbar + player.hotbar_offset];
 
 
                         Console.ForegroundColor = ConsoleColor.Red;
 
 
-                        if (player.hotbar == 0) player.hotbar = player.Inventory.Count-1; player.Selected_block = player.Inventory[player.hotbar + player.hotbar_offset];
 
 
                         break;
@@ -1146,18 +1150,12 @@ namespace cammera
                             break;
                         }
                     case "D2":
-                        player.hotbar++;
-
-
-
-
-
-                        Console.ForegroundColor = ConsoleColor.Red;
                         if (player.hotbar == player.Inventory.Count-1)
-                        { player.hotbar = 0; }
-                        if (player.hotbar == 10) player.hotbar = 0;
-                        player.Selected_block = player.Inventory[player.hotbar+player.hotbar_offset];
-
+                        {
+                            break;
+                        }
+                        player.hotbar++;
+                        player.Selected_block = player.Inventory[player.hotbar + player.hotbar_offset];
 
 
                         break;
@@ -1682,6 +1680,20 @@ namespace cammera
         static void Generate_terrain(Game game, int[,] grid)
         {
             Random random = new Random();
+
+
+            Biome Desert = new Biome();
+            Desert.Blocks = new List<Solid>();
+            Desert.Blocks.Add(game.GetBlock("Sand"));
+            Desert.x1 = random.Next(122, 888);
+            Desert.length = random.Next(46, 178);
+
+
+
+
+
+
+
             int Width = 1000;
             ; int Height = 45
             ;
@@ -1693,9 +1705,17 @@ namespace cammera
             int c = 0;
             int sea_level = 70;
 
-
+            
             for (int j = 2; j < Width; j++)
             {
+                if(j == Desert.x1)
+                {
+                    for (int i = 0; i < Desert.length; i++)
+                    {
+                        Fill_block(j, Height, grid, game.GetBlock("Sand"));
+                        continue;
+                    }
+                }
                 c = random.Next(min, max + 1);
                 if (c == min)
                 { Height++; }

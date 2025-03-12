@@ -6,7 +6,7 @@ namespace Minecraft
 
     {
         public List<Solid> Inventory = new List<Solid>();
-        public int hotbar_offset = 1;
+        public int hotbar_offset = 0;
         public bool creative = false;
         public bool Has_torch = false;
         public string Looking = "";
@@ -87,6 +87,7 @@ namespace Minecraft
     }
     class Game
     {
+        public List<Biome> biomes;
         public int player_pic_lv = 2;
         public bool day = true;
         public float cycle = 0f;
@@ -180,7 +181,16 @@ namespace Minecraft
         }
     }
 
-    
+    class Biome
+    {
+        public int x1;
+        public int length;
+        public string Name;
+        public List<Solid> Blocks;
+        public List<Entity> Mobs;
+        public List<Structure> Structures;
+
+    }
     class Non_Existent(int id, string name, int amount)
     {
         public int Id = id;
