@@ -1,4 +1,5 @@
 using Minecraft;
+using System.Drawing;
 using System.Numerics;
 using System.Runtime.Intrinsics.X86;
 
@@ -266,6 +267,8 @@ namespace cammera
 
         static async Task Main(string[] args)
         {
+            var Noon = Console.BackgroundColor;
+            
             //var database = new Database();
 
             //// Call the async method and await its result
@@ -371,8 +374,8 @@ namespace cammera
 
 
 
-                var not_selected_color = ConsoleColor.Gray;
-                var selected_color = ConsoleColor.Blue;
+                
+                var selected_color = Noon;
 
 
 
@@ -1582,7 +1585,7 @@ namespace cammera
                 if (Tree_r >= tree_rate - 2)
                 {
 
-                    structure(tree, i, grid, game);
+                    structure(tree, i, grid, game,game.GetBlock("Grass"));
                     i += 5;
                 }
 
@@ -1593,20 +1596,10 @@ namespace cammera
             //structure(House, 31, grid, player);
         }
 
-        static void structure(object struc, int Local_x, int[,] grid, Game game)
+        static void structure(object struc, int Local_x, int[,] grid, Game game,Solid required)
         {
             Structure structure = (Structure)struc;
-            //Block_ids block = (Block_ids)Block;
-            //Solid tile = (Solid)Block;
-            //int[,] str =
-            //{
-            //    {0,0,1,0,0 },
-            //    {0,0,1,0,0 },
-            //    {0,1,1,0,0 },
-            //    {0,0,1,0,0 },
-            //    {0,0,1,0,0 }
-            //};
-
+            
             int x = structure.Struct.GetLength(1);
             int y = structure.Struct.GetLength(0);
 
@@ -1616,24 +1609,27 @@ namespace cammera
                 Local_y++;
             }
             Local_y -= y;
-            for (int i = Local_y; i < Local_y + y; i++)
+
+            if(grid[Local_y,Local_x] == required.id || required == null)
             {
-                for (int j = Local_x; j < Local_x + x; j++)
+                for (int i = Local_y; i < Local_y + y; i++)
                 {
-                    if (structure.Struct[i - Local_y, j - Local_x] == 0)
+                    for (int j = Local_x; j < Local_x + x; j++)
                     {
-                        continue;
+                        if (structure.Struct[i - Local_y, j - Local_x] == 0)
+                        {
+                            continue;
+                        }
+                        int ID = structure.Struct[i - Local_y, j - Local_x];
+
+
+                        Solid block = game.Block_list.Find(x => x.id == structure.Struct[i - Local_y, j - Local_x]);
+                        Fill_block(j, i, grid, block);
+
                     }
-                    int ID = structure.Struct[i - Local_y, j - Local_x];
-
-
-                    Solid block = game.Block_list.Find(x => x.id == structure.Struct[i - Local_y, j - Local_x]);
-                    Fill_block(j, i, grid, block);
-
-
-
                 }
             }
+            
 
 
         }
@@ -1816,17 +1812,21 @@ namespace cammera
 
 
         }
-
+        
         private static void Fill_block(int x, int y, int[,] grid, Solid Block)
         {
+            
+            if(x >= 0 || y >= 0)
+            {
+                Console.ForegroundColor = Block.FG;
+                Console.BackgroundColor = Block.BG;
+                grid[y, x] = Block.id;
+                //WriteAt(Block.Texture, x * 2, y);
+                Console.ForegroundColor = default;
 
-            Console.ForegroundColor = Block.FG;
-            Console.BackgroundColor = Block.BG;
-            grid[y, x] = Block.id;
-            //WriteAt(Block.Texture, x * 2, y);
-            Console.ForegroundColor = default;
-
-            Console.BackgroundColor = ConsoleColor.Cyan;
+                Console.BackgroundColor = ConsoleColor.Cyan;
+            }
+            
         }
 
         public static void Caves(int x, int y, int[,] grid)

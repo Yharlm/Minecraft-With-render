@@ -87,6 +87,7 @@ namespace Minecraft
     }
     class Game
     {
+        public ConsoleColor Night_bg;
         public List<Biome> biomes;
         public int player_pic_lv = 2;
         public bool day = true;
