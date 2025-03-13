@@ -1,7 +1,4 @@
 using Minecraft;
-using System.Drawing;
-using System.Numerics;
-using System.Runtime.Intrinsics.X86;
 
 namespace cammera
 {
@@ -268,7 +265,7 @@ namespace cammera
         static async Task Main(string[] args)
         {
             var Noon = Console.BackgroundColor;
-            
+
             //var database = new Database();
 
             //// Call the async method and await its result
@@ -286,7 +283,7 @@ namespace cammera
             Console.CursorVisible = false;
             Game Game = new Game();
             Player player = new Player();
-
+            Game.Night_bg = Noon;
 
             Entity Mob = new Entity(null, 0, null, "EE"); Game.Entity_list.Add(Mob);
 
@@ -374,7 +371,7 @@ namespace cammera
 
 
 
-                
+
                 var selected_color = Noon;
 
 
@@ -555,166 +552,180 @@ namespace cammera
 
 
                 Game.cycle += 0.1f;
+                
                 if (Game.cycle >= 120)
                 { Game.day = false; }
-                else
+                    else
                 { Game.day = true; }
                 if (Game.cycle == 240)
                 { Game.cycle = 0; }
 
 
-                for (int i = 0; i < camera.View.GetLength(0); i++)
-                {
-                    for (int j = 0; j < camera.View.GetLength(1); j++)
-                    {
-                        //if (i <= size - 1 && j == size - 1 || i == 0 && j == 0 || i == size - 1 && j == 0 || i == 0 && j == size - 1)
-                        //{ continue; }
-                        Render_block(Game.Get_ByID(grid[i + camera.Position.y, j + camera.Position.x]), j, i, Game, camera, player, grid);
 
 
 
-                        //Fill_block(player.x, player.y, camera.View, Game.GetBlock("Stone"));
-                        Console.BackgroundColor = ConsoleColor.White;
-                        Console.ForegroundColor = ConsoleColor.Black;
-                        //WriteAt("EE",player.x*2,player.y);
-
-                        if (!Check_area(grid, player.x, player.y, 16, 6) && !Game.day)
-                        {
-                            Console.BackgroundColor = ConsoleColor.Black;
-                            Console.ForegroundColor = ConsoleColor.White;
-
-                        }
-
-                        WriteAt("..", camera.View.GetLength(1) - 1, (camera.View.GetLength(0) / 2) - 1);
-                        WriteAt("  ", camera.View.GetLength(1) - 1, camera.View.GetLength(0) / 2);
-                        Console.ForegroundColor = default;
-                        Console.BackgroundColor = ConsoleColor.Cyan;
-                    }
-                    try
-                    {
-                        foreach (Sprites Sprites in Game.Displayed_sprites)
-                        {
-                            int x = Sprites.pos.x - camera.Position.x;
-                            int y = Sprites.pos.y - camera.Position.y;
 
 
-                            if (Sprites.pos.x >= camera.Position.x && Sprites.pos.x <= camera.Position.x + camera.View.GetLength(1) &&
-                                Sprites.pos.y >= camera.Position.y && Sprites.pos.y <= camera.Position.y + camera.View.GetLength(0))
-                            {
-                                for (int a = 0; a < Sprites.sprite.Length; a++)
-                                {
-                                    for (int b = 0; b < Sprites.sprite[a].Length; b++)
-                                    {
-                                        char c = sprite.sprite[a][b];
-                                        if (c != ' ')
-                                        {
-                                            switch (c)
-                                            {
-                                                case 'R':
-                                                    Console.ForegroundColor = ConsoleColor.Red;
-                                                    break;
-                                                case 'W':
-                                                    Console.ForegroundColor = ConsoleColor.White;
-                                                    break;
-                                            }
-                                            WriteAt("█", x * 2 + b, y + a);
-                                        }
 
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                Game.Displayed_sprites.Remove(Sprites);
-                            }
-                            Sprites.despawn(Game);
-                        }
-                    }
-                    catch { }
-                }
-                if (time % 2 == 0)
-                {
-                    for (int i = 0; i < camera.View.GetLength(0) * 2; i++)
-                    {
-                        for (int j = 0; j < camera.View.GetLength(1) * 2; j++)
-                        {
 
-                            Block_Update(camera, j + camera.Position.x, i + camera.Position.y, grid, Game, time);
-                        }
-                    }
-                }
-                if (player.oxygen <= 0 && Game.curent_tick) { player.health -= 1; }
-                if (grid[player.y - 1, player.x] == 5)
-                {
-                    player.is_swiming = true;
-                    if (Game.curent_tick)
-                    {
-                        if (player.oxygen >= 0) player.oxygen -= 0.5;
-                        Print_window(camera, Game, player);
-                    }
-                }
                 else
                 {
-                    player.is_swiming = false;
-                }
+                    Game.day = false;
 
-                if (Game.Get_ByID(grid[player.y + 1, player.x]).Collidable == false && Game.curent_tick && player.grounded)
-                {
 
-                    if (player.is_swiming)
+                    for (int i = 0; i < camera.View.GetLength(0); i++)
                     {
-                        if (time % 2 == 0) { player.y++; }
+                        for (int j = 0; j < camera.View.GetLength(1); j++)
+                        {
+                            //if (i <= size - 1 && j == size - 1 || i == 0 && j == 0 || i == size - 1 && j == 0 || i == 0 && j == size - 1)
+                            //{ continue; }
+                            Render_block(Game.Get_ByID(grid[i + camera.Position.y, j + camera.Position.x]), j, i, Game, camera, player, grid);
 
+
+
+                            //Fill_block(player.x, player.y, camera.View, Game.GetBlock("Stone"));
+                            Console.BackgroundColor = ConsoleColor.White;
+                            Console.ForegroundColor = ConsoleColor.Black;
+                            //WriteAt("EE",player.x*2,player.y);
+
+                            if (!Check_area(grid, player.x, player.y, 16, 6) && !Game.day)
+                            {
+                                Console.BackgroundColor = ConsoleColor.Black;
+                                Console.ForegroundColor = ConsoleColor.White;
+
+                            }
+
+                            WriteAt("..", camera.View.GetLength(1) - 1, (camera.View.GetLength(0) / 2) - 1);
+                            WriteAt("  ", camera.View.GetLength(1) - 1, camera.View.GetLength(0) / 2);
+                            Console.ForegroundColor = default;
+                            Console.BackgroundColor = ConsoleColor.Cyan;
+                        }
+                        try
+                        {
+                            foreach (Sprites Sprites in Game.Displayed_sprites)
+                            {
+                                int x = Sprites.pos.x - camera.Position.x;
+                                int y = Sprites.pos.y - camera.Position.y;
+
+
+                                if (Sprites.pos.x >= camera.Position.x && Sprites.pos.x <= camera.Position.x + camera.View.GetLength(1) &&
+                                    Sprites.pos.y >= camera.Position.y && Sprites.pos.y <= camera.Position.y + camera.View.GetLength(0))
+                                {
+                                    for (int a = 0; a < Sprites.sprite.Length; a++)
+                                    {
+                                        for (int b = 0; b < Sprites.sprite[a].Length; b++)
+                                        {
+                                            char c = sprite.sprite[a][b];
+                                            if (c != ' ')
+                                            {
+                                                switch (c)
+                                                {
+                                                    case 'R':
+                                                        Console.ForegroundColor = ConsoleColor.Red;
+                                                        break;
+                                                    case 'W':
+                                                        Console.ForegroundColor = ConsoleColor.White;
+                                                        break;
+                                                }
+                                                WriteAt("█", x * 2 + b, y + a);
+                                            }
+
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    Game.Displayed_sprites.Remove(Sprites);
+                                }
+                                Sprites.despawn(Game);
+                            }
+                        }
+                        catch { }
+                    }
+                    if (time % 2 == 0)
+                    {
+                        for (int i = 0; i < camera.View.GetLength(0) * 2; i++)
+                        {
+                            for (int j = 0; j < camera.View.GetLength(1) * 2; j++)
+                            {
+
+                                Block_Update(camera, j + camera.Position.x, i + camera.Position.y, grid, Game, time);
+                            }
+                        }
+                    }
+                    if (player.oxygen <= 0 && Game.curent_tick) { player.health -= 1; }
+                    if (grid[player.y - 1, player.x] == 5)
+                    {
+                        player.is_swiming = true;
+                        if (Game.curent_tick)
+                        {
+                            if (player.oxygen >= 0) player.oxygen -= 0.5;
+                            Print_window(camera, Game, player);
+                        }
                     }
                     else
                     {
-                        player.y++;
-                        if (player.oxygen < 20 && Game.curent_tick) { player.oxygen += 0.5; }
+                        player.is_swiming = false;
                     }
 
-                    //Thread.Sleep(100);
+                    if (Game.Get_ByID(grid[player.y + 1, player.x]).Collidable == false && Game.curent_tick && player.grounded)
+                    {
+
+                        if (player.is_swiming)
+                        {
+                            if (time % 2 == 0) { player.y++; }
+
+                        }
+                        else
+                        {
+                            player.y++;
+                            if (player.oxygen < 20 && Game.curent_tick) { player.oxygen += 0.5; }
+                        }
+
+                        //Thread.Sleep(100);
+
+
+                    }
+                    if (grid[player.y, player.x] == 12)
+                    {
+                        player.grounded = false;
+                    }
+
+                    else
+                    {
+                        player.grounded = true;
+                    }
+
+                    if (player.health <= 0)
+                    {
+                        Console.BackgroundColor = ConsoleColor.Black;
+                        Console.Clear();
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        WriteAt("YOU ARE DEAD", 20, 11);
+                        Thread.Sleep(2000);
+                        WriteAt("[idiot]", 22, 12);
+                        Thread.Sleep(500);
+                        WriteAt("[idiot].", 22, 12);
+                        Thread.Sleep(500);
+                        WriteAt("[idiot]..", 22, 12);
+                        Thread.Sleep(500);
+                        WriteAt("[idiot]...", 22, 12);
+
+                        Console.ForegroundColor = default;
+
+                        Thread.Sleep(2000);
+                        player.health = 100;
+
+                        player.x = player.Spawnpoint.x;
+                        player.y = player.Spawnpoint.y;
+
+                    }
+
 
 
                 }
-                if (grid[player.y, player.x] == 12)
-                {
-                    player.grounded = false;
-                }
-
-                else
-                {
-                    player.grounded = true;
-                }
-
-                if (player.health <= 0)
-                {
-                    Console.BackgroundColor = ConsoleColor.Black;
-                    Console.Clear();
-                    Console.ForegroundColor = ConsoleColor.Red;
-                    WriteAt("YOU ARE DEAD", 20, 11);
-                    Thread.Sleep(2000);
-                    WriteAt("[idiot]", 22, 12);
-                    Thread.Sleep(500);
-                    WriteAt("[idiot].", 22, 12);
-                    Thread.Sleep(500);
-                    WriteAt("[idiot]..", 22, 12);
-                    Thread.Sleep(500);
-                    WriteAt("[idiot]...", 22, 12);
-
-                    Console.ForegroundColor = default;
-
-                    Thread.Sleep(2000);
-                    player.health = 100;
-
-                    player.x = player.Spawnpoint.x;
-                    player.y = player.Spawnpoint.y;
-
-                }
-
-
 
             }
-
         }
 
         private static void Update_Textures(Game Game)
@@ -1454,7 +1465,19 @@ namespace cammera
             if (game.day)
             {
                 Console.ForegroundColor = block.FG;
-                Console.BackgroundColor = block.BG;
+                if (block.BG == game.Background)
+                {
+                    if (game.cycle <= 30 || game.cycle >= 100)
+                    {
+                        Console.BackgroundColor = game.Night_bg;
+                    }
+                    else
+                    {
+                        Console.BackgroundColor = block.BG;
+                    }
+                    
+                }
+                
             }
 
 
@@ -1585,7 +1608,7 @@ namespace cammera
                 if (Tree_r >= tree_rate - 2)
                 {
 
-                    structure(tree, i, grid, game,game.GetBlock("Grass"));
+                    structure(tree, i, grid, game, game.GetBlock("Grass"));
                     i += 5;
                 }
 
@@ -1596,10 +1619,10 @@ namespace cammera
             //structure(House, 31, grid, player);
         }
 
-        static void structure(object struc, int Local_x, int[,] grid, Game game,Solid required)
+        static void structure(object struc, int Local_x, int[,] grid, Game game, Solid required)
         {
             Structure structure = (Structure)struc;
-            
+
             int x = structure.Struct.GetLength(1);
             int y = structure.Struct.GetLength(0);
 
@@ -1610,7 +1633,7 @@ namespace cammera
             }
             Local_y -= y;
 
-            if(grid[Local_y,Local_x] == required.id || required == null)
+            if (grid[Local_y, Local_x] == required.id || required == null)
             {
                 for (int i = Local_y; i < Local_y + y; i++)
                 {
@@ -1629,7 +1652,7 @@ namespace cammera
                     }
                 }
             }
-            
+
 
 
         }
@@ -1682,7 +1705,7 @@ namespace cammera
             Biome Desert = new Biome();
             Desert.Blocks = new List<Solid>();
             Desert.Blocks.Add(game.GetBlock("Sand"));
-            Desert.x1 =500;
+            Desert.x1 = 500;
             Desert.length = random.Next(46, 178);
 
 
@@ -1705,7 +1728,7 @@ namespace cammera
 
             for (int j = 2; j < Width; j++)
             {
-                if (Desert.x1 <= j && Desert.length+ Desert.x1 >= j)
+                if (Desert.x1 <= j && Desert.length + Desert.x1 >= j)
                 {
                     c = random.Next(min, max + 1);
                     if (c == min)
@@ -1729,7 +1752,7 @@ namespace cammera
                     }
                     continue;
                 }
-                
+
                 c = random.Next(min, max + 1);
                 if (c == min)
                 { Height++; }
@@ -1752,9 +1775,9 @@ namespace cammera
                 }
                 //Caves(j, random.Next(sea_level, 100), grid);
             }
-            
 
-                for (int j = 13; j < Width - 12;)
+
+            for (int j = 13; j < Width - 12;)
             {
                 int coalN = random.Next(1, 40);
                 int vein = random.Next(1, 6);
@@ -1765,7 +1788,7 @@ namespace cammera
                 }
                 j++;
             }
-            for (int j =13; j < Width - 12;)
+            for (int j = 13; j < Width - 12;)
             {
                 int ironN = random.Next(1, 40);
                 int vein = random.Next(1, 6);
@@ -1786,7 +1809,7 @@ namespace cammera
                     }
                 }
             }
-            
+
             for (int j = 12; j < Width - 12; j++)
             {
                 if (Desert.x1 <= j && Desert.length + Desert.x1 >= j)
@@ -1812,11 +1835,11 @@ namespace cammera
 
 
         }
-        
+
         private static void Fill_block(int x, int y, int[,] grid, Solid Block)
         {
-            
-            if(x >= 0 || y >= 0)
+
+            if (x >= 0 || y >= 0)
             {
                 Console.ForegroundColor = Block.FG;
                 Console.BackgroundColor = Block.BG;
@@ -1826,7 +1849,7 @@ namespace cammera
 
                 Console.BackgroundColor = ConsoleColor.Cyan;
             }
-            
+
         }
 
         public static void Caves(int x, int y, int[,] grid)
