@@ -312,6 +312,7 @@ namespace cammera
             recipe = new Recipe(); recipe.item = Game.GetBlock("Wood_Background"); placehold = new Non_Existent(15, "Wooden_planks", 1); recipe.num = 2; recipe.required.Add(placehold); Game.recipes.Add(recipe);
             recipe = new Recipe(); recipe.item = Game.GetBlock("Torch"); placehold = new Non_Existent(15, "Wooden_planks", 1); recipe.num = 4; recipe.required.Add(placehold); placehold = new Non_Existent(8, "Coal_ore", 1); recipe.required.Add(placehold); Game.recipes.Add(recipe);
             recipe = new Recipe(); recipe.item = Game.GetBlock("Wooden_pickaxe"); placehold = new Non_Existent(15, "Wooden_planks", 5); recipe.num = 1; recipe.required.Add(placehold); Game.recipes.Add(recipe);
+            recipe = new Recipe(); recipe.item = Game.GetBlock("h_Wooden_hoe"); placehold = new Non_Existent(Game.GetBlock("h_Wooden_hoe").id, "Wooden_planks", 5); recipe.num = 1; recipe.required.Add(placehold); Game.recipes.Add(recipe);
 
 
 
@@ -431,6 +432,8 @@ namespace cammera
                         Console.WriteLine("Loading...");
                         grid = Save.LoadWorld(Files.GetSaveFilePath("SaveFile"), "World.json");
                         backpack = Save.Load_inventory(Files.GetSaveFilePath("SaveFile"), "Backpack.json");
+
+
                         break;
                     case 3:
                         selected = true;
@@ -490,6 +493,14 @@ namespace cammera
                     item.quantity = 99;
                 }
             }
+            foreach (Solid item in Game.Block_list)
+            {
+                if (item.quantity > 0)
+                {
+                    player.Inventory.Add(item);
+                }
+
+            }
             player.Inventory.Add(Game.GetBlock("Air"));
             double block_tick = 0;
             double tick = 0.001;
@@ -538,26 +549,28 @@ namespace cammera
                     }
 
                 }
-                else
-                {
-                    foreach (Solid block in Game.Block_list)
-                    {
-                        if (block.BG == Game.Background || block.BG == ConsoleColor.DarkGray)
-                        {
-                            block.BG = ConsoleColor.Cyan;
-                        }
-                    }
+                //else
+                //{
+                //    foreach (Solid block in Game.Block_list)
+                //    {
+                //        if (block.BG == Game.Background || block.BG == ConsoleColor.DarkGray)
+                //        {
+                //            block.BG = ConsoleColor.Cyan;
+                //        }
+                //    }
 
-                }
+                //}
 
 
                 Game.cycle += 0.1f;
-                
-                if (Game.cycle >= 120)
-                { Game.day = false; }
-                    else
+
+                if (Game.cycle <= 120)
                 { Game.day = true; }
-                if (Game.cycle == 240)
+                else 
+                { Game.day = false; }
+
+
+                if (Game.cycle >= 240)
                 { Game.cycle = 0; }
 
 
@@ -570,7 +583,7 @@ namespace cammera
 
                 else
                 {
-                    Game.day = false;
+                    Game.day = true;
 
 
                     for (int i = 0; i < camera.View.GetLength(0); i++)
@@ -740,10 +753,10 @@ namespace cammera
             Default = new Solid("Stone", id++, "██", ConsoleColor.DarkGray, ConsoleColor.DarkGray); Default.level = 2; Game.Block_list.Add(Default);
             Default = new Solid("Log", id++, "||", ConsoleColor.Yellow, ConsoleColor.DarkYellow); Game.Block_list.Add(Default);
 
-            Default = new Solid("water", id++, "  ", ConsoleColor.DarkBlue, ConsoleColor.DarkBlue); Default.Collidable = false; Game.Block_list.Add(Default);
+            Default = new Solid("water", id++, "  ", ConsoleColor.DarkBlue, ConsoleColor.DarkBlue); Default.level = 5; Default.Collidable = false; Game.Block_list.Add(Default);
             //Default = new Solid("water", 5, "  ", ConsoleColor.DarkBlue, ConsoleColor.DarkBlue); Game.Block_list.Add(Default);
 
-            Default = new Solid("waterTop", id++, "▄▄", ConsoleColor.DarkBlue, ConsoleColor.Cyan); Default.Collidable = false; Game.Block_list.Add(Default);
+            Default = new Solid("waterTop", id++, "▄▄", ConsoleColor.DarkBlue, ConsoleColor.Cyan); Default.level = 5; Default.Collidable = false; Game.Block_list.Add(Default);
             Default = new Solid("Leaves", id++, "▄▀", ConsoleColor.DarkGreen, ConsoleColor.Green); Default.Collidable = false; Game.Block_list.Add(Default);
             Default = new Solid("Coal_ore", id++, "▄▀", ConsoleColor.DarkGray, ConsoleColor.Black); Default.level = 2; Game.Block_list.Add(Default);
             Default = new Solid("Iron_ore", id++, "▄▀", ConsoleColor.DarkGray, ConsoleColor.Yellow); Default.level = 2; Game.Block_list.Add(Default);
@@ -767,6 +780,7 @@ namespace cammera
             Default = new Solid("Growing_wheat", id++, "ii", ConsoleColor.Yellow, Game.Background); Default.level = 1; Default.Collidable = false; Game.Block_list.Add(Default);
             Default = new Solid("Apple", id++, " `", ConsoleColor.White, ConsoleColor.Red); Default.level = 1; Default.Collidable = false; Game.Block_list.Add(Default);
             Default = new Solid("infected_leaves", id++, "▄▀", ConsoleColor.White, ConsoleColor.DarkGray); Default.level = 1; Default.Collidable = false; Game.Block_list.Add(Default);
+            Default = new Solid("h_Wooden_hoe", id++, " F", ConsoleColor.DarkYellow, Game.Background); Default.Collidable = false; Default.Category = "Item"; Game.Block_list.Add(Default);
 
 
 
@@ -1046,8 +1060,8 @@ namespace cammera
                 {
                     case "J":
                         player.Selected_block.quantity = 99; break;
-                    case "U":
-                        Caves(x, y + 3, grid);
+                    case "R":
+                        Player_interactions.Use_Item(player, game, grid, player.Selected_block);
                         break;
                     case "I":
                         int blocks_num = game.Block_list.Count();
@@ -1132,7 +1146,7 @@ namespace cammera
                     case "C":
                         if (player.Crafting_select == 0 || grid[player.y + 1, player.x] == game.GetBlock("Crafting_table").id)
                         {
-                            Craft(game.recipes[player.Crafting_select], game);
+                            Craft(game.recipes[player.Crafting_select], game, player);
                         }
 
 
@@ -1434,51 +1448,56 @@ namespace cammera
 
         static void Render_block(Solid block, int x, int y, Game game, Camera camera, Player player, int[,] grid)
         {
-            bool front = true;
-            int vision = 0;
-            if (player.x + vision >= x + camera.Position.x && player.y + vision >= y + camera.Position.y && player.x - vision <= x + camera.Position.x && player.y - vision <= y + camera.Position.y)
-            {
+            
+            //if (player.x + vision >= x + camera.Position.x && player.y + vision >= y + camera.Position.y && player.x - vision <= x + camera.Position.x && player.y - vision <= y + camera.Position.y)
+            //{
 
+            //    Console.ForegroundColor = block.FG;
+            //    Console.BackgroundColor = block.BG;
+            //}
+            //if (grid[y + camera.Position.y, x + camera.Position.x] != 0 && !game.day)
+            //{
+            //    Console.ForegroundColor = ConsoleColor.Black;
+            //    Console.BackgroundColor = ConsoleColor.Black;
+            //}
+            //else if (!game.day && game.GetBlock("Air").id == grid[y + camera.Position.y, x + camera.Position.x])
+            //{
+
+            //    Console.BackgroundColor = ConsoleColor.Black;
+            //}
+            if (game.day)
+            {
                 Console.ForegroundColor = block.FG;
                 Console.BackgroundColor = block.BG;
+                if (block.BG == game.Background)
+                {
+                    if (game.cycle <= 30 || game.cycle >= 100 && game.cycle < 120)
+                    {
+                        Console.BackgroundColor = ConsoleColor.DarkCyan;
+                    }
+
+                }
+
             }
-            else if (grid[y + camera.Position.y, x + camera.Position.x] != 0)
+            if (game.day == false)
             {
                 Console.ForegroundColor = ConsoleColor.Black;
                 Console.BackgroundColor = ConsoleColor.Black;
-            }
-            else if (grid[y + camera.Position.y, x + camera.Position.x] == 0)
-            {
+                
 
-                Console.BackgroundColor = ConsoleColor.Gray;
             }
-            if (grid[y + camera.Position.y, x + camera.Position.x] == 8)
-            {
 
-                Console.BackgroundColor = ConsoleColor.White;
-            }
+            //if (grid[y + camera.Position.y, x + camera.Position.x] == 8)
+            //{
+
+            //    Console.BackgroundColor = ConsoleColor.White;
+            //}
             if (Check_area(grid, camera.Position.x + x, camera.Position.y + y, 16, 5) || Check_area(grid, camera.Position.x + x, camera.Position.y + y, 16, game.GetBlock("Furnace_active").id))
             {
                 Console.ForegroundColor = block.FG;
                 Console.BackgroundColor = block.BG;
             }
-            if (game.day)
-            {
-                Console.ForegroundColor = block.FG;
-                if (block.BG == game.Background)
-                {
-                    if (game.cycle <= 30 || game.cycle >= 100)
-                    {
-                        Console.BackgroundColor = game.Night_bg;
-                    }
-                    else
-                    {
-                        Console.BackgroundColor = block.BG;
-                    }
-                    
-                }
-                
-            }
+
 
 
 
@@ -2165,6 +2184,7 @@ namespace cammera
             WriteAt("Health" + player.health.ToString(), 1, UI + 2);
             WriteAt("Oxygen" + player.oxygen.ToString(), 1, UI + 3);
             WriteAt("                                                                    ", 1, UI + 1);
+
             int offset = player.hotbar_offset;
             //for (int e = 0; e < 10; e++)
             //{
@@ -2199,6 +2219,7 @@ namespace cammera
             WriteAt("Selected id:" + player.Selected_block.id.ToString() + "   ", 40, 12);
 
             WriteAt("Mining level " + game.player_pic_lv.ToString(), 40, 10);
+            WriteAt("Time " + game.cycle, 40, 14);
 
             int hotbar_selected = player.hotbar;
 
@@ -2209,15 +2230,26 @@ namespace cammera
             Console.ForegroundColor = default;
 
         }
-        static void Craft(Recipe name, Game game)
+        static void Craft(Recipe name, Game game, Player player)
         {
 
             foreach (var Item in name.required)
             {
                 if (game.GetBlock(Item.Name).quantity >= Item.Amount)
                 {
-                    game.GetBlock(name.item.Name).quantity += name.num;
-                    game.GetBlock(Item.Name).quantity -= Item.Amount;
+                    var GetBlock = game.GetBlock(name.item.Name);
+                    if (player.Inventory.Find(x => x.id == GetBlock.id) == null)
+                    {
+                        player.Inventory.Add(GetBlock);
+                        player.Inventory.Find(x => x.id == GetBlock.id).quantity += name.num;
+                        game.GetBlock(Item.Name).quantity -= Item.Amount;
+                    }
+                    else
+                    {
+                        player.Inventory.Find(x => x.id == GetBlock.id).quantity += name.num;
+                        player.Inventory.Find(x => x.id == GetBlock.id).quantity -= Item.Amount;
+                    }
+
                 }
 
             }
