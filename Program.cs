@@ -583,7 +583,7 @@ namespace cammera
 
                 else
                 {
-                    Game.day = true;
+                    //Game.day = true;
 
 
                     for (int i = 0; i < camera.View.GetLength(0); i++)
@@ -1448,7 +1448,7 @@ namespace cammera
 
         static void Render_block(Solid block, int x, int y, Game game, Camera camera, Player player, int[,] grid)
         {
-            
+
             //if (player.x + vision >= x + camera.Position.x && player.y + vision >= y + camera.Position.y && player.x - vision <= x + camera.Position.x && player.y - vision <= y + camera.Position.y)
             //{
 

@@ -91,7 +91,7 @@ namespace Minecraft
         public List<Biome> biomes;
         public int player_pic_lv = 2;
         public bool day = true;
-        public float cycle = 115f;
+        public float cycle = 0f;
         public bool Awaiting_update = false;
         public ConsoleColor Background = ConsoleColor.Cyan;
         protected static int origRow;
