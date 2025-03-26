@@ -266,16 +266,16 @@ namespace cammera
         {
             var Noon = Console.BackgroundColor;
 
-            //var database = new Database();
+            var database = new Database();
 
-            //// Call the async method and await its result
-            //var cordinates = await database.GetCordinates();
+            // Call the async method and await its result
+            var cordinates = await database.GetCordinates();
 
-            //// Use the result (for example, print the coordinates)
-            //foreach (var cordinate in cordinates)
-            //{
-            //    Console.WriteLine($"X: {cordinate.x}, Y: {cordinate.y}");
-            //}
+            // Use the result (for example, print the coordinates)
+            foreach (var cordinate in cordinates)
+            {
+                Console.WriteLine($"X: {cordinate.x}, Y: {cordinate.y}");
+            }
 
             Console.ReadLine();
             //Thread.Sleep(80000);
@@ -394,7 +394,7 @@ namespace cammera
                 int counter2 = 12;
 
                 int buttons_x = 86;
-                int buttons_y = 30;
+                int buttons_y = 28;
                 Console.BackgroundColor = ConsoleColor.Gray;
                 if (selected_button == 1) { Console.BackgroundColor = selected_color; }
                 WriteAt("    Create World   ", buttons_x, buttons_y);
@@ -419,18 +419,18 @@ namespace cammera
                         var block = Game.Get_ByID(grid_home[i + 42, j + 30+index]);
                         Console.ForegroundColor = block.FG;
                         Console.BackgroundColor = block.BG;
-                        WriteAt(block.Texture, 2 * j, 40+i);
+                        WriteAt(block.Texture, 2 * j, 35+i);
                         Console.BackgroundColor = default;
                         Console.ForegroundColor = default;
                     }
                 }
-                bool readInput = false;
-                if (Console.KeyAvailable == false)
+                
+                if (Console.KeyAvailable == true)
                 {
-
-                    readInput = true;
+                    inputed = Console.ReadKey().Key;
+                    
                 }
-                if (readInput)
+                
                 { mapcounter++; }
                 
 
@@ -442,7 +442,7 @@ namespace cammera
                 {
                     option = selected_button;
                 }
-                
+                inputed = 0;
 
 
 
@@ -1552,6 +1552,8 @@ namespace cammera
                     Console.ForegroundColor = mob.Color;
                     Console.BackgroundColor = mob.BGColor;
                     WriteAt(mob.Sprite, x * 2, y);
+                    WriteAt(mob.Sprite, x * 2, y-1);
+                    WriteAt(mob.Sprite, x * 2, y - 2);
                 }
             }
             //foreach (Sprites sprite in game.Displayed_sprites)
