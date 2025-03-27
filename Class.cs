@@ -61,7 +61,11 @@ namespace Minecraft
 
     public class Cordinates
     {
-
+        //public Cordinates(int x,int y)
+        //{
+        //    this.x = x;
+        //    this.y = y;
+        //}
         public int x = 11;
         public int y = 11;
         public int x1 = 0;
@@ -81,7 +85,8 @@ namespace Minecraft
     }
     class Camera
     {
-
+        public int X_offset = 33;
+        public int Y_offset = 7;
         public int[,] View = new int[15, 15];
         public Cordinates Position = new Cordinates();
     }
@@ -264,8 +269,15 @@ namespace Minecraft
         }
 
     }
+    
+
     class Entity(string name, int health, string type, string sprite)
     {
+        public string[,] Sprite2D;
+        public void Load_sprite(string[,] new_sprite)
+        {
+            Sprite2D = new_sprite;
+        }
         public bool delay(int delay, bool tick)
         {
             if (tick)

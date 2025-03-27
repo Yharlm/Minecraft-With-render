@@ -1,4 +1,5 @@
 using Minecraft;
+using System.Configuration;
 
 namespace cammera
 {
@@ -266,16 +267,16 @@ namespace cammera
         {
             var Noon = Console.BackgroundColor;
 
-            var database = new Database();
+            //var database = new Database();
 
-            // Call the async method and await its result
-            var cordinates = await database.GetCordinates();
+            //// Call the async method and await its result
+            //var cordinates = await database.GetCordinates();
 
-            // Use the result (for example, print the coordinates)
-            foreach (var cordinate in cordinates)
-            {
-                Console.WriteLine($"X: {cordinate.x}, Y: {cordinate.y}");
-            }
+            //// Use the result (for example, print the coordinates)
+            //foreach (var cordinate in cordinates)
+            //{
+            //    Console.WriteLine($"X: {cordinate.x}, Y: {cordinate.y}");
+            //}
 
             Console.ReadLine();
             //Thread.Sleep(80000);
@@ -293,7 +294,9 @@ namespace cammera
             Mob = new Entity("TNT", 0, null, "██"); Game.Entity_list.Add(Mob);
             Mob.Color = ConsoleColor.Blue;
             Mob = new Entity("Boss", 30, "E", "██");
+            string[,] Sprite = { { "██", "██" }, {"██", "██" } };
 
+            Mob.Load_sprite(Sprite);
             Mob.Color = ConsoleColor.Blue;
             Game.Entity_list.Add(Mob);
 
@@ -643,8 +646,8 @@ namespace cammera
 
                             }
 
-                            WriteAt("..", camera.View.GetLength(1) - 1, (camera.View.GetLength(0) / 2) - 1);
-                            WriteAt("  ", camera.View.GetLength(1) - 1, camera.View.GetLength(0) / 2);
+                            WriteAt("..",2* camera.X_offset+camera.View.GetLength(1) - 1, camera.Y_offset + (camera.View.GetLength(0) / 2) - 1);
+                            WriteAt("  ",2* camera.X_offset+camera.View.GetLength(1) - 1, camera.Y_offset + camera.View.GetLength(0) / 2);
                             Console.ForegroundColor = default;
                             Console.BackgroundColor = ConsoleColor.Cyan;
                         }
@@ -708,7 +711,7 @@ namespace cammera
                         if (Game.curent_tick)
                         {
                             if (player.oxygen >= 0) player.oxygen -= 0.5;
-                            Print_window(camera, Game, player);
+                            Print_window1(camera, Game, player);
                         }
                     }
                     else
@@ -815,7 +818,8 @@ namespace cammera
             Default = new Solid("Growing_wheat", id++, "ii", ConsoleColor.Magenta, Game.Background); Default.level = 1; Default.Collidable = false; Game.Block_list.Add(Default);
             Default = new Solid("Apple", id++, " `", ConsoleColor.White, ConsoleColor.Red); Default.level = 1; Default.Collidable = false; Game.Block_list.Add(Default);
             Default = new Solid("infected_leaves", id++, "▄▀", ConsoleColor.White, ConsoleColor.DarkGray); Default.level = 1; Default.Collidable = false; Game.Block_list.Add(Default);
-            Default = new Solid("h_Wooden_hoe", id++, " F", ConsoleColor.DarkYellow, Game.Background); Default.Collidable = false; Default.Category = "Item"; Game.Block_list.Add(Default);
+            Default = new Solid("h_Wooden_hoe", id++, " F", ConsoleColor.DarkYellow, Game.Background); Default.Collidable = false; Default.Category = "Item"; Game.Block_list.Add(Default);//30
+            Default = new Solid("Sugar_cane", id++, "||", ConsoleColor.Green, Game.Background); Default.Collidable = false; Game.Block_list.Add(Default);//31
 
 
 
@@ -1199,7 +1203,7 @@ namespace cammera
 
                             //WriteAt(game.Existing_Entities.Count().ToString(), 24, 3);
 
-                            Entity mob = game.Entity_list[1];
+                            Entity mob = game.Entity_list[3];
                             Entity Default = new Entity(mob.Name, mob.Health, mob.Type, mob.Sprite);
                             Default.Color = mob.Color;
                             //Default.cordinates.x = random.Next(4, 55);
@@ -1437,7 +1441,7 @@ namespace cammera
 
                         break;
                 }
-                Print_window(camera, game, player);
+                Print_window1(camera, game, player);
                 player.Input = null;
                 player.x = x;
                 player.y = y;
@@ -1537,10 +1541,11 @@ namespace cammera
 
 
 
+            int X_offset = camera.X_offset;
+            int Y_offset = camera.Y_offset;
 
 
-
-            WriteAt(block.Texture, x * 2, y);
+            WriteAt(block.Texture, (x + X_offset) * 2, Y_offset + y);
 
             Console.ForegroundColor = default;
             Console.BackgroundColor = default;
@@ -1549,11 +1554,19 @@ namespace cammera
 
                 if (mob.cordinates.x >= x + camera.Position.x && mob.cordinates.x <= x + camera.Position.x && mob.cordinates.y >= y + camera.Position.y && mob.cordinates.y <= y + camera.Position.y)
                 {
+
+                    //for (int i = 0; i < mob.Sprite2D.GetLength(0); i++)
+                    //{
+                    //    for (int j = 0; j < mob.Sprite2D.GetLength(1); j++)
+                    //    {
                     Console.ForegroundColor = mob.Color;
-                    Console.BackgroundColor = mob.BGColor;
-                    WriteAt(mob.Sprite, x * 2, y);
-                    WriteAt(mob.Sprite, x * 2, y-1);
-                    WriteAt(mob.Sprite, x * 2, y - 2);
+                    //        WriteAt(mob.Sprite2D[i,j].ToString(), x * 2 + j, y + i);
+                    //        Console.ForegroundColor = default;
+                    //    }
+                    //}
+                    WriteAt(mob.Sprite2D[0,0], x * 2, y);
+
+
                 }
             }
             //foreach (Sprites sprite in game.Displayed_sprites)
@@ -1888,8 +1901,9 @@ namespace cammera
 
 
             }
-
-
+            // final touches
+            
+            
         }
 
         private static void Fill_block(int x, int y, int[,] grid, Solid Block)
@@ -2210,7 +2224,12 @@ namespace cammera
 
         }
 
-
+        static void Print_window1(Camera camera, Game game, Player player)
+        {
+            Console.BackgroundColor = ConsoleColor.Black;
+            Console.ForegroundColor = ConsoleColor.Red;
+            WriteAt("Health" + player.health.ToString(), 1, camera.View.GetLength(0) + 2);
+        }
         static void Print_window(Camera camera, Game game, Player player)
         {
 
