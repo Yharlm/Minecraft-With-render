@@ -1,5 +1,4 @@
 using Minecraft;
-using System.Configuration;
 
 namespace cammera
 {
@@ -294,7 +293,7 @@ namespace cammera
             Mob = new Entity("TNT", 0, null, "██"); Game.Entity_list.Add(Mob);
             Mob.Color = ConsoleColor.Blue;
             Mob = new Entity("Boss", 30, "E", "██");
-            string[,] Sprite = { { "██", "██" }, {"██", "██" } };
+            string[,] Sprite = { { "██", "██" }, { "██", "██" } };
 
             Mob.Load_sprite(Sprite);
             Mob.Color = ConsoleColor.Blue;
@@ -361,8 +360,8 @@ namespace cammera
             Console.Clear();
             while (option != null && !selected)
             {
-                
-                if(mapcounter >= 10)
+
+                if (mapcounter >= 10)
                 {
                     mapcounter = 0;
                     index++;
@@ -374,7 +373,7 @@ namespace cammera
                 {
                     selected_button = 1;
                 }
-                
+
 
                 int logo_x = 45;
                 int logo_y = 11;
@@ -385,7 +384,7 @@ namespace cammera
                 WriteAt("████       ████ ████ ████  ████████ ████       ████████ ████  ████ ████▀▀████ ████          ████    ", logo_x, logo_y++);
                 WriteAt("████       ████ ████ ████    ██████ ██████████ ████████ ████  ████ ████  ████ ████          ████    ", logo_x, logo_y++);
 
-                
+
 
 
 
@@ -414,28 +413,28 @@ namespace cammera
                 Console.BackgroundColor = ConsoleColor.Cyan;
 
                 //option = Console.ReadLine();
-                
+
                 for (int i = 0; i < 16; i++)
                 {
                     for (int j = 0; j < 94; j++)
                     {
-                        var block = Game.Get_ByID(grid_home[i + 42, j + 30+index]);
+                        var block = Game.Get_ByID(grid_home[i + 42, j + 30 + index]);
                         Console.ForegroundColor = block.FG;
                         Console.BackgroundColor = block.BG;
-                        WriteAt(block.Texture, 2 * j, 35+i);
+                        WriteAt(block.Texture, 2 * j, 35 + i);
                         Console.BackgroundColor = default;
                         Console.ForegroundColor = default;
                     }
                 }
-                
+
                 if (Console.KeyAvailable == true)
                 {
                     inputed = Console.ReadKey().Key;
-                    
+
                 }
-                
+
                 { mapcounter++; }
-                
+
 
                 if (inputed == ConsoleKey.Spacebar)
                 {
@@ -598,13 +597,20 @@ namespace cammera
                 //    }
 
                 //}
-
-
+                if (Game.Existing_Entities.Count > 0)
+                {
+                    var P2_messege = new List<string>();
+                    P2_messege = await Database.GetName();
+                    var P2_pos = new List<Cordinates>();
+                    P2_pos = await Database.GetPos();
+                    Game.Existing_Entities.Find(i => i.Type == "Player").cordinates = P2_pos.Last();
+                    Game.Existing_Entities.Find(i => i.Type == "Player").Name = P2_messege.Last();
+                }
                 Game.cycle += 0.1f;
 
                 if (Game.cycle <= 120)
                 { Game.day = true; }
-                else 
+                else
                 { Game.day = false; }
 
 
@@ -646,8 +652,8 @@ namespace cammera
 
                             }
 
-                            WriteAt("..",2* camera.X_offset+camera.View.GetLength(1) - 1, camera.Y_offset + (camera.View.GetLength(0) / 2) - 1);
-                            WriteAt("  ",2* camera.X_offset+camera.View.GetLength(1) - 1, camera.Y_offset + camera.View.GetLength(0) / 2);
+                            WriteAt("..", 2 * camera.X_offset + camera.View.GetLength(1) - 1, camera.Y_offset + (camera.View.GetLength(0) / 2) - 1);
+                            WriteAt("  ", 2 * camera.X_offset + camera.View.GetLength(1) - 1, camera.Y_offset + camera.View.GetLength(0) / 2);
                             Console.ForegroundColor = default;
                             Console.BackgroundColor = ConsoleColor.Cyan;
                         }
@@ -711,7 +717,7 @@ namespace cammera
                         if (Game.curent_tick)
                         {
                             if (player.oxygen >= 0) player.oxygen -= 0.5;
-                            Print_window1(camera, Game, player);
+                            Print_window(camera, Game, player);
                         }
                     }
                     else
@@ -1037,8 +1043,13 @@ namespace cammera
         }
 
 
-
-        private static void GetInput(int[,] grid, Player player, Game game, Camera camera)
+        class Player_2
+        {
+            public string Name;
+            public int x;
+            public int y;
+        }
+        async static Task GetInput(int[,] grid, Player player, Game game, Camera camera)
         {
 
             //Block_ids air = new Block_ids(0, "  ", default, ConsoleColor.Cyan);
@@ -1097,9 +1108,13 @@ namespace cammera
             {
                 switch (player.Input)
                 {
-                    case "J":
-                        player.Selected_block.quantity = 99; break;
                     case "R":
+                        List<string> name = new List<string>();
+                        name = await Database.GetName();
+                        player.Selected_block.quantity = 99;
+                        game.CreateP2(name.First(), player.x, player.y);
+                        break;
+                    case "i":
                         Player_interactions.Use_Item(player, game, grid, player.Selected_block);
                         break;
                     case "I":
@@ -1441,7 +1456,7 @@ namespace cammera
 
                         break;
                 }
-                Print_window1(camera, game, player);
+                Print_window(camera, game, player);
                 player.Input = null;
                 player.x = x;
                 player.y = y;
@@ -1522,7 +1537,7 @@ namespace cammera
             {
                 Console.ForegroundColor = ConsoleColor.Black;
                 Console.BackgroundColor = ConsoleColor.Black;
-                
+
 
             }
 
@@ -1564,7 +1579,11 @@ namespace cammera
                     //        Console.ForegroundColor = default;
                     //    }
                     //}
-                    WriteAt(mob.Sprite2D[0,0], x * 2, y);
+                    if(mob.Type == "Player")
+                    {
+                        WriteAt(mob.Name, (x + X_offset) * 2, y + Y_offset-1);
+                    }
+                    WriteAt(mob.Sprite, (x + X_offset) * 2, y + Y_offset);
 
 
                 }
@@ -1902,8 +1921,8 @@ namespace cammera
 
             }
             // final touches
-            
-            
+
+
         }
 
         private static void Fill_block(int x, int y, int[,] grid, Solid Block)
@@ -2239,7 +2258,7 @@ namespace cammera
             Console.ForegroundColor = ConsoleColor.Red;
             WriteAt("Health" + player.health.ToString(), 1, UI + 2);
             WriteAt("Oxygen" + player.oxygen.ToString(), 1, UI + 3);
-            WriteAt("                                                                    ", 1, UI + 1);
+            WriteAt("                    ", 1, UI + 1);
 
             int offset = player.hotbar_offset;
             //for (int e = 0; e < 10; e++)
@@ -2275,7 +2294,7 @@ namespace cammera
             WriteAt("Selected id:" + player.Selected_block.id.ToString() + "   ", 40, 12);
 
             WriteAt("Mining level " + game.player_pic_lv.ToString(), 40, 10);
-            WriteAt("Time " + game.cycle, 40, 14);
+            WriteAt("Time " + game.cycle, 30, 14);
 
             int hotbar_selected = player.hotbar;
 

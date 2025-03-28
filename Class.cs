@@ -145,7 +145,15 @@ namespace Minecraft
             //number++;
         }
 
-
+        public void CreateP2(string name, int x,int y)
+        {
+            Entity player_2 = new Entity(name, 100, "Player", "██");
+            player_2.Color = ConsoleColor.Red;
+            player_2.Sprite = "██";
+            player_2.cordinates.x = x;
+            player_2.cordinates.y = y;
+            Existing_Entities.Add(player_2);
+        }
         public bool delay(int mob_time, int delay, bool tick)
         {
             if (tick)

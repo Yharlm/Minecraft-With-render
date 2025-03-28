@@ -19,7 +19,7 @@ public class Database : Cordinates
             await connection.OpenAsync();
 
             // SQL query to insert coordinates into the 'position' table.
-            var query = "INSERT INTO position (x, y) VALUES (@x, @y)";
+            var query = "INSERT INTO player (x, y) VALUES (@x, @y)";
 
             // Prepare the command with the query.
             using var command = new MySqlCommand(query, connection);
@@ -46,33 +46,64 @@ public class Database : Cordinates
         // Return whether the save operation was successful or not.
         return success;
     }
-    public async Task<List<Cordinates>> GetCordinates()
+    public static async Task<List<string>> GetName()
         {
-            var position = new List<Cordinates>(); // Инициализиране на списък за съхраняване на продуктите.
-
+            //var position = new List<Cordinates>(); // Инициализиране на списък за съхраняване на продуктите.
+            var name = new List<string>();  
             // Коригирана връзка с MySQL база данни
             using var connection = new MySqlConnection("Server=localhost;Port=3306;Database=Player;Uid=root;Pwd=;");
             await connection.OpenAsync();
 
             // SQL заявка за извличане на всички продукти
-            using var command = new MySqlCommand("SELECT * FROM position", connection);
+            using var command = new MySqlCommand("SELECT * FROM player", connection);
             using var reader = await command.ExecuteReaderAsync();
 
             // Четене на данни от резултата на заявката
             while (await reader.ReadAsync())
             {
-                var cordinates = new Cordinates
-                {
+                name.Add(reader.GetString(0));
+                //var cordinates = new Cordinates
+                //{
+                   
+                //    x = reader.GetInt32(1),
+                //    y = reader.GetInt32(2),
+                    
+                //};
 
-                    x = reader.GetInt32(0),
-                    y = reader.GetInt32(1),
-
-                };
-
-                position.Add(cordinates); // Добавяне на продукта в списъка
+                /*position.Add(cordinates)*/; // Добавяне на продукта в списъка
             }
 
-            return position;
+            return name;
         }
-    
+    public static async Task<List<Cordinates>> GetPos()
+    {
+        var position = new List<Cordinates>(); // Инициализиране на списък за съхраняване на продуктите.
+        //var name = new List<string>();
+        // Коригирана връзка с MySQL база данни
+        using var connection = new MySqlConnection("Server=localhost;Port=3306;Database=Player;Uid=root;Pwd=;");
+        await connection.OpenAsync();
+
+        // SQL заявка за извличане на всички продукти
+        using var command = new MySqlCommand("SELECT * FROM player", connection);
+        using var reader = await command.ExecuteReaderAsync();
+
+        // Четене на данни от резултата на заявката
+        while (await reader.ReadAsync())
+        {
+
+            var cordinates = new Cordinates
+            {
+
+                x = reader.GetInt32(1),
+                y = reader.GetInt32(2),
+
+            };
+
+            position.Add(cordinates)
+            ; // Добавяне на продукта в списъка
+        }
+
+        return position;
+    }
+
 }
