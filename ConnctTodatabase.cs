@@ -1,6 +1,7 @@
 ﻿using Minecraft;
 using System;
 using MySql.Data.MySqlClient;
+using System.Xml.Linq;
 
 public class Database : Cordinates
 {
@@ -41,6 +42,49 @@ public class Database : Cordinates
         {
             // Handle any errors that occur during the database operations.
             Console.WriteLine($"An error occurred: {ex.Message}");
+        }
+
+        // Return whether the save operation was successful or not.
+        return success;
+    }
+
+    public static async Task<bool> playerPos(Cordinates cordinates,string name)
+    {
+        var success = false; // To track if the insert was successful.
+
+        // Corrected connection string for MySQL database.
+        var connectionString = "Server=localhost;Port=3306;Database=Player;Uid=root;Pwd=;";
+
+        try
+        {
+            // Open the connection asynchronously.
+            using var connection = new MySqlConnection(connectionString);
+            await connection.OpenAsync();
+
+            // SQL query to insert coordinates into the 'position' table.
+            var query = "UPDATE  player  SET x = @x, y = @y WHERE Name = @Name";
+
+            // Prepare the command with the query.
+            using var command = new MySqlCommand(query, connection);
+
+            // Add parameters to prevent SQL injection.
+            command.Parameters.AddWithValue("@x", cordinates.x);
+            command.Parameters.AddWithValue("@y", cordinates.y);
+            command.Parameters.AddWithValue("@Name", name);
+
+            // Execute the query asynchronously and check the number of affected rows.
+            var rowsAffected = await command.ExecuteNonQueryAsync();
+
+            // If one or more rows are affected, it means the data was successfully inserted.
+            if (rowsAffected > 0)
+            {
+                success = true; // Set success to true if the insertion is successful.
+            }
+        }
+        catch (Exception ex)
+        {
+            // Handle any errors that occur during the database operations.
+            
         }
 
         // Return whether the save operation was successful or not.

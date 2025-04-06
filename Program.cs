@@ -481,10 +481,10 @@ namespace cammera
 
                         break;
                     case 4:
-                        selected = true;
-
-                        grid[50, 500] = 2;
-                        grid[49, 500] = Game.GetBlock("Tree").id;
+                        //selected = true;
+                        
+                        //grid[50, 500] = 2;
+                        //grid[49, 500] = Game.GetBlock("Tree").id;
                         break;
 
 
@@ -1108,13 +1108,15 @@ namespace cammera
             {
                 switch (player.Input)
                 {
-                    case "R":
+                    //case "H":
+                        
+                    case "J":
                         List<string> name = new List<string>();
                         name = await Database.GetName();
                         player.Selected_block.quantity = 99;
                         game.CreateP2(name.First(), player.x, player.y);
                         break;
-                    case "i":
+                    case "R":
                         Player_interactions.Use_Item(player, game, grid, player.Selected_block);
                         break;
                     case "I":
