@@ -281,7 +281,11 @@ namespace Minecraft
 
     class Entity(string name, int health, string type, string sprite)
     {
-        public string[,] Sprite2D;
+        public string[,] Sprite2D = null;
+        public string[] Sprite1D = null;
+        public string Sprite = sprite;
+        public ConsoleColor Color;
+        public ConsoleColor BGColor;
         public void Load_sprite(string[,] new_sprite)
         {
             Sprite2D = new_sprite;
@@ -306,10 +310,10 @@ namespace Minecraft
         public string Name = name;
         public int Health = health;
         public string Type = type;
-        public List<Behaviour> mob_ais = new List<Behaviour>();
+        
         protected static int origRow;
         protected static int origCol;
-        public string Sprite = sprite;
+        
         public Cordinates starting_pos;
         public int time = 0;
         public int specialvalue = 0;
@@ -329,8 +333,7 @@ namespace Minecraft
         public bool grounded = true;
 
         public Cordinates cordinates = new Cordinates();
-        public ConsoleColor Color;
-        public ConsoleColor BGColor;
+        
         public void gravity(int[,] grid)
         {
 

@@ -1,5 +1,6 @@
 using Minecraft;
 
+
 namespace cammera
 {
     internal class Program
@@ -32,44 +33,7 @@ namespace cammera
                     string behaviour = mob.Type;
                     switch (behaviour)
                     {
-                        case "Pig":
-
-                            //try { Walk_to_player(mob, player, grid, game); }
-                            //catch { }
-                            if (mob.Health <= 0) { Kill_entity(game, mob); }
-                            Walk_to_player(mob, player, grid, game);
-                            if (GetRadius_forplayer(player, mob.cordinates, 2, 2) && game.delay(mob.time, 2, game.curent_tick))
-                            {
-                                Explosion(game, grid, mob.cordinates, player, 2);
-                                Kill_entity(game, mob);
-                            }
-                            if (grid[mob.cordinates.y + 1, mob.cordinates.x] != 0)
-                            {
-                                if (grid[mob.cordinates.y, mob.cordinates.x + 1] != 0 || grid[mob.cordinates.y, mob.cordinates.x - 1] != 0)
-                                {
-
-                                    mob.cordinates.y -= 2;
-                                }
-                            }
-                            break;
-                        case "Boss":
-                            if (mob.Health <= 0) { Kill_entity(game, mob); }
-                            Walk_to_player(mob, player, grid, game);
-                            if (grid[mob.cordinates.y + 1, mob.cordinates.x] != 0)
-                            {
-                                if (grid[mob.cordinates.y, mob.cordinates.x + 1] != 0 || grid[mob.cordinates.y, mob.cordinates.x - 1] != 0)
-                                {
-
-                                    mob.cordinates.y -= 2;
-                                }
-                            }
-                            if (GetRadius_forplayer(player, mob.cordinates, 2, 2) && game.curent_tick)
-                            {
-                                player.health -= 10;
-                            }
-
-
-                            break;
+                        
                         case "Projectile":
 
                             Cordinates pos = mob.cordinates;
@@ -261,7 +225,48 @@ namespace cammera
             var cordinates = new Cordinates { x = Cords.x, y = Cords.y };
             bool isSaved = await db.SaveCordinates(cordinates);
         }
+        public static void Update_Textures(Game Game)
+        {
+            int id = 0;
+            Solid Default = new Solid("null", 0, null, default, default);
 
+            Default = new Solid("Air", id++, "  ", ConsoleColor.DarkGray, Game.Background); Default.Collidable = false; Game.Block_list.Add(Default);
+            Default = new Solid("Grass", id++, "▀▀", ConsoleColor.DarkGreen, ConsoleColor.DarkYellow); Game.Block_list.Add(Default);
+            Default = new Solid("Dirt", id++, "██", ConsoleColor.DarkYellow, ConsoleColor.DarkYellow); Game.Block_list.Add(Default);
+            Default = new Solid("Stone", id++, "██", ConsoleColor.DarkGray, ConsoleColor.DarkGray); Default.level = 2; Game.Block_list.Add(Default);
+            Default = new Solid("Log", id++, "||", ConsoleColor.Yellow, ConsoleColor.DarkYellow); Game.Block_list.Add(Default);
+
+            Default = new Solid("water", id++, "  ", ConsoleColor.DarkBlue, ConsoleColor.DarkBlue); Default.level = 5; Default.Collidable = false; Game.Block_list.Add(Default);
+            //Default = new Solid("water", 5, "  ", ConsoleColor.DarkBlue, ConsoleColor.DarkBlue); Game.Block_list.Add(Default);
+
+            Default = new Solid("waterTop", id++, "▄▄", ConsoleColor.DarkBlue, ConsoleColor.Cyan); Default.level = 5; Default.Collidable = false; Game.Block_list.Add(Default);
+            Default = new Solid("Leaves", id++, "▄▀", ConsoleColor.DarkGreen, ConsoleColor.Green); Default.Collidable = false; Game.Block_list.Add(Default);
+            Default = new Solid("Coal_ore", id++, "▄▀", ConsoleColor.DarkGray, ConsoleColor.Black); Default.level = 2; Game.Block_list.Add(Default);
+            Default = new Solid("Iron_ore", id++, "▄▀", ConsoleColor.DarkGray, ConsoleColor.Yellow); Default.level = 2; Game.Block_list.Add(Default);
+            Default = new Solid("Crafting_table", id++, "TT", ConsoleColor.Yellow, ConsoleColor.DarkYellow); Default.Collidable = true; Game.Block_list.Add(Default);
+            Default = new Solid("Wooden_planks", id++, "--", ConsoleColor.DarkYellow, ConsoleColor.DarkMagenta); Game.Block_list.Add(Default);
+            Default = new Solid("Ladder", id++, "||", ConsoleColor.Yellow, ConsoleColor.DarkYellow); Default.Collidable = false; Default.climbable = true; Game.Block_list.Add(Default);
+            Default = new Solid("Sand", id++, "██", ConsoleColor.DarkMagenta, ConsoleColor.Cyan); Game.Block_list.Add(Default);
+            Default = new Solid("Furnace", id++, "▀▀", ConsoleColor.DarkGray, ConsoleColor.Black); Default.Collidable = false; Game.Block_list.Add(Default);//15
+            Default = new Solid("Tree", id++, "▀▀", ConsoleColor.Green, ConsoleColor.DarkYellow); Default.Collidable = false; Game.Block_list.Add(Default);
+            Default = new Solid("Torch", id++, "▄▄", ConsoleColor.DarkYellow, ConsoleColor.Magenta); Default.Collidable = false; Game.Block_list.Add(Default);
+            Default = new Solid("Cave_Background", id++, "  ", ConsoleColor.DarkYellow, ConsoleColor.Gray); Default.level = 3; Default.Collidable = false; Game.Block_list.Add(Default);
+            Default = new Solid("Wood_Background", id++, "==", ConsoleColor.DarkYellow, ConsoleColor.Magenta); Default.level = 1; Default.Collidable = false; Game.Block_list.Add(Default);
+            Default = new Solid("Wooden_pickaxe", id++, "T ", ConsoleColor.DarkYellow, Game.Background); Default.level = 3; Default.Collidable = false; Default.Category = "Item"; Game.Block_list.Add(Default);
+            Default = new Solid("Iron_ingot", id++, "▄▄", ConsoleColor.DarkGray, Game.Background); Default.Collidable = false; Default.Category = "Item"; Game.Block_list.Add(Default);
+            Default = new Solid("Furnace_active", id++, "▀▀", ConsoleColor.DarkGray, ConsoleColor.Magenta); Default.level = 3; Default.Collidable = false; Game.Block_list.Add(Default); // 21
+            Default = new Solid("Soil", id++, "'.", ConsoleColor.DarkYellow, ConsoleColor.Yellow); Default.level = 1; Default.Collidable = true; Game.Block_list.Add(Default);
+            Default = new Solid("Weeds", id++, "WW", ConsoleColor.DarkGreen, Game.Background); Default.level = 1; Default.Collidable = false; Game.Block_list.Add(Default);
+            Default = new Solid("Wheat", id++, "WW", ConsoleColor.Magenta, Game.Background); Default.level = 1; Default.Collidable = false; Game.Block_list.Add(Default);
+            Default = new Solid("Planted_seeds_wheat", id++, ",,", ConsoleColor.Green, Game.Background); Default.level = 1; Default.Collidable = false; Game.Block_list.Add(Default);// 25
+            Default = new Solid("Growing_seeds_wheat", id++, ";;", ConsoleColor.Green, Game.Background); Default.level = 1; Default.Collidable = false; Game.Block_list.Add(Default);
+            Default = new Solid("Growing_wheat", id++, "ii", ConsoleColor.Magenta, Game.Background); Default.level = 1; Default.Collidable = false; Game.Block_list.Add(Default);
+            Default = new Solid("Apple", id++, " `", ConsoleColor.White, ConsoleColor.Red); Default.level = 1; Default.Collidable = false; Game.Block_list.Add(Default);
+            Default = new Solid("infected_leaves", id++, "▄▀", ConsoleColor.White, ConsoleColor.DarkGray); Default.level = 1; Default.Collidable = false; Game.Block_list.Add(Default);
+            Default = new Solid("h_Wooden_hoe", id++, " F", ConsoleColor.DarkYellow, Game.Background); Default.Collidable = false; Default.Category = "Item"; Game.Block_list.Add(Default);//30
+            Default = new Solid("Sugar_cane", id++, "||", ConsoleColor.Green, Game.Background); Default.Collidable = false; Game.Block_list.Add(Default);//31
+
+        }
         static async Task Main(string[] args)
         {
             var Noon = Console.BackgroundColor;
@@ -285,21 +290,9 @@ namespace cammera
             Player player = new Player();
             Game.Night_bg = Noon;
 
-            Entity Mob = new Entity(null, 0, null, "EE"); Game.Entity_list.Add(Mob);
-
-            Mob = new Entity("pig", 10, "Pig", "██"); Game.Entity_list.Add(Mob);
-            Mob.Color = ConsoleColor.Blue;
-
-            Mob = new Entity("TNT", 0, null, "██"); Game.Entity_list.Add(Mob);
-            Mob.Color = ConsoleColor.Blue;
-            Mob = new Entity("Boss", 30, "E", "██");
-            string[,] Sprite = { { "██", "██" }, { "██", "██" } };
-
-            Mob.Load_sprite(Sprite);
-            Mob.Color = ConsoleColor.Blue;
-            Game.Entity_list.Add(Mob);
-
+            
             Update_Textures(Game);
+            CreateContent.LoadEntities(Game);
 
 
             // recepies
@@ -319,20 +312,7 @@ namespace cammera
 
 
             //Projectiles
-            Mob = new Entity("Blue", 0, "Projectile", "██");
-            Mob.Color = ConsoleColor.DarkBlue;
-            Game.Projectiles.Add(Mob);
-            Mob = new Entity("Red", 0, "Projectile", "██");
-            Mob.Color = ConsoleColor.DarkRed;
-            Game.Projectiles.Add(Mob);
-            Mob = new Entity("Slash", 0, "Projectile", "--");
-            Mob.Color = ConsoleColor.White;
-            Game.Projectiles.Add(Mob);
-            Mob = new Entity("Arrow", 0, "Projectile", "  ");
-
-            Mob.specialvalue = 5;
-            Mob.BGColor = ConsoleColor.Yellow;
-            Game.Projectiles.Add(Mob);
+            
 
 
             // Sprites ▄█▀
@@ -597,15 +577,15 @@ namespace cammera
                 //    }
 
                 //}
-                if (Game.Existing_Entities.Count > 0)
-                {
-                    var P2_messege = new List<string>();
-                    P2_messege = await Database.GetName();
-                    var P2_pos = new List<Cordinates>();
-                    P2_pos = await Database.GetPos();
-                    Game.Existing_Entities.Find(i => i.Type == "Player").cordinates = P2_pos.Last();
-                    Game.Existing_Entities.Find(i => i.Type == "Player").Name = P2_messege.Last();
-                }
+                //if (Game.Existing_Entities.Count > 0)
+                //{
+                //    var P2_messege = new List<string>();
+                //    P2_messege = await Database.GetName();
+                //    var P2_pos = new List<Cordinates>();
+                //    P2_pos = await Database.GetPos();
+                //    Game.Existing_Entities.Find(i => i.Type == "Player").cordinates = P2_pos.Last();
+                //    Game.Existing_Entities.Find(i => i.Type == "Player").Name = P2_messege.Last();
+                //}
                 Game.cycle += 0.1f;
 
                 if (Game.cycle <= 120)
@@ -785,57 +765,7 @@ namespace cammera
             }
         }
 
-        private static void Update_Textures(Game Game)
-        {
-            int id = 0;
-            Solid Default = new Solid("null", 0, null, default, default);
-            Non_solid Background = new Non_solid("", 0, null, default, default);
-
-            Default = new Solid("Air", id++, "  ", ConsoleColor.DarkGray, Game.Background); Default.Collidable = false; Game.Block_list.Add(Default);
-            Default = new Solid("Grass", id++, "▀▀", ConsoleColor.DarkGreen, ConsoleColor.DarkYellow); Game.Block_list.Add(Default);
-            Default = new Solid("Dirt", id++, "██", ConsoleColor.DarkYellow, ConsoleColor.DarkYellow); Game.Block_list.Add(Default);
-            Default = new Solid("Stone", id++, "██", ConsoleColor.DarkGray, ConsoleColor.DarkGray); Default.level = 2; Game.Block_list.Add(Default);
-            Default = new Solid("Log", id++, "||", ConsoleColor.Yellow, ConsoleColor.DarkYellow); Game.Block_list.Add(Default);
-
-            Default = new Solid("water", id++, "  ", ConsoleColor.DarkBlue, ConsoleColor.DarkBlue); Default.level = 5; Default.Collidable = false; Game.Block_list.Add(Default);
-            //Default = new Solid("water", 5, "  ", ConsoleColor.DarkBlue, ConsoleColor.DarkBlue); Game.Block_list.Add(Default);
-
-            Default = new Solid("waterTop", id++, "▄▄", ConsoleColor.DarkBlue, ConsoleColor.Cyan); Default.level = 5; Default.Collidable = false; Game.Block_list.Add(Default);
-            Default = new Solid("Leaves", id++, "▄▀", ConsoleColor.DarkGreen, ConsoleColor.Green); Default.Collidable = false; Game.Block_list.Add(Default);
-            Default = new Solid("Coal_ore", id++, "▄▀", ConsoleColor.DarkGray, ConsoleColor.Black); Default.level = 2; Game.Block_list.Add(Default);
-            Default = new Solid("Iron_ore", id++, "▄▀", ConsoleColor.DarkGray, ConsoleColor.Yellow); Default.level = 2; Game.Block_list.Add(Default);
-            Default = new Solid("Crafting_table", id++, "TT", ConsoleColor.Yellow, ConsoleColor.DarkYellow); Default.Collidable = true; Game.Block_list.Add(Default);
-            Default = new Solid("Wooden_planks", id++, "--", ConsoleColor.DarkYellow, ConsoleColor.DarkMagenta); Game.Block_list.Add(Default);
-            Default = new Solid("Ladder", id++, "||", ConsoleColor.Yellow, ConsoleColor.DarkYellow); Default.Collidable = false; Default.climbable = true; Game.Block_list.Add(Default);
-            Default = new Solid("Sand", id++, "██", ConsoleColor.DarkMagenta, ConsoleColor.Cyan); Game.Block_list.Add(Default);
-            Default = new Solid("Furnace", id++, "▀▀", ConsoleColor.DarkGray, ConsoleColor.Black); Default.Collidable = false; Game.Block_list.Add(Default);//15
-            Default = new Solid("Tree", id++, "▀▀", ConsoleColor.Green, ConsoleColor.DarkYellow); Default.Collidable = false; Game.Block_list.Add(Default);
-            Default = new Solid("Torch", id++, "▄▄", ConsoleColor.DarkYellow, ConsoleColor.Magenta); Default.Collidable = false; Game.Block_list.Add(Default);
-            Default = new Solid("Cave_Background", id++, "  ", ConsoleColor.DarkYellow, ConsoleColor.Gray); Default.level = 3; Default.Collidable = false; Game.Block_list.Add(Default);
-            Default = new Solid("Wood_Background", id++, "==", ConsoleColor.DarkYellow, ConsoleColor.Magenta); Default.level = 1; Default.Collidable = false; Game.Block_list.Add(Default);
-            Default = new Solid("Wooden_pickaxe", id++, "T ", ConsoleColor.DarkYellow, Game.Background); Default.level = 3; Default.Collidable = false; Default.Category = "Item"; Game.Block_list.Add(Default);
-            Default = new Solid("Iron_ingot", id++, "▄▄", ConsoleColor.DarkGray, Game.Background); Default.Collidable = false; Default.Category = "Item"; Game.Block_list.Add(Default);
-            Default = new Solid("Furnace_active", id++, "▀▀", ConsoleColor.DarkGray, ConsoleColor.Magenta); Default.level = 3; Default.Collidable = false; Game.Block_list.Add(Default); // 21
-            Default = new Solid("Soil", id++, "'.", ConsoleColor.DarkYellow, ConsoleColor.Yellow); Default.level = 1; Default.Collidable = true; Game.Block_list.Add(Default);
-            Default = new Solid("Weeds", id++, "WW", ConsoleColor.DarkGreen, Game.Background); Default.level = 1; Default.Collidable = false; Game.Block_list.Add(Default);
-            Default = new Solid("Wheat", id++, "WW", ConsoleColor.Magenta, Game.Background); Default.level = 1; Default.Collidable = false; Game.Block_list.Add(Default);
-            Default = new Solid("Planted_seeds_wheat", id++, ",,", ConsoleColor.Green, Game.Background); Default.level = 1; Default.Collidable = false; Game.Block_list.Add(Default);// 25
-            Default = new Solid("Growing_seeds_wheat", id++, ";;", ConsoleColor.Green, Game.Background); Default.level = 1; Default.Collidable = false; Game.Block_list.Add(Default);
-            Default = new Solid("Growing_wheat", id++, "ii", ConsoleColor.Magenta, Game.Background); Default.level = 1; Default.Collidable = false; Game.Block_list.Add(Default);
-            Default = new Solid("Apple", id++, " `", ConsoleColor.White, ConsoleColor.Red); Default.level = 1; Default.Collidable = false; Game.Block_list.Add(Default);
-            Default = new Solid("infected_leaves", id++, "▄▀", ConsoleColor.White, ConsoleColor.DarkGray); Default.level = 1; Default.Collidable = false; Game.Block_list.Add(Default);
-            Default = new Solid("h_Wooden_hoe", id++, " F", ConsoleColor.DarkYellow, Game.Background); Default.Collidable = false; Default.Category = "Item"; Game.Block_list.Add(Default);//30
-            Default = new Solid("Sugar_cane", id++, "||", ConsoleColor.Green, Game.Background); Default.Collidable = false; Game.Block_list.Add(Default);//31
-
-
-
-
-
-
-
-
-
-        }
+        
 
         static void Block_Update(Camera camera, int x, int y, int[,] grid, Game game, double time)
         {
@@ -1220,12 +1150,12 @@ namespace cammera
 
                             //WriteAt(game.Existing_Entities.Count().ToString(), 24, 3);
 
-                            Entity mob = game.Entity_list[3];
+                            Entity mob = game.Entity_list.Last();
                             Entity Default = new Entity(mob.Name, mob.Health, mob.Type, mob.Sprite);
                             Default.Color = mob.Color;
                             //Default.cordinates.x = random.Next(4, 55);
-                            Default.cordinates.x = player.x + 13;
-                            Default.cordinates.y = player.y - 4;
+                            Default.cordinates.x = player.x;
+                            Default.cordinates.y = player.y;
 
 
 
@@ -1572,44 +1502,28 @@ namespace cammera
                 if (mob.cordinates.x >= x + camera.Position.x && mob.cordinates.x <= x + camera.Position.x && mob.cordinates.y >= y + camera.Position.y && mob.cordinates.y <= y + camera.Position.y)
                 {
 
-                    //for (int i = 0; i < mob.Sprite2D.GetLength(0); i++)
-                    //{
-                    //    for (int j = 0; j < mob.Sprite2D.GetLength(1); j++)
-                    //    {
+
+                    Console.BackgroundColor = mob.BGColor;
                     Console.ForegroundColor = mob.Color;
-                    //        WriteAt(mob.Sprite2D[i,j].ToString(), x * 2 + j, y + i);
-                    //        Console.ForegroundColor = default;
-                    //    }
-                    //}
+                    if(mob.Sprite1D == null && mob.Sprite2D == null)
+                    {
+                        WriteAt(mob.Sprite, (x + X_offset) * 2, y + Y_offset);
+                    }
+                    if (mob.Sprite1D != null)
+                    {
+                        WriteAt(mob.Sprite1D[0], (x + X_offset) * 2, y + Y_offset);
+                        WriteAt(mob.Sprite1D[1], (x + X_offset) * 2, y + Y_offset-1);
+                    }
                     if(mob.Type == "Player")
                     {
                         WriteAt(mob.Name, (x + X_offset) * 2, y + Y_offset-1);
                     }
-                    WriteAt(mob.Sprite, (x + X_offset) * 2, y + Y_offset);
+                    
 
 
                 }
             }
-            //foreach (Sprites sprite in game.Displayed_sprites)
-            //{
-
-            //    if (sprite.pos.x >= x + camera.Position.x && sprite.pos.x <= x + camera.Position.x && sprite.pos.y >= y + camera.Position.y && sprite.pos.y <= y + camera.Position.y)
-            //    {
-            //        for (int i = 0; i < sprite.sprite.GetLength(0); i++)
-            //        {
-            //            for (int j = 0; j < sprite.sprite[i].Length; j++)
-            //            {
-            //                if (grid[sprite.pos.y + i, sprite.pos.x + j] == 0 && j % 2 != 0)
-            //                {
-            //                    var c = sprite.sprite[i];
-            //                    WriteAt(c[j].ToString(), x * 2 + j, y + i);
-            //                }
-
-            //            }
-            //        }
-            //    }
-
-            //}
+            
 
         }
 

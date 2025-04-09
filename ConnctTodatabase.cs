@@ -1,7 +1,5 @@
 ﻿using Minecraft;
-using System;
 using MySql.Data.MySqlClient;
-using System.Xml.Linq;
 
 public class Database : Cordinates
 {
@@ -48,7 +46,7 @@ public class Database : Cordinates
         return success;
     }
 
-    public static async Task<bool> playerPos(Cordinates cordinates,string name)
+    public static async Task<bool> playerPos(Cordinates cordinates, string name)
     {
         var success = false; // To track if the insert was successful.
 
@@ -84,41 +82,42 @@ public class Database : Cordinates
         catch (Exception ex)
         {
             // Handle any errors that occur during the database operations.
-            
+
         }
 
         // Return whether the save operation was successful or not.
         return success;
     }
     public static async Task<List<string>> GetName()
+    {
+        //var position = new List<Cordinates>(); // Инициализиране на списък за съхраняване на продуктите.
+        var name = new List<string>();
+        // Коригирана връзка с MySQL база данни
+        using var connection = new MySqlConnection("Server=localhost;Port=3306;Database=Player;Uid=root;Pwd=;");
+        await connection.OpenAsync();
+
+        // SQL заявка за извличане на всички продукти
+        using var command = new MySqlCommand("SELECT * FROM player", connection);
+        using var reader = await command.ExecuteReaderAsync();
+
+        // Четене на данни от резултата на заявката
+        while (await reader.ReadAsync())
         {
-            //var position = new List<Cordinates>(); // Инициализиране на списък за съхраняване на продуктите.
-            var name = new List<string>();  
-            // Коригирана връзка с MySQL база данни
-            using var connection = new MySqlConnection("Server=localhost;Port=3306;Database=Player;Uid=root;Pwd=;");
-            await connection.OpenAsync();
+            name.Add(reader.GetString(0));
+            //var cordinates = new Cordinates
+            //{
 
-            // SQL заявка за извличане на всички продукти
-            using var command = new MySqlCommand("SELECT * FROM player", connection);
-            using var reader = await command.ExecuteReaderAsync();
+            //    x = reader.GetInt32(1),
+            //    y = reader.GetInt32(2),
 
-            // Четене на данни от резултата на заявката
-            while (await reader.ReadAsync())
-            {
-                name.Add(reader.GetString(0));
-                //var cordinates = new Cordinates
-                //{
-                   
-                //    x = reader.GetInt32(1),
-                //    y = reader.GetInt32(2),
-                    
-                //};
+            //};
 
-                /*position.Add(cordinates)*/; // Добавяне на продукта в списъка
-            }
-
-            return name;
+            /*position.Add(cordinates)*/
+            ; // Добавяне на продукта в списъка
         }
+
+        return name;
+    }
     public static async Task<List<Cordinates>> GetPos()
     {
         var position = new List<Cordinates>(); // Инициализиране на списък за съхраняване на продуктите.
