@@ -33,7 +33,23 @@ namespace cammera
                     string behaviour = mob.Type;
                     switch (behaviour)
                     {
-                        
+                        case "Hostilee":
+                            
+                                if (mob.cordinates.x < player.x && game.time / 2 == 1)
+                                {
+                                    if (!game.Get_Bycords(mob.cordinates.x + 1, mob.cordinates.y, grid).Collidable)
+                                        mob.cordinates.x++;
+
+                                }
+                                else
+                                if (mob.cordinates.x > player.x && game.time / 2 == 1)
+                                {
+                                    if (!game.Get_Bycords(mob.cordinates.x - 1, mob.cordinates.y, grid).Collidable)
+                                        mob.cordinates.x--;
+                                }
+                            
+                            break;
+
                         case "Projectile":
 
                             Cordinates pos = mob.cordinates;
@@ -290,7 +306,7 @@ namespace cammera
             Player player = new Player();
             Game.Night_bg = Noon;
 
-            
+
             Update_Textures(Game);
             CreateContent.LoadEntities(Game);
 
@@ -312,7 +328,7 @@ namespace cammera
 
 
             //Projectiles
-            
+
 
 
             // Sprites ▄█▀
@@ -462,7 +478,7 @@ namespace cammera
                         break;
                     case 4:
                         //selected = true;
-                        
+
                         //grid[50, 500] = 2;
                         //grid[49, 500] = Game.GetBlock("Tree").id;
                         break;
@@ -765,7 +781,7 @@ namespace cammera
             }
         }
 
-        
+
 
         static void Block_Update(Camera camera, int x, int y, int[,] grid, Game game, double time)
         {
@@ -922,15 +938,14 @@ namespace cammera
             //PlayerAbilities(grid, player, game);
             if (game.Existing_Entities.Count != 0)
             {
+
                 foreach (Entity entity in game.Existing_Entities)
                 {
                     if (game.curent_tick)
                     {
-                        entity.gravity(grid);
+                        entity.gravity(grid, game);
                     }
 
-                    //try { Walk_to_player(entity, player, grid, game); }
-                    //catch { }
                 }
 
             }
@@ -1039,7 +1054,7 @@ namespace cammera
                 switch (player.Input)
                 {
                     //case "H":
-                        
+
                     case "J":
                         List<string> name = new List<string>();
                         name = await Database.GetName();
@@ -1152,8 +1167,10 @@ namespace cammera
 
                             Entity mob = game.Entity_list.Last();
                             Entity Default = new Entity(mob.Name, mob.Health, mob.Type, mob.Sprite);
-                            Default.Color = mob.Color;
+                            Default.FGColor = mob.FGColor;
+                            Default.BGColor = mob.BGColor;
                             //Default.cordinates.x = random.Next(4, 55);
+                            Default.Sprite1D = mob.Sprite1D;
                             Default.cordinates.x = player.x;
                             Default.cordinates.y = player.y;
 
@@ -1435,22 +1452,7 @@ namespace cammera
         static void Render_block(Solid block, int x, int y, Game game, Camera camera, Player player, int[,] grid)
         {
 
-            //if (player.x + vision >= x + camera.Position.x && player.y + vision >= y + camera.Position.y && player.x - vision <= x + camera.Position.x && player.y - vision <= y + camera.Position.y)
-            //{
 
-            //    Console.ForegroundColor = block.FG;
-            //    Console.BackgroundColor = block.BG;
-            //}
-            //if (grid[y + camera.Position.y, x + camera.Position.x] != 0 && !game.day)
-            //{
-            //    Console.ForegroundColor = ConsoleColor.Black;
-            //    Console.BackgroundColor = ConsoleColor.Black;
-            //}
-            //else if (!game.day && game.GetBlock("Air").id == grid[y + camera.Position.y, x + camera.Position.x])
-            //{
-
-            //    Console.BackgroundColor = ConsoleColor.Black;
-            //}
             if (game.day)
             {
                 Console.ForegroundColor = block.FG;
@@ -1473,11 +1475,6 @@ namespace cammera
 
             }
 
-            //if (grid[y + camera.Position.y, x + camera.Position.x] == 8)
-            //{
-
-            //    Console.BackgroundColor = ConsoleColor.White;
-            //}
             if (Check_area(grid, camera.Position.x + x, camera.Position.y + y, 16, 5) || Check_area(grid, camera.Position.x + x, camera.Position.y + y, 16, game.GetBlock("Furnace_active").id))
             {
                 Console.ForegroundColor = block.FG;
@@ -1494,36 +1491,35 @@ namespace cammera
 
             WriteAt(block.Texture, (x + X_offset) * 2, Y_offset + y);
 
-            Console.ForegroundColor = default;
-            Console.BackgroundColor = default;
+
             foreach (Entity mob in game.Existing_Entities)
             {
-
+                Console.BackgroundColor = mob.BGColor;
+                Console.ForegroundColor = mob.FGColor;
                 if (mob.cordinates.x >= x + camera.Position.x && mob.cordinates.x <= x + camera.Position.x && mob.cordinates.y >= y + camera.Position.y && mob.cordinates.y <= y + camera.Position.y)
                 {
 
 
-                    Console.BackgroundColor = mob.BGColor;
-                    Console.ForegroundColor = mob.Color;
-                    if(mob.Sprite1D == null && mob.Sprite2D == null)
+
+                    if (mob.Sprite1D == null && mob.Sprite2D == null)
                     {
                         WriteAt(mob.Sprite, (x + X_offset) * 2, y + Y_offset);
                     }
                     if (mob.Sprite1D != null)
                     {
                         WriteAt(mob.Sprite1D[0], (x + X_offset) * 2, y + Y_offset);
-                        WriteAt(mob.Sprite1D[1], (x + X_offset) * 2, y + Y_offset-1);
+                        WriteAt(mob.Sprite1D[1], (x + X_offset) * 2, y + Y_offset - 1);
                     }
-                    if(mob.Type == "Player")
+                    if (mob.Type == "Player")
                     {
-                        WriteAt(mob.Name, (x + X_offset) * 2, y + Y_offset-1);
+                        WriteAt(mob.Name, (x + X_offset) * 2, y + Y_offset - 1);
                     }
-                    
+
 
 
                 }
             }
-            
+
 
         }
 

@@ -1,4 +1,5 @@
-﻿using MySql.Data.MySqlClient;
+﻿using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
+using MySql.Data.MySqlClient;
 namespace Minecraft
 {
 
@@ -135,7 +136,10 @@ namespace Minecraft
         {
             return Block_list.Find(x => x.id == id);
         }
-
+        public Solid Get_Bycords(int x,int y, int[,] grid)
+        {
+            return Get_ByID(grid[y,x]);
+        }
 
 
         public void Spawn_entity(Entity mob)
@@ -148,7 +152,7 @@ namespace Minecraft
         public void CreateP2(string name, int x,int y)
         {
             Entity player_2 = new Entity(name, 100, "Player", "██");
-            player_2.Color = ConsoleColor.Red;
+            player_2.FGColor = ConsoleColor.Red;
             player_2.Sprite = "██";
             player_2.cordinates.x = x;
             player_2.cordinates.y = y;
@@ -284,7 +288,7 @@ namespace Minecraft
         public string[,] Sprite2D = null;
         public string[] Sprite1D = null;
         public string Sprite = sprite;
-        public ConsoleColor Color;
+        public ConsoleColor FGColor;
         public ConsoleColor BGColor;
         public void Load_sprite(string[,] new_sprite)
         {
@@ -334,12 +338,12 @@ namespace Minecraft
 
         public Cordinates cordinates = new Cordinates();
         
-        public void gravity(int[,] grid)
+        public void gravity(int[,] grid, Game game)
         {
 
 
             //WriteAt("  ", cordinates.x, cordinates.y);
-            if (grid[cordinates.y + 1, cordinates.x] == 0 && Type != "Projectile")
+            if (game.Get_ByID(grid[cordinates.y + 1, cordinates.x]).Collidable == false && Type != "Projectile")
             {
 
 

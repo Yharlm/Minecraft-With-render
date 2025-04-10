@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+
 namespace Minecraft
 {
     internal class CreateContent
@@ -14,15 +15,21 @@ namespace Minecraft
             Entity Mob = new Entity("", 0, "", "██");
 
             // Creates an object(Entity)
-            Mob = new Entity("Zombie", 40, "", "██");
-            Mob.BGColor = ConsoleColor.Green;
-            Mob.Color = ConsoleColor.Blue;
-            Mob.Sprite1D = ["''", "██"];
+            Mob = new Entity("Zombie", 40, "Hostile", "██");
+            Mob.BGColor = ConsoleColor.DarkGreen;
+            Mob.FGColor = ConsoleColor.DarkBlue;
+            
+            Mob.Sprite1D = ["██", "[:"];
             game.Entity_list.Add(Mob);
 
         }
 
-        
+
+
+
     }
+
     
+
+
 }
