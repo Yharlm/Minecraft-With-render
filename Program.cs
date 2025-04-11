@@ -26,6 +26,9 @@ namespace cammera
 
         static void Entity_behaviour(Game game, Player player, int[,] grid)
         {
+            Cordinates plr = new Cordinates();
+            plr.x = player.x;
+            plr.y = player.y;
             try
             {
                 foreach (Entity mob in game.Existing_Entities)
@@ -59,10 +62,32 @@ namespace cammera
                                     }
                                 }
                             }
-                            if (game.gametime % 5 == 0)
+                            if(mob.Name == "Zombie")
                             {
-                                AttackPL(game, player, grid, 2, 1, 30);
+                                if (game.gametime % 5 == 0)
+                                {
+                                    AttackPL(game, player, grid, 2, 1, 30);
+                                }
                             }
+                            if (mob.Name == "Creeper")
+                            {
+                                if (mob.time == 10)
+                                {
+                                    Explosion(game, grid, mob.cordinates, player, 2);
+                                    player.health -= 40;
+                                }
+                                else if (game.time % 3 == 0 && mob.cordinates.x >= player.x-2 && mob.cordinates.x <= player.x + 2)
+                                {
+                                    mob.time++;
+                                    mob.BGColor = ConsoleColor.White;
+                                }
+                                else
+                                {
+                                    mob.BGColor = ConsoleColor.DarkGreen;
+                                    mob.time = 0;
+                                }
+                            }
+                            
                             break;
 
                         case "Projectile":

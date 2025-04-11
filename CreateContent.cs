@@ -25,9 +25,9 @@ namespace Minecraft
 
             Mob = new Entity("Creeper", 5, "Hostile", "██");
             Mob.BGColor = ConsoleColor.DarkGreen;
-            Mob.FGColor = ConsoleColor.White;
+            Mob.FGColor = ConsoleColor.Red;
 
-            Mob.Sprite1D = ["^ ", "''"];
+            Mob.Sprite1D = ["  ", ".,"];
             game.Entity_list.Add(Mob);
 
         }
