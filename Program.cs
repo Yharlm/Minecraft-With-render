@@ -33,21 +33,36 @@ namespace cammera
                     string behaviour = mob.Type;
                     switch (behaviour)
                     {
-                        case "Hostilee":
-                            
-                                if (mob.cordinates.x < player.x && game.time / 2 == 1)
+                        case "Hostile":
+                            if (game.gametime % 4 == 0)
+                            { 
+                                if (mob.cordinates.x < player.x)
                                 {
                                     if (!game.Get_Bycords(mob.cordinates.x + 1, mob.cordinates.y, grid).Collidable)
                                         mob.cordinates.x++;
+                                    else if(!game.Get_Bycords(mob.cordinates.x + 1, mob.cordinates.y-1, grid).Collidable && !game.Get_Bycords(mob.cordinates.x, mob.cordinates.y - 1, grid).Collidable)
+                                    {
+                                        mob.cordinates.x++;
+                                        mob.cordinates.y--;
+                                    }
 
                                 }
                                 else
-                                if (mob.cordinates.x > player.x && game.time / 2 == 1)
+                                if (mob.cordinates.x > player.x)
                                 {
                                     if (!game.Get_Bycords(mob.cordinates.x - 1, mob.cordinates.y, grid).Collidable)
                                         mob.cordinates.x--;
+                                    else if (!game.Get_Bycords(mob.cordinates.x - 1, mob.cordinates.y - 1, grid).Collidable && !game.Get_Bycords(mob.cordinates.x, mob.cordinates.y - 1, grid).Collidable)
+                                    {
+                                        mob.cordinates.x--;
+                                        mob.cordinates.y--;
+                                    }
                                 }
-                            
+                            }
+                            if (game.gametime % 5 == 0)
+                            {
+                                AttackPL(game, player, grid, 2, 1, 30);
+                            }
                             break;
 
                         case "Projectile":
@@ -175,7 +190,7 @@ namespace cammera
                                     foreach (Entity entity in game.Existing_Entities)
                                     {
 
-                                        if (GetRadius(entity, pos, 3, 3) && entity.Type != "Projectile")
+                                        if (GetRadius(entity.cordinates, pos, 3, 3) && entity.Type != "Projectile")
                                         {
                                             entity.cordinates.x = pos.x;
                                             entity.cordinates.y = pos.y + -1;
@@ -189,7 +204,7 @@ namespace cammera
                                 {
                                     foreach (Entity entity in game.Existing_Entities)
                                     {
-                                        if (GetRadius(entity, pos, 3, 3) && entity.Name == "Blue")
+                                        if (GetRadius(entity.cordinates, pos, 3, 3) && entity.Name == "Blue")
                                         {
                                             Explosion(game, grid, pos, player, 22);
 
@@ -246,8 +261,8 @@ namespace cammera
             int id = 0;
             Solid Default = new Solid("null", 0, null, default, default);
 
-            Default = new Solid("Air", id++, "  ", ConsoleColor.DarkGray, Game.Background); Default.Collidable = false; Game.Block_list.Add(Default);
-            Default = new Solid("Grass", id++, "▀▀", ConsoleColor.DarkGreen, ConsoleColor.DarkYellow); Game.Block_list.Add(Default);
+            Default = new Solid("Air", id++, "  ", ConsoleColor.DarkGray, Game.Background); Default.Collidable = false;  Game.Block_list.Add(Default);
+            Default = new Solid("Grass", id++, "▀▀", ConsoleColor.DarkGreen, ConsoleColor.DarkYellow); Default.Category = "Weapon"; Game.Block_list.Add(Default);
             Default = new Solid("Dirt", id++, "██", ConsoleColor.DarkYellow, ConsoleColor.DarkYellow); Game.Block_list.Add(Default);
             Default = new Solid("Stone", id++, "██", ConsoleColor.DarkGray, ConsoleColor.DarkGray); Default.level = 2; Game.Block_list.Add(Default);
             Default = new Solid("Log", id++, "||", ConsoleColor.Yellow, ConsoleColor.DarkYellow); Game.Block_list.Add(Default);
@@ -541,7 +556,7 @@ namespace cammera
             while (true)
 
             {
-
+                Game.gametime = time;
 
 
                 GetInput(grid, player, Game, camera);
@@ -714,6 +729,7 @@ namespace cammera
                         {
                             if (player.oxygen >= 0) player.oxygen -= 0.5;
                             Print_window(camera, Game, player);
+                            
                         }
                     }
                     else
@@ -930,7 +946,7 @@ namespace cammera
         }
         static void Entity_update(int[,] grid, List<Entity> Entity_list, Game game, Player player)
         {
-
+            
 
 
             //Entity_behaviour(game, player, grid);
@@ -941,6 +957,11 @@ namespace cammera
 
                 foreach (Entity entity in game.Existing_Entities)
                 {
+                    if(entity.Health <= 0)
+                    {
+                       Entity_list.Remove(entity);
+                        break;
+                    }
                     if (game.curent_tick)
                     {
                         entity.gravity(grid, game);
@@ -1509,6 +1530,7 @@ namespace cammera
                     {
                         WriteAt(mob.Sprite1D[0], (x + X_offset) * 2, y + Y_offset);
                         WriteAt(mob.Sprite1D[1], (x + X_offset) * 2, y + Y_offset - 1);
+                        WriteAt(mob.Health.ToString(), (x + X_offset) * 2, y + Y_offset - 2);
                     }
                     if (mob.Type == "Player")
                     {
@@ -2004,18 +2026,14 @@ namespace cammera
             cords.x = x;
             return cords;
         }
-        static bool GetRadius(Entity mob1, Cordinates plr, int x, int y)
+        static bool GetRadius(Cordinates mob1, Cordinates plr, int x, int y)
         {
             bool res = false;
-            if (mob1.cordinates.x > plr.x - x && mob1.cordinates.x < plr.x + x)
+            if (mob1.x >= plr.x - x || mob1.x <= plr.x)
             {
                 res = true;
             }
-            //if (mob1.cordinates.y > plr.y - y && mob1.cordinates.y < plr.y + y)
-            //{
-            //    res = true;
-            //}
-
+            //  {m}{ }{ }{ } P { }{ }{ }{m}
             return res;
         }
         static bool GetRadius_forplayer(Cordinates object1, Cordinates object2, int x, int y)
@@ -2029,31 +2047,62 @@ namespace cammera
 
             return res;
         }
-
-        private static bool Attack(Game game, Cordinates player, int[,] grid, int knockback, int range, int dmg)
+        public static bool AttackPL(Game game, Player player, int[,] grid, int knockback, int range, int dmg)
         {
             bool is_there = false;
             foreach (Entity entity in game.Existing_Entities)
             {
                 if (entity.Type != "Projectle")
                 {
-                    if (GetRadius(entity, player, range, 3) && entity.cordinates.x > player.x)
+                    if (entity.cordinates.x+1 == player.x || entity.cordinates.x == player.x && entity.cordinates.y == player.y)
                     {
-                        WriteAt("  ", entity.cordinates.x * 2, entity.cordinates.y);
+
+                        player.health -= dmg;
+                        if (grid[player.y, player.x + range] == 0) { player.x += knockback; }
+                        is_there = true;
+                        player.y -= knockback;
+                        
+                    }
+                    if (entity.cordinates.x - 1 == player.x || entity.cordinates.x == player.x && entity.cordinates.y == player.y)
+                    {
+
+
+                        player.health -= dmg;
+                        if (grid[player.y, player.x - range] == 0) { player.x -= knockback; }
+                        is_there = true;
+                        player.y -= knockback;
+                        
+                    }
+                }
+
+            }
+            return is_there;
+        }
+        public static bool Attack(Game game, Cordinates player, int[,] grid, int knockback, int range, int dmg)
+        {
+            bool is_there = false;
+            foreach (Entity entity in game.Existing_Entities)
+            {
+                if (entity.Type != "Projectle")
+                {
+                    if (GetRadius(entity.cordinates, player, range, 3) && entity.cordinates.x >= player.x)
+                    {
+                        
                         entity.Health -= dmg;
                         if (grid[entity.cordinates.y, entity.cordinates.x + range] == 0) { entity.cordinates.x += knockback; }
                         is_there = true;
                         entity.cordinates.y -= knockback;
                         entity.velocity += 1;
                     }
-                    if (GetRadius(entity, player, range, 3) && entity.cordinates.x < player.x)
+                    if (GetRadius(entity.cordinates, player, -range, 3) && entity.cordinates.x <= player.x)
                     {
-                        WriteAt("  ", entity.cordinates.x * 2, entity.cordinates.y);
+
+                        
                         entity.Health -= dmg;
                         if (grid[entity.cordinates.y, entity.cordinates.x - range] == 0) { entity.cordinates.x -= knockback; }
                         is_there = true;
                         entity.cordinates.y -= knockback;
-                        entity.velocity += -1;
+                        entity.velocity += 1;
                     }
                 }
 
@@ -2159,11 +2208,12 @@ namespace cammera
         {
             Console.BackgroundColor = ConsoleColor.Black;
             Console.ForegroundColor = ConsoleColor.Red;
-            WriteAt("Health" + player.health.ToString(), 1, camera.View.GetLength(0) + 2);
+            WriteAt("Health" + player.health.ToString() + "   ", 1, camera.View.GetLength(0) + 2);
         }
         static void Print_window(Camera camera, Game game, Player player)
         {
-
+            Print_window1(camera, game, player);
+            if (false) { 
             int c = 0;
             int UI = camera.View.GetLength(0) + 1;
             Console.BackgroundColor = ConsoleColor.Black;
@@ -2215,7 +2265,7 @@ namespace cammera
             WriteAt(player.x.ToString() + ":" + player.y.ToString(), 44, UI + 3);
             Console.BackgroundColor = ConsoleColor.Cyan;
             Console.ForegroundColor = default;
-
+            }
         }
         static void Craft(Recipe name, Game game, Player player)
         {

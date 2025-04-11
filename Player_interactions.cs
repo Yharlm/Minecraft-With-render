@@ -1,4 +1,6 @@
-﻿using System;
+﻿using cammera;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -27,6 +29,10 @@ namespace Minecraft
                 {
                     Grid[player.y, player.x] = game.GetBlock("Planted_seeds_wheat").id;
                 }
+            }
+            if(Item.Category == "Weapon")
+            {
+                Program.Attack(game, player.Convert_cor(player.x, player.y), Grid, Item.knc, 2, Item.dmg);
             }
 
         }

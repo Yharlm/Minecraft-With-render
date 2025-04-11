@@ -1,6 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
-using MySql.Data.MySqlClient;
-namespace Minecraft
+﻿namespace Minecraft
 {
 
     class Player : Cordinates
@@ -118,7 +116,7 @@ namespace Minecraft
         }
         public Cordinates cordinates = new Cordinates();
         public int number = 0;
-
+        public double gametime = 0;
         public double time = 0;
         public bool curent_tick = false;
         public List<Sprites> Sprite_list = new List<Sprites>();
@@ -136,9 +134,9 @@ namespace Minecraft
         {
             return Block_list.Find(x => x.id == id);
         }
-        public Solid Get_Bycords(int x,int y, int[,] grid)
+        public Solid Get_Bycords(int x, int y, int[,] grid)
         {
-            return Get_ByID(grid[y,x]);
+            return Get_ByID(grid[y, x]);
         }
 
 
@@ -149,7 +147,7 @@ namespace Minecraft
             //number++;
         }
 
-        public void CreateP2(string name, int x,int y)
+        public void CreateP2(string name, int x, int y)
         {
             Entity player_2 = new Entity(name, 100, "Player", "██");
             player_2.FGColor = ConsoleColor.Red;
@@ -229,6 +227,8 @@ namespace Minecraft
         public bool climbable = false;
         public int level = 1;
         public bool Collidable = true;
+        public int dmg = 1;
+        public int knc = 2;
         public bool solid = true;
         public int quantity = 0;
         public string Name = name;
@@ -281,7 +281,7 @@ namespace Minecraft
         }
 
     }
-    
+
 
     class Entity(string name, int health, string type, string sprite)
     {
@@ -314,10 +314,10 @@ namespace Minecraft
         public string Name = name;
         public int Health = health;
         public string Type = type;
-        
+
         protected static int origRow;
         protected static int origCol;
-        
+
         public Cordinates starting_pos;
         public int time = 0;
         public int specialvalue = 0;
