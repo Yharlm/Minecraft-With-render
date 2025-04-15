@@ -1,4 +1,7 @@
+using Microsoft.EntityFrameworkCore.Update.Internal;
 using Minecraft;
+using System.ComponentModel.Design;
+using System.Numerics;
 
 
 namespace cammera
@@ -37,7 +40,7 @@ namespace cammera
                     switch (behaviour)
                     {
                         case "Hostile":
-                            if (game.gametime % 4 == 0)
+                            if (game.gametime % mob.speed == 0)
                             { 
                                 if (mob.cordinates.x < player.x)
                                 {
@@ -87,6 +90,28 @@ namespace cammera
                                     mob.time = 0;
                                 }
                             }
+                            if(mob.Name == "Slime")
+                            {
+                                if (game.gametime % 5 == 0)
+                                {
+                                    mob.speed = 0;
+                                }
+                                if (game.gametime % 10 == 0)
+                                {
+                                    
+                                    AttackPL(game, player, grid, 2, 1, 30);
+                                    mob.cordinates.y -= 3;
+                                    mob.speed = 2;
+                                }
+                                
+                                
+                                
+
+
+
+
+                            }
+
                             
                             break;
 
@@ -286,7 +311,7 @@ namespace cammera
             int id = 0;
             Solid Default = new Solid("null", 0, null, default, default);
 
-            Default = new Solid("Air", id++, "  ", ConsoleColor.DarkGray, Game.Background); Default.Collidable = false;  Game.Block_list.Add(Default);
+            Default = new Solid("Air", id++, "  ", ConsoleColor.DarkGray, Game.Background); Default.Collidable = false; Default.Category = "Weapon"; Game.Block_list.Add(Default);
             Default = new Solid("Grass", id++, "▀▀", ConsoleColor.DarkGreen, ConsoleColor.DarkYellow); Default.Category = "Weapon"; Game.Block_list.Add(Default);
             Default = new Solid("Dirt", id++, "██", ConsoleColor.DarkYellow, ConsoleColor.DarkYellow); Game.Block_list.Add(Default);
             Default = new Solid("Stone", id++, "██", ConsoleColor.DarkGray, ConsoleColor.DarkGray); Default.level = 2; Game.Block_list.Add(Default);
@@ -1000,12 +1025,12 @@ namespace cammera
         static void Walk_to_player(Entity entity, Player player, int[,] grid, Game game)
         {
 
-            int speed = 3;
+            
 
             if (player.x < entity.cordinates.x)
             {
 
-                if (grid[entity.cordinates.y, entity.cordinates.x - 1] == 0 && entity.delay(speed, game.curent_tick))
+                if (grid[entity.cordinates.y, entity.cordinates.x - 1] == 0 && entity.speed != 0)
                 {
 
                     entity.cordinates.x--;
@@ -1017,7 +1042,7 @@ namespace cammera
             else if (player.x > entity.cordinates.x)
             {
 
-                if (grid[entity.cordinates.y, entity.cordinates.x + 1] == 0 && entity.delay(speed, game.curent_tick))
+                if (grid[entity.cordinates.y, entity.cordinates.x + 1] == 0 && entity.speed != 0)
                 {
 
                     entity.cordinates.x++;
@@ -1039,6 +1064,22 @@ namespace cammera
             public string Name;
             public int x;
             public int y;
+        }
+        
+        
+        static void Command(Player player)
+        {
+
+            string input = Console.ReadLine();
+            string[] commands = input.Split(' ');
+            switch (commands[0])
+            {
+                case "Ent":
+                    int index = int.Parse(commands[1]);
+                    player.Entity_hotbar = index;
+                    break;
+
+            }
         }
         async static Task GetInput(int[,] grid, Player player, Game game, Camera camera)
         {
@@ -1100,7 +1141,9 @@ namespace cammera
                 switch (player.Input)
                 {
                     //case "H":
-
+                    case "O":
+                        Command(player);
+                        break;
                     case "J":
                         List<string> name = new List<string>();
                         name = await Database.GetName();
@@ -1211,10 +1254,11 @@ namespace cammera
 
                             //WriteAt(game.Existing_Entities.Count().ToString(), 24, 3);
 
-                            Entity mob = game.Entity_list.Last();
+                            Entity mob = game.Entity_list[player.Entity_hotbar];
                             Entity Default = new Entity(mob.Name, mob.Health, mob.Type, mob.Sprite);
                             Default.FGColor = mob.FGColor;
                             Default.BGColor = mob.BGColor;
+                            Default.speed = mob.speed;
                             //Default.cordinates.x = random.Next(4, 55);
                             Default.Sprite1D = mob.Sprite1D;
                             Default.cordinates.x = player.x;

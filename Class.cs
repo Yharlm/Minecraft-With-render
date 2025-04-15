@@ -317,7 +317,7 @@
 
         protected static int origRow;
         protected static int origCol;
-
+        public int speed = 3;
         public Cordinates starting_pos;
         public int time = 0;
         public int specialvalue = 0;
@@ -338,6 +338,13 @@
 
         public Cordinates cordinates = new Cordinates();
         
+        public void velocity(int x, int y)
+        {
+            cordinates.x += x;
+            x--;
+            cordinates.y += y;
+            y--;
+        }
         public void gravity(int[,] grid, Game game)
         {
 

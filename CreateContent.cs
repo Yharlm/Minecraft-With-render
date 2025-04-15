@@ -30,6 +30,13 @@ namespace Minecraft
             Mob.Sprite1D = ["  ", ".,"];
             game.Entity_list.Add(Mob);
 
+            Mob = new Entity("Slime", 3, "Hostile", "██");
+            Mob.BGColor = ConsoleColor.DarkGreen;
+            Mob.FGColor = ConsoleColor.Blue;
+
+            Mob.speed = 0;
+            game.Entity_list.Add(Mob);
+
         }
 
 
