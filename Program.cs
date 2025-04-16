@@ -40,7 +40,7 @@ namespace cammera
                     switch (behaviour)
                     {
                         case "Hostile":
-                            if (game.gametime % mob.speed == 0)
+                            if (game.gametime % mob.speed == 0 && false)
                             { 
                                 if (mob.cordinates.x < player.x)
                                 {
@@ -300,7 +300,7 @@ namespace cammera
             catch { }
         }
 
-        static async Task Cordinates(Cordinates Cords)
+        static async Task Cordinatess(Cordinates Cords)
         {
             var db = new Database();
             var cordinates = new Cordinates { x = Cords.x, y = Cords.y };
@@ -1007,6 +1007,7 @@ namespace cammera
 
                 foreach (Entity entity in game.Existing_Entities)
                 {
+                    
                     if(entity.Health <= 0)
                     {
                        Entity_list.Remove(entity);
@@ -1014,7 +1015,11 @@ namespace cammera
                     }
                     if (game.curent_tick)
                     {
-                        entity.gravity(grid, game);
+                        if(entity.velocity_y == 0 && grid[entity.cordinates.y+1,entity.cordinates.x] == 0)
+                        {
+                            entity.Add_velocity(Cordinates.Convert_cor(0,1), 0.5);
+                        }
+                        entity.Velocity(game.time);
                     }
 
                 }
@@ -1067,9 +1072,9 @@ namespace cammera
         }
         
         
-        static void Command(Player player)
+        static void Command(Player player,Game game)
         {
-
+            Console.ForegroundColor = ConsoleColor.Green;
             string input = Console.ReadLine();
             string[] commands = input.Split(' ');
             switch (commands[0])
@@ -1077,6 +1082,12 @@ namespace cammera
                 case "Ent":
                     int index = int.Parse(commands[1]);
                     player.Entity_hotbar = index;
+                    break;
+                case "vel":
+                    foreach (Entity entity in game.Existing_Entities)
+                    {
+                        entity.Add_velocity(Cordinates.Convert_cor(int.Parse(commands[1]), int.Parse(commands[2])), double.Parse(commands[3]));
+                    }
                     break;
 
             }
@@ -1142,7 +1153,7 @@ namespace cammera
                 {
                     //case "H":
                     case "O":
-                        Command(player);
+                        Command(player,game);
                         break;
                     case "J":
                         List<string> name = new List<string>();
@@ -1163,7 +1174,7 @@ namespace cammera
 
 
 
-                        Cordinates(player_cords);
+                        Cordinatess(player_cords);
                         Files.Save_map(grid);
                         Files.Save_Inventory(invent);
                         Console.ForegroundColor = ConsoleColor.Green;
@@ -2161,7 +2172,7 @@ namespace cammera
                         if (grid[entity.cordinates.y, entity.cordinates.x + range] == 0) { entity.cordinates.x += knockback; }
                         is_there = true;
                         entity.cordinates.y -= knockback;
-                        entity.velocity += 1;
+                        
                     }
                     if (GetRadius(entity.cordinates, player, -range, 3) && entity.cordinates.x <= player.x)
                     {
@@ -2171,7 +2182,7 @@ namespace cammera
                         if (grid[entity.cordinates.y, entity.cordinates.x - range] == 0) { entity.cordinates.x -= knockback; }
                         is_there = true;
                         entity.cordinates.y -= knockback;
-                        entity.velocity += 1;
+                        
                     }
                 }
 

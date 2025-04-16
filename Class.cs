@@ -71,7 +71,7 @@
         public int y1 = 0;
         public int x2 = 0;
         public int y2 = 0;
-        public Cordinates Convert_cor(int x, int y)
+        public static Cordinates Convert_cor(int x, int y)
         {
             Cordinates cords = new Cordinates();
             cords.y = y;
@@ -310,7 +310,7 @@
                 return false;
             }
         }
-        public int velocity = 0;
+        
         public string Name = name;
         public int Health = health;
         public string Type = type;
@@ -319,7 +319,7 @@
         protected static int origCol;
         public int speed = 3;
         public Cordinates starting_pos;
-        public int time = 0;
+        public double time;
         public int specialvalue = 0;
         protected static void WriteAt(string s, int x, int y)
         {
@@ -337,42 +337,48 @@
         public bool grounded = true;
 
         public Cordinates cordinates = new Cordinates();
-        
-        public void velocity(int x, int y)
+
+        public double velocity_x = 0;
+        public double velocity_y = 0;
+        public double Velocity_drag = 1;
+        public void Add_velocity(Cordinates vector, double drag)
         {
-            cordinates.x += x;
-            x--;
-            cordinates.y += y;
-            y--;
+            Velocity_drag = drag;
+            velocity_x += vector.x;
+            velocity_y += vector.y;
         }
-        public void gravity(int[,] grid, Game game)
+        public void Velocity(double time)
         {
-
-
-            //WriteAt("  ", cordinates.x, cordinates.y);
-            if (game.Get_ByID(grid[cordinates.y + 1, cordinates.x]).Collidable == false && Type != "Projectile")
+            
+            if (time % Velocity_drag == 0)
             {
-
-
-
-
-                if (grid[cordinates.y + 2, cordinates.x] == 0)
+                double velx = velocity_x / velocity_y;
+                double vely = velocity_y / velocity_x;
+                if (velocity_x > 0)
                 {
-                    cordinates.y += Math.Abs(velocity) + 1;
+                    
+                    velocity_x--;
+                    cordinates.x += 1;
                 }
-                else
+                if (velocity_x < 0)
                 {
+                    velocity_x++;
+                    cordinates.x -= 1;
+                }
+                if (velocity_y > 0)
+                {
+                    velocity_y--;
                     cordinates.y += 1;
                 }
-                //cordinates.x += velocity;
+                if (velocity_y < 0)
+                {
+                    velocity_y++;
+                    cordinates.y -= 1;
+                }
 
             }
-            else if (grid[cordinates.y + 1, cordinates.x] != 0)
-            {
-                velocity = 0;
-            }
-
         }
+        
 
 
 

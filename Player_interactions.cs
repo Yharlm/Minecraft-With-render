@@ -32,7 +32,7 @@ namespace Minecraft
             }
             if(Item.Category == "Weapon")
             {
-                Program.Attack(game, player.Convert_cor(player.x, player.y), Grid, Item.knc, 2, Item.dmg);
+                Program.Attack(game, Cordinates.Convert_cor(player.x, player.y), Grid, Item.knc, 2, Item.dmg);
             }
 
         }

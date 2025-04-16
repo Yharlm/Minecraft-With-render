@@ -217,12 +217,12 @@ namespace Minecraft
                     case "Q":
                         if (select_point_2)
                         {
-                            point2 = point2.Convert_cor(x + size / 2, y + size / 2);
+                            point2 = Cordinates.Convert_cor(x + size / 2, y + size / 2);
                             WriteAt("Point 2: " + point2.x + "," + point2.y, 20, 40);
                             select_point_2 = false;
                             continue;
                         }
-                        point1 = point1.Convert_cor(x + size / 2 + 1, y + size / 2 + 1);
+                        point1 = Cordinates.Convert_cor(x + size / 2 + 1, y + size / 2 + 1);
                         WriteAt("Point 1: " + point1.x + "," + point1.y, 20, 41);
 
                         select_point_2 = true;
@@ -264,7 +264,7 @@ namespace Minecraft
                         break;
                     case "D3":
                         pos = new Cordinates();
-                        pos = pos.Convert_cor(x + size / 2, y + size / 2);
+                        pos = Cordinates.Convert_cor(x + size / 2, y + size / 2);
                         
                         for (int i = 0; i < selected.selected_area.GetLength(0); i++)
                         {
