@@ -1015,11 +1015,11 @@ namespace cammera
                     }
                     if (game.curent_tick)
                     {
-                        if(entity.velocity_y == 0 && grid[entity.cordinates.y+1,entity.cordinates.x] == 0)
+                        if(!game.Block_list.Find(x => x.id == grid[entity.cordinates.y, entity.cordinates.x - 1]).Collidable)
                         {
-                            entity.Add_velocity(Cordinates.Convert_cor(0,1), 0.5);
+                            entity.Add_velocity(Cordinates.Convert_cor(0,1));
                         }
-                        entity.Velocity(game.time);
+                        entity.Velocity(game.gametime,game,grid);
                     }
 
                 }
@@ -1084,10 +1084,13 @@ namespace cammera
                     player.Entity_hotbar = index;
                     break;
                 case "vel":
-                    foreach (Entity entity in game.Existing_Entities)
-                    {
-                        entity.Add_velocity(Cordinates.Convert_cor(int.Parse(commands[1]), int.Parse(commands[2])), double.Parse(commands[3]));
-                    }
+                    
+                        foreach (Entity entity in game.Existing_Entities)
+                        {
+                            entity.Add_velocity(Cordinates.Convert_cor(int.Parse(commands[1]), -int.Parse(commands[2])), double.Parse(commands[3]));
+                        }
+                    
+                    
                     break;
 
             }

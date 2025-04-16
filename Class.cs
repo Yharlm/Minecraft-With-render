@@ -340,47 +340,55 @@
 
         public double velocity_x = 0;
         public double velocity_y = 0;
+        public double temp_vx = 0;
+        public double temp_vy = 0;
         public double Velocity_drag = 1;
         public void Add_velocity(Cordinates vector, double drag)
         {
-            Velocity_drag = drag;
+            Velocity_drag += drag;
             velocity_x += vector.x;
             velocity_y += vector.y;
         }
-        public void Velocity(double time)
+        public void Add_velocity(Cordinates vector)
         {
             
+            velocity_x += vector.x;
+            velocity_y += vector.y;
+        }
+        public void Velocity(double time,Game game, int[,] grid)
+        {
+
             if (time % Velocity_drag == 0)
             {
-                double velx = velocity_x / velocity_y;
-                double vely = velocity_y / velocity_x;
-                if (velocity_x > 0)
+                if (velocity_x > 0 && !game.Block_list.Find(x => x.id == grid[cordinates.y, cordinates.x + 1]).Collidable)
                 {
-                    
-                    velocity_x--;
                     cordinates.x += 1;
+
                 }
-                if (velocity_x < 0)
+                else velocity_x--;
+                if (velocity_x < 0 && !game.Block_list.Find(x => x.id == grid[cordinates.y, cordinates.x - 1]).Collidable)
                 {
-                    velocity_x++;
                     cordinates.x -= 1;
+                    velocity_x++;
                 }
-                if (velocity_y > 0)
+                else velocity_x++;
+                if (velocity_y > 0 && !game.Block_list.Find(x => x.id == grid[cordinates.y+1, cordinates.x]).Collidable)
                 {
-                    velocity_y--;
                     cordinates.y += 1;
+                    velocity_y--;
                 }
-                if (velocity_y < 0)
+                else velocity_y--;
+                if (velocity_y < 0 && !game.Block_list.Find(x => x.id == grid[cordinates.y-1, cordinates.x]).Collidable)
                 {
-                    velocity_y++;
                     cordinates.y -= 1;
+                    velocity_y++;
                 }
+                else velocity_y++;
 
             }
+
+
         }
-        
-
-
 
     }
 }
