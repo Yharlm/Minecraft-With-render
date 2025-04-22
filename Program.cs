@@ -1,7 +1,4 @@
-using Microsoft.EntityFrameworkCore.Update.Internal;
 using Minecraft;
-using System.ComponentModel.Design;
-using System.Numerics;
 
 
 namespace cammera
@@ -40,13 +37,13 @@ namespace cammera
                     switch (behaviour)
                     {
                         case "Hostile":
-                            if (game.gametime % mob.speed == 0 && false)
-                            { 
+                            if (game.gametime % mob.speed == 0 || false)
+                            {
                                 if (mob.cordinates.x < player.x)
                                 {
                                     if (!game.Get_Bycords(mob.cordinates.x + 1, mob.cordinates.y, grid).Collidable)
                                         mob.cordinates.x++;
-                                    else if(!game.Get_Bycords(mob.cordinates.x + 1, mob.cordinates.y-1, grid).Collidable && !game.Get_Bycords(mob.cordinates.x, mob.cordinates.y - 1, grid).Collidable)
+                                    else if (!game.Get_Bycords(mob.cordinates.x + 1, mob.cordinates.y - 1, grid).Collidable && !game.Get_Bycords(mob.cordinates.x, mob.cordinates.y - 1, grid).Collidable)
                                     {
                                         mob.cordinates.x++;
                                         mob.cordinates.y--;
@@ -65,7 +62,7 @@ namespace cammera
                                     }
                                 }
                             }
-                            if(mob.Name == "Zombie")
+                            if (mob.Name == "Zombie")
                             {
                                 if (game.gametime % 5 == 0)
                                 {
@@ -79,7 +76,7 @@ namespace cammera
                                     Explosion(game, grid, mob.cordinates, player, 2);
                                     player.health -= 40;
                                 }
-                                else if (game.time % 3 == 0 && mob.cordinates.x >= player.x-2 && mob.cordinates.x <= player.x + 2)
+                                else if (game.time % 3 == 0 && mob.cordinates.x >= player.x - 2 && mob.cordinates.x <= player.x + 2)
                                 {
                                     mob.time++;
                                     mob.BGColor = ConsoleColor.White;
@@ -90,7 +87,7 @@ namespace cammera
                                     mob.time = 0;
                                 }
                             }
-                            if(mob.Name == "Slime")
+                            if (mob.Name == "Slime")
                             {
                                 if (game.gametime % 5 == 0)
                                 {
@@ -98,21 +95,21 @@ namespace cammera
                                 }
                                 if (game.gametime % 10 == 0)
                                 {
-                                    
+
                                     AttackPL(game, player, grid, 2, 1, 30);
                                     mob.cordinates.y -= 3;
                                     mob.speed = 2;
                                 }
-                                
-                                
-                                
+
+
+
 
 
 
 
                             }
 
-                            
+
                             break;
 
                         case "Projectile":
@@ -779,7 +776,7 @@ namespace cammera
                         {
                             if (player.oxygen >= 0) player.oxygen -= 0.5;
                             Print_window(camera, Game, player);
-                            
+
                         }
                     }
                     else
@@ -996,7 +993,7 @@ namespace cammera
         }
         static void Entity_update(int[,] grid, List<Entity> Entity_list, Game game, Player player)
         {
-            
+
 
 
             //Entity_behaviour(game, player, grid);
@@ -1007,19 +1004,19 @@ namespace cammera
 
                 foreach (Entity entity in game.Existing_Entities)
                 {
-                    
-                    if(entity.Health <= 0)
+
+                    if (entity.Health <= 0)
                     {
-                       Entity_list.Remove(entity);
+                        Entity_list.Remove(entity);
                         break;
                     }
                     if (game.curent_tick)
                     {
-                        if(!game.Block_list.Find(x => x.id == grid[entity.cordinates.y, entity.cordinates.x - 1]).Collidable)
+                        if (!game.Block_list.Find(x => x.id == grid[entity.cordinates.y, entity.cordinates.x - 1]).Collidable && entity.velocity_y == 0 && entity.velocity_x == 0)
                         {
-                            entity.Add_velocity(Cordinates.Convert_cor(0,1));
+                            entity.Add_velocity(Cordinates.Convert_cor(0, 1));
                         }
-                        entity.Velocity(game.gametime,game,grid);
+                        entity.Velocity(game.gametime, game, grid);
                     }
 
                 }
@@ -1030,7 +1027,7 @@ namespace cammera
         static void Walk_to_player(Entity entity, Player player, int[,] grid, Game game)
         {
 
-            
+
 
             if (player.x < entity.cordinates.x)
             {
@@ -1070,11 +1067,13 @@ namespace cammera
             public int x;
             public int y;
         }
-        
-        
-        static void Command(Player player,Game game)
+
+
+        static void Command(Player player, Game game)
         {
             Console.ForegroundColor = ConsoleColor.Green;
+            Console.BackgroundColor = ConsoleColor.Black;
+
             string input = Console.ReadLine();
             string[] commands = input.Split(' ');
             switch (commands[0])
@@ -1084,17 +1083,19 @@ namespace cammera
                     player.Entity_hotbar = index;
                     break;
                 case "vel":
-                    
-                        foreach (Entity entity in game.Existing_Entities)
-                        {
-                            entity.Add_velocity(Cordinates.Convert_cor(int.Parse(commands[1]), -int.Parse(commands[2])), double.Parse(commands[3]));
-                        }
-                    
-                    
+
+                    foreach (Entity entity in game.Existing_Entities)
+                    {
+                        entity.Add_velocity(Cordinates.Convert_cor(int.Parse(commands[1]), -int.Parse(commands[2])), double.Parse(commands[3]));
+                    }
+
+
                     break;
 
             }
         }
+
+
         async static Task GetInput(int[,] grid, Player player, Game game, Camera camera)
         {
 
@@ -1110,6 +1111,7 @@ namespace cammera
 
 
             Solid air = game.Block_list[0];
+
 
 
 
@@ -1143,7 +1145,22 @@ namespace cammera
 
 
             }
+            //switch (player.Input)
+            //{
+            //    case "NumPad6":
+            //        num = 3;
+            //        break;
+            //    case "NumPad4":
+            //        num = 7;
+            //        break;
+            //    case "NumPad8":
+            //        num = 1;
+            //        break;
+            //    case "NumPad2":
+            //        num = 2;
+            //        break;
 
+            //}
             else { player.Input = null; }
 
             Cordinates player_cords = new Cordinates();
@@ -1156,7 +1173,7 @@ namespace cammera
                 {
                     //case "H":
                     case "O":
-                        Command(player,game);
+                        Command(player, game);
                         break;
                     case "J":
                         List<string> name = new List<string>();
@@ -2137,14 +2154,14 @@ namespace cammera
             {
                 if (entity.Type != "Projectle")
                 {
-                    if (entity.cordinates.x+1 == player.x || entity.cordinates.x == player.x && entity.cordinates.y == player.y)
+                    if (entity.cordinates.x + 1 == player.x || entity.cordinates.x == player.x && entity.cordinates.y == player.y)
                     {
 
                         player.health -= dmg;
                         if (grid[player.y, player.x + range] == 0) { player.x += knockback; }
                         is_there = true;
                         player.y -= knockback;
-                        
+
                     }
                     if (entity.cordinates.x - 1 == player.x || entity.cordinates.x == player.x && entity.cordinates.y == player.y)
                     {
@@ -2154,7 +2171,7 @@ namespace cammera
                         if (grid[player.y, player.x - range] == 0) { player.x -= knockback; }
                         is_there = true;
                         player.y -= knockback;
-                        
+
                     }
                 }
 
@@ -2170,22 +2187,22 @@ namespace cammera
                 {
                     if (GetRadius(entity.cordinates, player, range, 3) && entity.cordinates.x >= player.x)
                     {
-                        
+
                         entity.Health -= dmg;
                         if (grid[entity.cordinates.y, entity.cordinates.x + range] == 0) { entity.cordinates.x += knockback; }
                         is_there = true;
                         entity.cordinates.y -= knockback;
-                        
+
                     }
                     if (GetRadius(entity.cordinates, player, -range, 3) && entity.cordinates.x <= player.x)
                     {
 
-                        
+
                         entity.Health -= dmg;
                         if (grid[entity.cordinates.y, entity.cordinates.x - range] == 0) { entity.cordinates.x -= knockback; }
                         is_there = true;
                         entity.cordinates.y -= knockback;
-                        
+
                     }
                 }
 
@@ -2292,62 +2309,71 @@ namespace cammera
             Console.BackgroundColor = ConsoleColor.Black;
             Console.ForegroundColor = ConsoleColor.Red;
             WriteAt("Health" + player.health.ToString() + "   ", 1, camera.View.GetLength(0) + 2);
+            int index = 0;
+            
+            foreach (var i in player.Inventory)
+            {
+                WriteAt(i.quantity.ToString() + ": "+i.Name, 3, 20 + index); index++;
+                
+            }
+            WriteAt("Health" + player.health.ToString() + "   ", 1, camera.View.GetLength(0) + 2);
         }
         static void Print_window(Camera camera, Game game, Player player)
         {
             Print_window1(camera, game, player);
-            if (false) { 
-            int c = 0;
-            int UI = camera.View.GetLength(0) + 1;
-            Console.BackgroundColor = ConsoleColor.Black;
-            Console.ForegroundColor = ConsoleColor.Red;
-            WriteAt("Health" + player.health.ToString(), 1, UI + 2);
-            WriteAt("Oxygen" + player.oxygen.ToString(), 1, UI + 3);
-            WriteAt("                    ", 1, UI + 1);
-
-            int offset = player.hotbar_offset;
-            //for (int e = 0; e < 10; e++)
-            //{
-            //    if (player.Inventory.Count == 0)
-            //    {
-            //        continue;
-            //    };
-            //    var i = player.Inventory[e + offset];
-
-            //    Console.ForegroundColor = i.FG;
-            //    Console.BackgroundColor = i.BG;
-            //    WriteAt(i.Texture.ToString(), c * 2, UI);
-            //    Console.BackgroundColor = ConsoleColor.Black;
-            //    Console.ForegroundColor = ConsoleColor.White;
-            //    WriteAt(i.quantity.ToString(), c * 2, UI - 1);
-            //    c++;
-
-
-            //}
-
-            foreach (var i in player.Inventory)
+            if (false)
             {
-
-                Console.ForegroundColor = i.FG;
-                Console.BackgroundColor = i.BG;
-                WriteAt(i.Texture.ToString(), c * 2, UI);
+                int c = 0;
+                int UI = camera.View.GetLength(0) + 1;
                 Console.BackgroundColor = ConsoleColor.Black;
-                Console.ForegroundColor = ConsoleColor.White;
-                WriteAt(i.quantity.ToString(), c * 2, UI - 1);
-                c++;
-            }
-            WriteAt("Selected id:" + player.Selected_block.id.ToString() + "   ", 40, 12);
+                Console.ForegroundColor = ConsoleColor.Red;
+                WriteAt("Health" + player.health.ToString(), 1, UI + 2);
+                WriteAt("Oxygen" + player.oxygen.ToString(), 1, UI + 3);
+                WriteAt("                    ", 1, UI + 1);
 
-            WriteAt("Mining level " + game.player_pic_lv.ToString(), 40, 10);
-            WriteAt("Time " + game.cycle, 30, 14);
+                int offset = player.hotbar_offset;
+                //for (int e = 0; e < 10; e++)
+                //{
+                //    if (player.Inventory.Count == 0)
+                //    {
+                //        continue;
+                //    };
+                //    var i = player.Inventory[e + offset];
 
-            int hotbar_selected = player.hotbar;
+                //    Console.ForegroundColor = i.FG;
+                //    Console.BackgroundColor = i.BG;
+                //    WriteAt(i.Texture.ToString(), c * 2, UI);
+                //    Console.BackgroundColor = ConsoleColor.Black;
+                //    Console.ForegroundColor = ConsoleColor.White;
+                //    WriteAt(i.quantity.ToString(), c * 2, UI - 1);
+                //    c++;
 
-            WriteAt("^^", hotbar_selected * 2, UI + 1);
-            WriteAt(player.Crafting_select.ToString() + ":" + game.recipes[player.Crafting_select].item.Name + "       ", 2, UI + 4);
-            WriteAt(player.x.ToString() + ":" + player.y.ToString(), 44, UI + 3);
-            Console.BackgroundColor = ConsoleColor.Cyan;
-            Console.ForegroundColor = default;
+
+                //}
+
+                foreach (var i in player.Inventory)
+                {
+
+                    Console.ForegroundColor = i.FG;
+                    Console.BackgroundColor = i.BG;
+                    WriteAt(i.Texture.ToString(), c * 2, UI);
+                    Console.BackgroundColor = ConsoleColor.Black;
+                    Console.ForegroundColor = ConsoleColor.White;
+                    WriteAt(i.quantity.ToString(), c * 2, UI - 1);
+                    c++;
+                }
+                WriteAt("Selected id:" + player.Selected_block.id.ToString() + "   ", 40, 12);
+
+                WriteAt("Mining level " + game.player_pic_lv.ToString(), 40, 10);
+                WriteAt("Time " + game.cycle, 30, 14);
+
+                int hotbar_selected = player.hotbar;
+
+                WriteAt("^^", hotbar_selected * 2, UI + 1);
+                WriteAt(player.Crafting_select.ToString() + ":" + game.recipes[player.Crafting_select].item.Name + "       ", 2, UI + 4);
+                WriteAt(player.x.ToString() + ":" + player.y.ToString(), 44, UI + 3);
+                Console.BackgroundColor = ConsoleColor.Cyan;
+                Console.ForegroundColor = default;
             }
         }
         static void Craft(Recipe name, Game game, Player player)

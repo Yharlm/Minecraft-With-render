@@ -32,7 +32,7 @@ namespace Minecraft
 
             Mob = new Entity("Slime", 3, "Hostile", "██");
             Mob.BGColor = ConsoleColor.DarkGreen;
-            Mob.FGColor = ConsoleColor.Blue;
+            Mob.FGColor = ConsoleColor.DarkBlue;
 
             Mob.speed = 0;
             game.Entity_list.Add(Mob);

@@ -4,6 +4,8 @@
     class Player : Cordinates
 
     {
+        // from 1 to 8 step is 10
+        public int Direction = 0;
         public List<Solid> Inventory = new List<Solid>();
         public int hotbar_offset = 0;
         public bool creative = false;
@@ -355,6 +357,13 @@
             velocity_x += vector.x;
             velocity_y += vector.y;
         }
+
+        public void Overide_velocity(Cordinates vector)
+        {
+
+            velocity_x = vector.x;
+            velocity_y = vector.y;
+        }
         public void Velocity(double time,Game game, int[,] grid)
         {
 
@@ -363,27 +372,43 @@
                 if (velocity_x > 0 && !game.Block_list.Find(x => x.id == grid[cordinates.y, cordinates.x + 1]).Collidable)
                 {
                     cordinates.x += 1;
-
+                    if(velocity_x != 0)
+                    {
+                        velocity_x--;
+                        
+                    }
                 }
-                else velocity_x--;
+                
                 if (velocity_x < 0 && !game.Block_list.Find(x => x.id == grid[cordinates.y, cordinates.x - 1]).Collidable)
                 {
                     cordinates.x -= 1;
-                    velocity_x++;
+                    if (velocity_x != 0)
+                    {
+                        velocity_x++;
+
+                    }
                 }
-                else velocity_x++;
+                
                 if (velocity_y > 0 && !game.Block_list.Find(x => x.id == grid[cordinates.y+1, cordinates.x]).Collidable)
                 {
                     cordinates.y += 1;
-                    velocity_y--;
+                    if (velocity_x != 0)
+                    {
+                        velocity_y--;
+
+                    }
                 }
-                else velocity_y--;
+                
                 if (velocity_y < 0 && !game.Block_list.Find(x => x.id == grid[cordinates.y-1, cordinates.x]).Collidable)
                 {
                     cordinates.y -= 1;
-                    velocity_y++;
+                    if (velocity_x != 0)
+                    {
+                        velocity_y++;
+
+                    }
                 }
-                else velocity_y++;
+                
 
             }
 
