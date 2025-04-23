@@ -915,7 +915,7 @@ namespace cammera
                 case 15:
                     if (random.Next(1, 100) < 10 && time % 4 == 0)
                     {
-                        structure(tree, x - 2, y + 1, grid, game);
+                        structure(tree, x - 3, y + 1, grid, game);
                     }
                     break;
 
@@ -1730,7 +1730,7 @@ namespace cammera
                 if (Tree_r >= tree_rate - 2)
                 {
 
-                    structure(tree, i, grid, game, game.GetBlock("Grass"));
+                    structure(tree, i, grid, game);
                     i += 5;
                 }
 
@@ -1741,40 +1741,45 @@ namespace cammera
             //structure(House, 31, grid, player);
         }
 
-        static void structure(object struc, int Local_x, int[,] grid, Game game, Solid required)
+        static void structure(object struc, int Local_x, int[,] grid, Game game)
         {
             Structure structure = (Structure)struc;
+            //Block_ids block = (Block_ids)Block;
+            //Solid tile = (Solid)Block;
+            //int[,] str =
+            //{
+            //    {0,0,1,0,0 },
+            //    {0,0,1,0,0 },
+            //    {0,1,1,0,0 },
+            //    {0,0,1,0,0 },
+            //    {0,0,1,0,0 }
+            //};
 
             int x = structure.Struct.GetLength(1);
             int y = structure.Struct.GetLength(0);
 
             int Local_y = 0;
-            while (game.Get_ByID(grid[Local_y, Local_x]).Collidable == false)
+            while (grid[Local_y, Local_x] == 0)
             {
                 Local_y++;
             }
             Local_y -= y;
-
-            if (grid[Local_y, Local_x] == required.id || required == null)
+            for (int i = Local_y; i < Local_y + y; i++)
             {
-                for (int i = Local_y; i < Local_y + y; i++)
+                for (int j = Local_x; j < Local_x + x; j++)
                 {
-                    for (int j = Local_x; j < Local_x + x; j++)
+                    if (structure.Struct[i - Local_y, j - Local_x] == 0)
                     {
-                        if (structure.Struct[i - Local_y, j - Local_x] == 0)
-                        {
-                            continue;
-                        }
-                        int ID = structure.Struct[i - Local_y, j - Local_x];
-
-
-                        Solid block = game.Block_list.Find(x => x.id == structure.Struct[i - Local_y, j - Local_x]);
-                        Fill_block(j, i, grid, block);
-
+                        continue;
                     }
+                    int ID = structure.Struct[i - Local_y, j - Local_x];
+
+
+                    Solid block = game.Block_list.Find(x => x.id == structure.Struct[i - Local_y, j - Local_x]);
+                    Fill_block(j, i, grid, block);
+
                 }
             }
-
 
 
         }
@@ -2318,12 +2323,21 @@ namespace cammera
             WriteAt("Oxygen: " + player.oxygen.ToString() + "   ", 1, 7);
             int index = 0;
             
+            
+            WriteAt("__________________", 0, 12);
+            WriteAt("|                 ", 0, 13);
+            WriteAt("> -------------- <", 0, 14);
+            
+
+            WriteAt(game.recipes[player.Crafting_select].item.Name + "   ", 3,13);
+
             foreach (var i in player.Inventory)
             {
+                Console.ForegroundColor = ConsoleColor.Red;
                 WriteAt(i.quantity.ToString() + ": "+i.Name, 3, 20 + index); index++;
                 WriteAt("  ", 0, 20 + index); 
             }
-            WriteAt(">>", 0, 20 + index);
+            WriteAt(">>", 0, 20 + player.hotbar);
         }
         static void Print_window(Camera camera, Game game, Player player)
         {
