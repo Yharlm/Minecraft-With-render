@@ -2308,15 +2308,22 @@ namespace cammera
         {
             Console.BackgroundColor = ConsoleColor.Black;
             Console.ForegroundColor = ConsoleColor.Red;
-            WriteAt("Health" + player.health.ToString() + "   ", 1, camera.View.GetLength(0) + 2);
+            WriteAt(">>", 0, 20 + player.hotbar);
+            WriteAt("|                |", 0, 5);
+            WriteAt("|________________|", 0, 6);
+            WriteAt("Health: " + player.health.ToString() + "   ", 1, 5);
+            Console.ForegroundColor = ConsoleColor.Blue;
+            WriteAt("|                |", 0, 7);
+            WriteAt("|________________|", 0, 8);
+            WriteAt("Oxygen: " + player.oxygen.ToString() + "   ", 1, 7);
             int index = 0;
             
             foreach (var i in player.Inventory)
             {
                 WriteAt(i.quantity.ToString() + ": "+i.Name, 3, 20 + index); index++;
-                
+                WriteAt("  ", 0, 20 + index); 
             }
-            WriteAt("Health" + player.health.ToString() + "   ", 1, camera.View.GetLength(0) + 2);
+            WriteAt(">>", 0, 20 + index);
         }
         static void Print_window(Camera camera, Game game, Player player)
         {
