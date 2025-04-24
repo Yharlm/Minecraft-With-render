@@ -742,7 +742,7 @@ namespace cammera
                                                         Console.ForegroundColor = ConsoleColor.White;
                                                         break;
                                                 }
-                                                WriteAt("█", x * 2 + b, y + a);
+                                                WriteAt("█", (x + camera.X_offset) * 2 + b, (y + camera.Y_offset)+a);
                                             }
 
                                         }
@@ -1010,13 +1010,13 @@ namespace cammera
                         Entity_list.Remove(entity);
                         break;
                     }
-                    if (game.curent_tick)
+                    if (game.curent_tick && false)
                     {
                         if (!game.Block_list.Find(x => x.id == grid[entity.cordinates.y, entity.cordinates.x - 1]).Collidable && entity.velocity_y == 0 && entity.velocity_x == 0)
                         {
                             entity.Add_velocity(Cordinates.Convert_cor(0, 1));
                         }
-                        entity.Velocity(game.gametime, game, grid);
+                        entity.VelocityV2(game.gametime, game, grid);
                     }
 
                 }
@@ -1069,7 +1069,7 @@ namespace cammera
         }
 
 
-        static void Command(Player player, Game game)
+        static void Command(Player player, Game game, int[,] grid)
         {
             Console.ForegroundColor = ConsoleColor.Green;
             Console.BackgroundColor = ConsoleColor.Black;
@@ -1088,6 +1088,25 @@ namespace cammera
                     {
                         entity.Add_velocity(Cordinates.Convert_cor(int.Parse(commands[1]), -int.Parse(commands[2])), double.Parse(commands[3]));
                     }
+
+
+                    break;
+                case "Test1":
+
+                    float x = 0;
+                    float y = 0;
+                    float curve = 1;
+                    
+                    for (int i = 0; i < 70; i++)
+                    {
+                        x += 0.5f;
+                        y += 0.1f * (int)curve;
+                        curve += 0.3f;
+                        Fill_block(player.x + (int)x, player.y+(int)y, grid, game.GetBlock("Wooden_planks"));
+                    }
+
+
+
 
 
                     break;
@@ -1173,7 +1192,7 @@ namespace cammera
                 {
                     //case "H":
                     case "O":
-                        Command(player, game);
+                        Command(player, game,grid);
                         break;
                     case "J":
                         List<string> name = new List<string>();
@@ -1216,10 +1235,21 @@ namespace cammera
                         }
 
                         break;
-                    case "X":
+                    case "V":
 
+                        //Entity bullet = game.Projectiles[1];
+                        //Entity template = new Entity(bullet.Name, bullet.Health, bullet.Type, bullet.Sprite);
+                        //template.FGColor = bullet.FGColor;
+                        //template.BGColor = bullet.BGColor;
+                        //template.speed = bullet.speed;
+                        ////Default.cordinates.x = random.Next(4, 55);
+                        //template.Sprite1D = bullet.Sprite1D;
+                        //template.cordinates = game.cordinates;
+                        //template.Add_velocity(Convert_cor(5,0));
+
+                        //game.Existing_Entities.Add(template);
                         //player.Holding = true;
-                        Shoot_Projectile(player, game, player_cords, player.Entity_hotbar);
+                        game.Shoot_Projectile(player_cords, 0, Convert_cor(10, 0));
                         break;
                     case "D1":
 
@@ -2214,17 +2244,7 @@ namespace cammera
             }
             return is_there;
         }
-        static void Shoot_Projectile(Player player, Game game, Cordinates cordinates, int ID)
-        {
-            Entity entity = game.Projectiles[ID];
-            entity.cordinates = cordinates;
-            entity.cordinates.y -= 1;
-            entity.cordinates.x += 1;
-            entity.cordinates.x1 = cordinates.x;
-            game.Existing_Entities.Add(entity);
-
-
-        }
+        
 
         static void Slash(Player player, Game game, int[,] grid)
         {
@@ -2315,16 +2335,16 @@ namespace cammera
             Console.ForegroundColor = ConsoleColor.Red;
             WriteAt(">>", 0, 20 + player.hotbar);
             WriteAt("|                |", 0, 5);
-            WriteAt("|________________|", 0, 6);
+            WriteAt("'________________'", 0, 6);
             WriteAt("Health: " + player.health.ToString() + "   ", 1, 5);
             Console.ForegroundColor = ConsoleColor.Blue;
             WriteAt("|                |", 0, 7);
-            WriteAt("|________________|", 0, 8);
+            WriteAt("'________________'", 0, 8);
             WriteAt("Oxygen: " + player.oxygen.ToString() + "   ", 1, 7);
             int index = 0;
             
             
-            WriteAt("__________________", 0, 12);
+            WriteAt("._________________", 0, 12);
             WriteAt("|                 ", 0, 13);
             WriteAt("> -------------- <", 0, 14);
             
@@ -2337,6 +2357,7 @@ namespace cammera
                 WriteAt(i.quantity.ToString() + ": "+i.Name, 3, 20 + index); index++;
                 WriteAt("  ", 0, 20 + index); 
             }
+            Console.ForegroundColor = ConsoleColor.White;
             WriteAt(">>", 0, 20 + player.hotbar);
         }
         static void Print_window(Camera camera, Game game, Player player)

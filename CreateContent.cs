@@ -13,6 +13,8 @@ namespace Minecraft
     {
         public static void LoadEntities(Game game)
         {
+            
+
             Entity Mob = new Entity("", 0, "", "██");
         
             // Creates an object(Entity)
@@ -36,6 +38,13 @@ namespace Minecraft
 
             Mob.speed = 0;
             game.Entity_list.Add(Mob);
+            // projeciles 
+
+            Mob = new Entity("Blue", 1, "Projectile", "██");
+
+            Mob.FGColor = ConsoleColor.DarkBlue;
+            game.Projectiles.Add(Mob);
+
 
         }
 

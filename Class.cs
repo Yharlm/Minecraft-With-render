@@ -1,4 +1,7 @@
-﻿namespace Minecraft
+﻿using System.Numerics;
+using Org.BouncyCastle.Bcpg.OpenPgp;
+
+namespace Minecraft
 {
 
     class Player : Cordinates
@@ -128,6 +131,24 @@
         public List<Entity> Existing_Entities = new List<Entity>();
         public List<Entity> Projectiles = new List<Entity>();
         public List<Recipe> recipes = new List<Recipe>();
+
+        public void Shoot_Projectile( Cordinates cordinates, int ID, Cordinates Velocity)
+        {
+            Entity mob = Projectiles[ID];
+            Entity Default = new Entity(mob.Name, mob.Health, mob.Type, mob.Sprite);
+            Default.FGColor = mob.FGColor;
+            Default.BGColor = mob.BGColor;
+            Default.speed = mob.speed;
+            //Default.cordinates.x = random.Next(4, 55);
+            Default.Sprite1D = mob.Sprite1D;
+            Default.cordinates = cordinates;
+            Default.Add_velocity(Velocity);
+
+
+            Existing_Entities.Add(Default);
+
+
+        }
         public Solid GetBlock(string name)
         {
             return Block_list.Find(x => x.Name == name);
@@ -413,6 +434,20 @@
             }
 
 
+        }
+        public void VelocityV2(double time, Game game, int[,] grid)
+        {
+            float x = 3;
+            float y = 3;
+
+            
+                x += 0.5f;
+                y += 0.5f;
+
+                cordinates.x += (int)x;
+                cordinates.y += (int)y;
+
+            
         }
 
     }
