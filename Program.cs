@@ -76,7 +76,7 @@ namespace cammera
                                     Explosion(game, grid, mob.cordinates, player, 2);
                                     player.health -= 40;
                                 }
-                                else if (game.time % 3 == 0 && mob.cordinates.x >= player.x - 2 && mob.cordinates.x <= player.x + 2)
+                                else if (game.time % 3 == 0 && GetRange(mob.cordinates.x-1,player.x ,mob.cordinates.x + 1))
                                 {
                                     mob.time++;
                                     mob.BGColor = ConsoleColor.White;
@@ -742,7 +742,7 @@ namespace cammera
                                                         Console.ForegroundColor = ConsoleColor.White;
                                                         break;
                                                 }
-                                                WriteAt("█", (x + camera.X_offset) * 2 + b, (y + camera.Y_offset)+a);
+                                                WriteAt("█", (x + camera.X_offset) * 2 + b, (y + camera.Y_offset) + a);
                                             }
 
                                         }
@@ -1001,24 +1001,41 @@ namespace cammera
             //PlayerAbilities(grid, player, game);
             if (game.Existing_Entities.Count != 0)
             {
-
+                
                 foreach (Entity entity in game.Existing_Entities)
                 {
+                    if(entity.hit)
+                    {
+                        switch (entity.on_hit)
+                        {
+                            case "Die":
+                                
+                                entity.Health = 0;
+                                break;
+                        }
+                    }
 
                     if (entity.Health <= 0)
                     {
                         Entity_list.Remove(entity);
                         break;
                     }
-                    if (game.curent_tick && false)
+                    if (game.curent_tick)
                     {
                         if (!game.Block_list.Find(x => x.id == grid[entity.cordinates.y, entity.cordinates.x - 1]).Collidable && entity.velocity_y == 0 && entity.velocity_x == 0)
                         {
                             entity.Add_velocity(Cordinates.Convert_cor(0, 1));
                         }
-                        entity.VelocityV2(game.gametime, game, grid);
+                        entity.Velocity(game.gametime, game, grid);
                     }
-
+                    if (game.Get_ByID(grid[entity.cordinates.y, entity.cordinates.x - 1]).Collidable || game.Get_ByID( grid[entity.cordinates.y, entity.cordinates.x+1]).Collidable && entity.Type == "Projectile" )
+                    {
+                        entity.hit = true;
+                    }
+                    if(entity.Type == "Projectile")
+                    {
+                        Attack(game, entity.cordinates, grid, 1, 1, 1);
+                    }
                 }
 
             }
@@ -1086,7 +1103,7 @@ namespace cammera
 
                     foreach (Entity entity in game.Existing_Entities)
                     {
-                        entity.Add_velocity(Cordinates.Convert_cor(int.Parse(commands[1]), -int.Parse(commands[2])), double.Parse(commands[3]));
+                        entity.Add_velocity(Cordinates.Convert_cor(int.Parse(commands[1]), -int.Parse(commands[2])), float.Parse(commands[3]));
                     }
 
 
@@ -1096,13 +1113,13 @@ namespace cammera
                     float x = 0;
                     float y = 0;
                     float curve = 1;
-                    
+
                     for (int i = 0; i < 70; i++)
                     {
                         x += 0.5f;
                         y += 0.1f * (int)curve;
                         curve += 0.3f;
-                        Fill_block(player.x + (int)x, player.y+(int)y, grid, game.GetBlock("Wooden_planks"));
+                        Fill_block(player.x + (int)x, player.y + (int)y, grid, game.GetBlock("Wooden_planks"));
                     }
 
 
@@ -1164,25 +1181,27 @@ namespace cammera
 
 
             }
-            //switch (player.Input)
-            //{
-            //    case "NumPad6":
-            //        num = 3;
-            //        break;
-            //    case "NumPad4":
-            //        num = 7;
-            //        break;
-            //    case "NumPad8":
-            //        num = 1;
-            //        break;
-            //    case "NumPad2":
-            //        num = 2;
-            //        break;
-
-            //}
             else { player.Input = null; }
-
             Cordinates player_cords = new Cordinates();
+            switch (player.Input)
+            {
+                case "NumPad6":
+                    game.Shoot_Projectile(player_cords, 0, Convert_cor(10, 0));
+                    break;
+                case "NumPad4":
+                    game.Shoot_Projectile(player_cords, 0, Convert_cor(-10, 0));
+                    break;
+                case "NumPad8":
+                    
+                    break;
+                case "NumPad2":
+                    
+                    break;
+
+            }
+            
+
+            
             player_cords.x = x;
             player_cords.y = y;
             //player.Selected_block = dirt;
@@ -1192,7 +1211,7 @@ namespace cammera
                 {
                     //case "H":
                     case "O":
-                        Command(player, game,grid);
+                        Command(player, game, grid);
                         break;
                     case "J":
                         List<string> name = new List<string>();
@@ -1237,19 +1256,8 @@ namespace cammera
                         break;
                     case "V":
 
-                        //Entity bullet = game.Projectiles[1];
-                        //Entity template = new Entity(bullet.Name, bullet.Health, bullet.Type, bullet.Sprite);
-                        //template.FGColor = bullet.FGColor;
-                        //template.BGColor = bullet.BGColor;
-                        //template.speed = bullet.speed;
-                        ////Default.cordinates.x = random.Next(4, 55);
-                        //template.Sprite1D = bullet.Sprite1D;
-                        //template.cordinates = game.cordinates;
-                        //template.Add_velocity(Convert_cor(5,0));
-
-                        //game.Existing_Entities.Add(template);
-                        //player.Holding = true;
-                        game.Shoot_Projectile(player_cords, 0, Convert_cor(10, 0));
+                        
+                        
                         break;
                     case "D1":
 
@@ -1994,6 +2002,20 @@ namespace cammera
 
         }
 
+        static bool GetRange(int x, int a, int y)
+        {
+
+            if (x < a && a < y)
+            {
+                
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+
+        }
         private static void Fill_block(int x, int y, int[,] grid, Solid Block)
         {
 
@@ -2182,69 +2204,50 @@ namespace cammera
 
             return res;
         }
-        public static bool AttackPL(Game game, Player player, int[,] grid, int knockback, int range, int dmg)
+        public static void AttackPL(Game game, Player player, int[,] grid, int knockback, int range, int dmg)
         {
-            bool is_there = false;
+            
             foreach (Entity entity in game.Existing_Entities)
             {
                 if (entity.Type != "Projectle")
                 {
-                    if (entity.cordinates.x + 1 == player.x || entity.cordinates.x == player.x && entity.cordinates.y == player.y)
+                    if (GetRange(entity.cordinates.x- range, player.x,entity.cordinates.x+ range))
                     {
 
                         player.health -= dmg;
-                        if (grid[player.y, player.x + range] == 0) { player.x += knockback; }
-                        is_there = true;
+                        
+                        
                         player.y -= knockback;
 
                     }
-                    if (entity.cordinates.x - 1 == player.x || entity.cordinates.x == player.x && entity.cordinates.y == player.y)
-                    {
-
-
-                        player.health -= dmg;
-                        if (grid[player.y, player.x - range] == 0) { player.x -= knockback; }
-                        is_there = true;
-                        player.y -= knockback;
-
-                    }
+                    
                 }
 
             }
-            return is_there;
+            
         }
         public static bool Attack(Game game, Cordinates player, int[,] grid, int knockback, int range, int dmg)
         {
             bool is_there = false;
             foreach (Entity entity in game.Existing_Entities)
             {
-                if (entity.Type != "Projectle")
+                if (entity.Type != "Projectile")
                 {
-                    if (GetRadius(entity.cordinates, player, range, 3) && entity.cordinates.x >= player.x)
+                    if (GetRange(entity.cordinates.x-1,player.x, entity.cordinates.x + 1))
                     {
 
                         entity.Health -= dmg;
-                        if (grid[entity.cordinates.y, entity.cordinates.x + range] == 0) { entity.cordinates.x += knockback; }
                         is_there = true;
                         entity.cordinates.y -= knockback;
 
                     }
-                    if (GetRadius(entity.cordinates, player, -range, 3) && entity.cordinates.x <= player.x)
-                    {
-
-
-                        entity.Health -= dmg;
-                        if (grid[entity.cordinates.y, entity.cordinates.x - range] == 0) { entity.cordinates.x -= knockback; }
-                        is_there = true;
-                        entity.cordinates.y -= knockback;
-
-                    }
+                    
                 }
 
             }
             return is_there;
         }
-        
+
 
         static void Slash(Player player, Game game, int[,] grid)
         {
@@ -2342,20 +2345,20 @@ namespace cammera
             WriteAt("'________________'", 0, 8);
             WriteAt("Oxygen: " + player.oxygen.ToString() + "   ", 1, 7);
             int index = 0;
-            
-            
+
+
             WriteAt("._________________", 0, 12);
             WriteAt("|                 ", 0, 13);
             WriteAt("> -------------- <", 0, 14);
-            
 
-            WriteAt(game.recipes[player.Crafting_select].item.Name + "   ", 3,13);
+
+            WriteAt(game.recipes[player.Crafting_select].item.Name + "   ", 3, 13);
 
             foreach (var i in player.Inventory)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
-                WriteAt(i.quantity.ToString() + ": "+i.Name, 3, 20 + index); index++;
-                WriteAt("  ", 0, 20 + index); 
+                WriteAt(i.quantity.ToString() + ": " + i.Name, 3, 20 + index); index++;
+                WriteAt("  ", 0, 20 + index);
             }
             Console.ForegroundColor = ConsoleColor.White;
             WriteAt(">>", 0, 20 + player.hotbar);

@@ -40,9 +40,10 @@ namespace Minecraft
             game.Entity_list.Add(Mob);
             // projeciles 
 
-            Mob = new Entity("Blue", 1, "Projectile", "██");
+            Mob = new Entity("Bullet", 1, "Projectile", "██");
 
-            Mob.FGColor = ConsoleColor.DarkBlue;
+            Mob.FGColor = ConsoleColor.Magenta;
+            Mob.on_hit = "Die";
             game.Projectiles.Add(Mob);
 
 
