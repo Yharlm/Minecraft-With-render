@@ -25,6 +25,13 @@ namespace Minecraft
             Mob.Sprite1D = ["  ", ".."];
             game.Entity_list.Add(Mob);
 
+            Mob = new Entity("Skeleton", 6, "Hostile", "██");
+            Mob.BGColor = ConsoleColor.White;
+            Mob.FGColor = ConsoleColor.Yellow;
+            Mob.speed = 0;
+            Mob.Sprite1D = ["▀ ", ",,"];
+            game.Entity_list.Add(Mob);
+
             Mob = new Entity("Creeper", 5, "Hostile", "██");
             Mob.BGColor = ConsoleColor.DarkGreen;
             Mob.FGColor = ConsoleColor.Red;

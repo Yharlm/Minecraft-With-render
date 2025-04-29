@@ -130,8 +130,29 @@ namespace Minecraft
             Default.Sprite1D = mob.Sprite1D;
             Default.cordinates = cordinates;
             Default.on_hit = mob.on_hit;
+            Default.Source = mob.Source;
             Default.Add_velocity(Velocity);
             
+
+
+            Existing_Entities.Add(Default);
+
+
+        }
+        public void Shoot_Projectile(Cordinates cordinates, int ID, Cordinates Velocity,string Source)
+        {
+            Entity mob = Projectiles[ID];
+            Entity Default = new Entity(mob.Name, mob.Health, mob.Type, mob.Sprite);
+            Default.FGColor = mob.FGColor;
+            Default.BGColor = mob.BGColor;
+            Default.speed = mob.speed;
+            //Default.cordinates.x = random.Next(4, 55);
+            Default.Sprite1D = mob.Sprite1D;
+            Default.cordinates = cordinates;
+            Default.on_hit = mob.on_hit;
+            Default.Source = Source;
+            Default.Add_velocity(Velocity);
+
 
 
             Existing_Entities.Add(Default);

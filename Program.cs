@@ -101,23 +101,38 @@ namespace cammera
                                     mob.speed = 2;
                                 }
 
-
-
-
-
-
-
+                            }
+                            if (mob.Name == "Skeleton")
+                            {
+                                if (game.gametime % 5 == 0)
+                                {
+                                    if(player.x > mob.cordinates.x)
+                                    {
+                                        game.Shoot_Projectile(mob.cordinates, 0, Convert_cor(3, -1), "Mob");
+                                    }
+                                    else if (player.x < mob.cordinates.x)
+                                    {
+                                        game.Shoot_Projectile(mob.cordinates, 0, Convert_cor(-3, -1), "Mob");
+                                    }
+                                }
                             }
 
 
                             break;
 
                         case "Projectile":
-
+                            
                             Cordinates pos = mob.cordinates;
                             if (game.curent_tick)
                             {
-
+                                if(mob.Source == "Mob")
+                                {
+                                    AttackPL(game, player, grid, 1, 1, 20);
+                                }
+                                else
+                                {
+                                    Attack(game, mob.cordinates, grid, 1, 1, 1);
+                                }
                                 if (mob.Name == "Slash")
                                 {
                                     if (pos.x <= pos.x1 + 8)
@@ -1028,14 +1043,11 @@ namespace cammera
                         }
                         entity.Velocity(game.gametime, game, grid);
                     }
-                    if (game.Get_ByID(grid[entity.cordinates.y, entity.cordinates.x - 1]).Collidable || game.Get_ByID( grid[entity.cordinates.y, entity.cordinates.x+1]).Collidable && entity.Type == "Projectile" )
+                    if (game.Get_ByID(grid[entity.cordinates.y - 1, entity.cordinates.x]).Collidable || game.Get_ByID(grid[entity.cordinates.y+1, entity.cordinates.x]).Collidable || game.Get_ByID(grid[entity.cordinates.y, entity.cordinates.x - 1]).Collidable || game.Get_ByID( grid[entity.cordinates.y, entity.cordinates.x+1]).Collidable && entity.Type == "Projectile" )
                     {
                         entity.hit = true;
                     }
-                    if(entity.Type == "Projectile")
-                    {
-                        Attack(game, entity.cordinates, grid, 1, 1, 1);
-                    }
+                    
                 }
 
             }
@@ -1186,16 +1198,16 @@ namespace cammera
             switch (player.Input)
             {
                 case "NumPad6":
-                    game.Shoot_Projectile(player_cords, 0, Convert_cor(10, 0));
+                    game.Shoot_Projectile(player_cords, 0, Convert_cor(10, -1));
                     break;
                 case "NumPad4":
-                    game.Shoot_Projectile(player_cords, 0, Convert_cor(-10, 0));
+                    game.Shoot_Projectile(player_cords, 0, Convert_cor(-10, -1));
                     break;
-                case "NumPad8":
-                    
+                case "NumPad9":
+                    game.Shoot_Projectile(player_cords, 0, Convert_cor(5, -3));
                     break;
-                case "NumPad2":
-                    
+                case "NumPad7":
+                    game.Shoot_Projectile(player_cords, 0, Convert_cor(-5, -3));
                     break;
 
             }
@@ -2209,8 +2221,7 @@ namespace cammera
             
             foreach (Entity entity in game.Existing_Entities)
             {
-                if (entity.Type != "Projectle")
-                {
+                
                     if (GetRange(entity.cordinates.x- range, player.x,entity.cordinates.x+ range))
                     {
 
@@ -2221,7 +2232,7 @@ namespace cammera
 
                     }
                     
-                }
+                
 
             }
             
