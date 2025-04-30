@@ -1,3 +1,4 @@
+using System;
 using Minecraft;
 
 
@@ -76,7 +77,7 @@ namespace cammera
                                     Explosion(game, grid, mob.cordinates, player, 2);
                                     player.health -= 40;
                                 }
-                                else if (game.time % 3 == 0 && GetRange(mob.cordinates.x-1,player.x ,mob.cordinates.x + 1))
+                                else if (game.time % 3 == 0 && GetRange(mob.cordinates.x-4,player.x ,mob.cordinates.x + 4))
                                 {
                                     mob.time++;
                                     mob.BGColor = ConsoleColor.White;
@@ -89,16 +90,17 @@ namespace cammera
                             }
                             if (mob.Name == "Slime")
                             {
-                                if (game.gametime % 5 == 0)
+                                if (game.gametime % 8 == 0 && game.Get_ByID(grid[mob.cordinates.y + 1, mob.cordinates.x]).Collidable)
                                 {
-                                    mob.speed = 0;
-                                }
-                                if (game.gametime % 10 == 0)
-                                {
-
-                                    AttackPL(game, player, grid, 2, 1, 30);
-                                    mob.cordinates.y -= 3;
-                                    mob.speed = 2;
+                                    if (player.x > mob.cordinates.x)
+                                    {
+                                        mob.Add_velocity(Convert_cor(3, -2));
+                                    }
+                                    else if (player.x < mob.cordinates.x)
+                                    {
+                                        mob.Add_velocity(Convert_cor(-3, -2));
+                                    }
+                                    AttackPL(game, player, grid, 2, 2, 20);
                                 }
 
                             }
@@ -106,13 +108,13 @@ namespace cammera
                             {
                                 if (game.gametime % 5 == 0)
                                 {
-                                    if(player.x > mob.cordinates.x)
+                                    if (player.x > mob.cordinates.x)
                                     {
-                                        game.Shoot_Projectile(mob.cordinates, 0, Convert_cor(3, -1), "Mob");
+                                        game.Shoot_Projectile(Convert_cor(mob.cordinates.x, mob.cordinates.y-1), 0, Convert_cor(3, -1), "Mob");
                                     }
                                     else if (player.x < mob.cordinates.x)
                                     {
-                                        game.Shoot_Projectile(mob.cordinates, 0, Convert_cor(-3, -1), "Mob");
+                                        game.Shoot_Projectile(Convert_cor(mob.cordinates.x, mob.cordinates.y - 1), 0, Convert_cor(-3, -1), "Mob");
                                     }
                                 }
                             }
@@ -125,11 +127,11 @@ namespace cammera
                             Cordinates pos = mob.cordinates;
                             if (game.curent_tick)
                             {
-                                if(mob.Source == "Mob")
+                                if (mob.Source == "Mob1")
                                 {
                                     AttackPL(game, player, grid, 1, 1, 20);
                                 }
-                                else
+                                else if (mob.Source == "plr")
                                 {
                                     Attack(game, mob.cordinates, grid, 1, 1, 1);
                                 }
@@ -375,7 +377,11 @@ namespace cammera
             //    Console.WriteLine($"X: {cordinate.x}, Y: {cordinate.y}");
             //}
 
-            Console.ReadLine();
+
+
+
+
+            //Console.ReadLine();
             //Thread.Sleep(80000);
             //Save.Test();
             Console.CursorVisible = false;
@@ -689,9 +695,18 @@ namespace cammera
 
                 if (Game.cycle >= 240)
                 { Game.cycle = 0; }
-
-
-
+                Random random = new Random();
+                Cordinates spawning = new Cordinates();
+                spawning.x = player.x - random.Next(8, 20);
+                spawning.y = player.y - 3;
+                if (Game.day && random.Next(1, 50) == 3)
+                {
+                    Game.Spawn(3, spawning);
+                }
+                else if (random.Next(1, 70) == 3)
+                {
+                    Game.Spawn(1, spawning);
+                }
 
 
 
@@ -1166,7 +1181,7 @@ namespace cammera
             //grid[player.y, player.x] = 0;
             int x = player.x;
             int y = player.y;
-
+            Cordinates player_cords = new Cordinates();
             if (Console.KeyAvailable == true)
             {
                 Console.ForegroundColor = ConsoleColor.Cyan;
@@ -1190,35 +1205,42 @@ namespace cammera
                 {
                     player.Looking = "Left";
                 }
+                switch (player.Input)
+                {
+                    case "LeftArrow":
+                        game.Shoot_Projectile(player_cords, 0, Convert_cor(-10, -1),"plr");
+                        break;
+                    case "RightArrow":
+                        game.Shoot_Projectile(player_cords, 0, Convert_cor(10, -1), "plr");
+                        break;
+                    case "NumPad6":
+                        game.Shoot_Projectile(player_cords, 0, Convert_cor(10, -1), "plr");
+                        break;
+                    case "NumPad4":
+                        game.Shoot_Projectile(player_cords, 0, Convert_cor(-10, -1), "plr");
+                        break;
+                    case "NumPad9":
+                        game.Shoot_Projectile(player_cords, 0, Convert_cor(5, -3), "plr");
+                        break;
+                    case "NumPad7":
+                        game.Shoot_Projectile(player_cords, 0, Convert_cor(-5, -3), "plr");
+                        break;
 
-
+                }
+                
             }
             else { player.Input = null; }
-            Cordinates player_cords = new Cordinates();
-            switch (player.Input)
-            {
-                case "NumPad6":
-                    game.Shoot_Projectile(player_cords, 0, Convert_cor(10, -1));
-                    break;
-                case "NumPad4":
-                    game.Shoot_Projectile(player_cords, 0, Convert_cor(-10, -1));
-                    break;
-                case "NumPad9":
-                    game.Shoot_Projectile(player_cords, 0, Convert_cor(5, -3));
-                    break;
-                case "NumPad7":
-                    game.Shoot_Projectile(player_cords, 0, Convert_cor(-5, -3));
-                    break;
-
-            }
             
-
+            
+            
+            
             
             player_cords.x = x;
             player_cords.y = y;
             //player.Selected_block = dirt;
             if (game.curent_tick)
             {
+                
                 switch (player.Input)
                 {
                     //case "H":
@@ -1333,23 +1355,7 @@ namespace cammera
                     case "T":
                         {
 
-                            //WriteAt(game.Existing_Entities.Count().ToString(), 24, 3);
-
-                            Entity mob = game.Entity_list[player.Entity_hotbar];
-                            Entity Default = new Entity(mob.Name, mob.Health, mob.Type, mob.Sprite);
-                            Default.FGColor = mob.FGColor;
-                            Default.BGColor = mob.BGColor;
-                            Default.speed = mob.speed;
-                            //Default.cordinates.x = random.Next(4, 55);
-                            Default.Sprite1D = mob.Sprite1D;
-                            Default.cordinates.x = player.x;
-                            Default.cordinates.y = player.y;
-
-
-
-                            game.Existing_Entities.Add(Default);
-                            //game.Spawn_entity(entity);
-
+                            game.Spawn(player.Entity_hotbar,player_cords);
                             break;
                         }
                     case "D2":
@@ -2222,7 +2228,7 @@ namespace cammera
             foreach (Entity entity in game.Existing_Entities)
             {
                 
-                    if (GetRange(entity.cordinates.x- range, player.x,entity.cordinates.x+ range))
+                    if (GetRange(entity.cordinates.x- range, player.x,entity.cordinates.x+ range) && GetRange(entity.cordinates.y - range, player.y, entity.cordinates.y + range))
                     {
 
                         player.health -= dmg;

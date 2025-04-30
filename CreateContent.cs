@@ -52,6 +52,7 @@ namespace Minecraft
             Mob.FGColor = ConsoleColor.Magenta;
             Mob.on_hit = "Die";
             game.Projectiles.Add(Mob);
+            
 
 
         }

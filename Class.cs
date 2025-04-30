@@ -130,19 +130,25 @@ namespace Minecraft
             Default.Sprite1D = mob.Sprite1D;
             Default.cordinates = cordinates;
             Default.on_hit = mob.on_hit;
-            Default.Source = mob.Source;
-            Default.Add_velocity(Velocity);
             
-
-
+            Default.Add_velocity(Velocity);
             Existing_Entities.Add(Default);
 
 
         }
         public void Shoot_Projectile(Cordinates cordinates, int ID, Cordinates Velocity,string Source)
         {
+            int temp = ID;
+            if (temp == -1)
+            {
+                ID = 0;
+            }
             Entity mob = Projectiles[ID];
             Entity Default = new Entity(mob.Name, mob.Health, mob.Type, mob.Sprite);
+            if (temp == -1)
+            {
+                Default.Sprite = "  ";
+            }
             Default.FGColor = mob.FGColor;
             Default.BGColor = mob.BGColor;
             Default.speed = mob.speed;
@@ -152,8 +158,6 @@ namespace Minecraft
             Default.on_hit = mob.on_hit;
             Default.Source = Source;
             Default.Add_velocity(Velocity);
-
-
 
             Existing_Entities.Add(Default);
 
@@ -172,7 +176,23 @@ namespace Minecraft
             return Get_ByID(grid[y, x]);
         }
 
+        public void Spawn(int ID,Cordinates pos)
+        {
+            Entity mob = Entity_list[ID];
+            Entity Default = new Entity(mob.Name, mob.Health, mob.Type, mob.Sprite);
+            Default.FGColor = mob.FGColor;
+            Default.BGColor = mob.BGColor;
+            Default.speed = mob.speed;
+            //Default.cordinates.x = random.Next(4, 55);
+            Default.Sprite1D = mob.Sprite1D;
+            Default.cordinates.x = pos.x;
+            Default.cordinates.y = pos.y;
 
+
+
+            Existing_Entities.Add(Default);
+            //game.Spawn_entity(entity);
+        }
         public void Spawn_entity(Entity mob)
         {
             Entity_list.Add(mob);
